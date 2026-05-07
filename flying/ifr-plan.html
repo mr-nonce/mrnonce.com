@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IFR Training Plan — Brett Morrison / N269PG</title>
+  <style>
+    :root {
+      --bg:       #0f0f0f;
+      --surface:  #181818;
+      --border:   #2a2a2a;
+      --text:     #e0e0e0;
+      --muted:    #888;
+      --accent:   #4a9eff;
+      --green:    #3ecf8e;
+      --yellow:   #f0c060;
+      --red:      #e05555;
+      --mono:     'Courier New', Courier, monospace;
+      --serif:    Georgia, 'Times New Roman', serif;
+      --sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.75;
+      padding: 0 1rem 6rem;
+    }
+
+    /* ── Layout ── */
+    .wrapper { max-width: 820px; margin: 0 auto; }
+    section { margin-bottom: 3.5rem; }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 3rem 0 2rem;
+      margin-bottom: 3rem;
+    }
+    header .eyebrow {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    header h1 {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: normal;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    header .subtitle {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    header .subtitle span { color: var(--accent); }
+
+    /* ── TOC ── */
+    nav.toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 3.5rem;
+    }
+    nav.toc h2 {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    nav.toc ol {
+      padding-left: 1.25rem;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+    }
+    nav.toc ol li { margin-bottom: 0.35rem; }
+    nav.toc a { color: var(--accent); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+
+    /* ── Section headings ── */
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      font-weight: normal;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+    h3 {
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 1.5rem 0 0.5rem;
+    }
+    h4 {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--yellow);
+      margin: 1.25rem 0 0.4rem;
+    }
+    p { margin-bottom: 1rem; }
+    ul, ol { padding-left: 1.4rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.3rem; }
+    strong { color: #fff; font-weight: 600; }
+    em { color: var(--yellow); font-style: normal; }
+
+    /* ── Callout boxes ── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--surface);
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0 4px 4px 0;
+      font-family: var(--sans);
+      font-size: 0.92rem;
+    }
+    .callout.green  { border-color: var(--green); }
+    .callout.yellow { border-color: var(--yellow); }
+    .callout.red    { border-color: var(--red); }
+    .callout .label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .callout.green  .label { color: var(--green); }
+    .callout.yellow .label { color: var(--yellow); }
+    .callout.red    .label { color: var(--red); }
+    .callout         .label { color: var(--accent); }
+
+    /* ── Requirements grid ── */
+    .req-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .req-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.1rem 1.25rem;
+      font-family: var(--sans);
+    }
+    .req-card .num {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .req-card .label { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Phase timeline ── */
+    .phase {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .phase-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.85rem 1.25rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .phase-num {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+    .phase-title {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .phase-dates {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .phase-body { padding: 1rem 1.25rem; font-family: var(--sans); font-size: 0.9rem; }
+    .phase-body ul { color: var(--text); }
+    .milestone {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--green);
+      margin-top: 0.75rem;
+    }
+    .milestone::before { content: "✓ MILESTONE: "; color: var(--muted); }
+
+    /* ── Cost table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      margin: 1rem 0;
+    }
+    th {
+      background: var(--surface);
+      text-align: left;
+      padding: 0.6rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    td {
+      padding: 0.55rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    td.num { font-family: var(--mono); color: var(--accent); }
+    td.total { color: #fff; font-weight: 600; }
+    td.total-num { font-family: var(--mono); color: var(--green); font-weight: 600; }
+
+    /* ── Avionics badges ── */
+    .badge-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      background: #1a2a1a;
+      border: 1px solid #2a4a2a;
+      color: var(--green);
+    }
+    .badge.yellow { background: #2a2200; border-color: #4a3a00; color: var(--yellow); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    footer span { color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Instrument Rating Training Plan</div>
+    <h1>IFR Training Plan<br>Brett Morrison / N269PG</h1>
+    <div class="subtitle">
+      <span>KCMA</span> Camarillo Airport · Sun Air FBO &nbsp;·&nbsp;
+      <span>SR22T G7+</span> Perspective+ · CFII Jason Price &nbsp;·&nbsp;
+      Start date: <span>June 1, 2026</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#faa-requirements">FAA Requirements</a></li>
+      <li><a href="#sr22t">Your Aircraft: SR22T G7+ Perspective+</a></li>
+      <li><a href="#syllabus">Training Syllabus — Phases &amp; Milestones</a></li>
+      <li><a href="#jason">Working with Jason Price</a></li>
+      <li><a href="#timeline">Realistic Timeline</a></li>
+      <li><a href="#cost">Estimated Cost</a></li>
+      <li><a href="#may">May: VFR Currency &amp; Mental Prep</a></li>
+      <li><a href="#checkride">Checkride Preparation</a></li>
+    </ol>
+  </nav>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="faa-requirements">
+    <h2>1 · FAA Requirements</h2>
+    <p>Under <strong>14 CFR Part 61.65</strong>, the Instrument Rating – Airplane requires the following minimum aeronautical experience. These are floors, not targets — most pilots need more.</p>
+
+    <div class="req-grid">
+      <div class="req-card">
+        <div class="num">50</div>
+        <div class="label">hours PIC cross-country time (any aircraft)</div>
+      </div>
+      <div class="req-card">
+        <div class="num">40</div>
+        <div class="label">hours actual or simulated instrument time</div>
+      </div>
+      <div class="req-card">
+        <div class="num">15</div>
+        <div class="label">hours instrument training with an authorized instructor (CFII)</div>
+      </div>
+      <div class="req-card">
+        <div class="num">3</div>
+        <div class="label">hours instrument training within 2 calendar months before checkride</div>
+      </div>
+    </div>
+
+    <h3>The IFR Cross-Country Requirement</h3>
+    <p>You must log at least one instrument cross-country flight with a CFII that covers:</p>
+    <ul>
+      <li>Total straight-line distance of at least <strong>250 nautical miles</strong></li>
+      <li>An instrument approach at each airport</li>
+      <li><strong>Three different types</strong> of approaches using navigation systems — e.g., ILS, LPV/RNAV, VOR</li>
+    </ul>
+    <div class="callout green">
+      <div class="label">SR22T Advantage</div>
+      In the Perspective+, a practical 250nm cross-country could be KCMA → KLAS → KPHX → back, hitting ILS, LPV, and VOR approaches comfortably in a day. Your aircraft range (1,000nm+) makes this a non-issue.
+    </div>
+
+    <h3>Written Exam (IRA)</h3>
+    <p>The Instrument Rating – Airplane knowledge test covers weather, regulations, charts, approach procedures, IFR planning, and aircraft systems. You must pass before the checkride. Scores of 70%+ pass; aim for 90%+.</p>
+    <ul>
+      <li><strong>Sheppard Air</strong> — gold standard for test prep. Guaranteed pass with their method. ~$50.</li>
+      <li><strong>Sporty's IFR Course</strong> — excellent for actual knowledge, not just test passing. ~$300.</li>
+      <li>Budget 4–6 weeks of 45-min/day study. Start Week 1 of June.</li>
+    </ul>
+
+    <h3>Practical Test (Checkride)</h3>
+    <p>The ACS (Airman Certification Standards) defines exactly what you'll be tested on. Key areas:</p>
+    <ul>
+      <li><strong>Oral:</strong> Regulations, weather, flight planning, aircraft systems, IFR procedures — typically 2–3 hours</li>
+      <li><strong>Flight:</strong> Preflight/departure, en route procedures, holding, instrument approaches (at least one ILS and one non-precision), unusual attitudes, partial panel, missed approach, circling approach (possibly), landing</li>
+    </ul>
+    <div class="callout yellow">
+      <div class="label">Important</div>
+      The DPE (Designated Pilot Examiner) will expect you to demonstrate that you can hand-fly the airplane under the hood — not just push buttons. In a glass cockpit aircraft, examiners specifically test for over-automation reliance. Be ready to pull the autopilot CB and fly raw data.
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="sr22t">
+    <h2>2 · Your Aircraft: SR22T G7+ Perspective+</h2>
+    <p>You're training in one of the best-equipped piston aircraft in existence. That's a significant advantage — and a discipline challenge.</p>
+
+    <div class="badge-row">
+      <span class="badge">GFC 700 Autopilot</span>
+      <span class="badge">Dual G1000 NXi (PFD + MFD)</span>
+      <span class="badge">Synthetic Vision (SVT)</span>
+      <span class="badge">WAAS GPS / LPV</span>
+      <span class="badge">GWX 70 Wx Radar</span>
+      <span class="badge">TAS Traffic</span>
+      <span class="badge">FIS-B NEXRAD</span>
+      <span class="badge green">TKS FIKI (Known Ice)</span>
+      <span class="badge yellow">CAPS Parachute</span>
+    </div>
+
+    <h3>Advantages in IFR Training</h3>
+    <ul>
+      <li><strong>LPV approaches to 200ft/½SM:</strong> Your WAAS capability gives you ILS-equivalent minimums on hundreds of approaches nationwide. In IMC, this is operationally significant — many airports without an ILS have an LPV at the same minimums.</li>
+      <li><strong>Synthetic vision:</strong> SVT doesn't replace instrument scan discipline, but it dramatically reduces spatial disorientation risk during training. The terrain awareness picture is always present.</li>
+      <li><strong>GFC 700 + Flight Director:</strong> Once you know when to use automation and when to hand-fly, the GFC 700 is a fatigue reducer on long IFR flights. Coupled approaches are precise and stable.</li>
+      <li><strong>TKS FIKI (Known Ice Approved):</strong> Most training aircraft and many GA planes aren't certified for known ice. Your SR22T is. This expands the real-world utility of your IFR rating enormously in Southern California marine layer conditions.</li>
+      <li><strong>NEXRAD + Wx Radar:</strong> Weather situational awareness tools that most student pilots never touch. You'll learn to read and use these from day one of IFR.</li>
+      <li><strong>SoCal airspace:</strong> KCMA's proximity to LAX, Burbank, and SoCal Approach means you'll get real IFR ATC experience — not quiet, sleepy airspace. That's a feature for training.</li>
+    </ul>
+
+    <h3>Considerations and Discipline Points</h3>
+    <ul>
+      <li><strong>Automation dependency:</strong> The GFC 700 can fly a coupled ILS to minimums better than any human. You must consciously choose to hand-fly during training or you'll arrive at the checkride with a skills deficit. Jason will enforce this.</li>
+      <li><strong>High performance in IMC:</strong> The SR22T is fast. At typical IFR cruise (175–185 KTAS), you'll get to your destination before slower trainers, but approach planning and ATC sequencing move faster. Brief your approaches further out.</li>
+      <li><strong>CAPS in IMC:</strong> Know when to pull. If you're in uncontrolled IMC, structural failure, or spatial disorientation you cannot recover from, CAPS is an option. That said, the goal of this training is to never need it.</li>
+      <li><strong>Single-pilot workload:</strong> The SR22T is certified for single-pilot IFR (SP-IFR). Managing comm, nav, weather, ATC, and flying simultaneously takes practice. Don't rush automation engagement during high-workload phases.</li>
+      <li><strong>Partial panel training:</strong> You don't have traditional steam gauges to fall back on. Partial panel in a glass cockpit means covering the PFD and flying off the MFD backup display or the standby instruments. Practice this specifically.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="label">Perspective+ Workflow to Master</div>
+      Before checkride, you should be able to — without hesitation — load and activate an approach, set up the GFC 700 for a coupled ILS, execute a missed approach procedure with one hand on the power, brief an alternate, and read Wx radar. These are real pilot skills, not test items.
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="syllabus">
+    <h2>3 · Training Syllabus — Phases &amp; Milestones</h2>
+    <p>The following phases follow the standard AOPA / Sporty's IFR curriculum, adapted for the SR22T G7+ and your experience level as a freshly-minted PPL with cross-country time already building.</p>
+
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-num">Phase 1</span>
+        <span class="phase-title">Foundation — Basic Attitude Instrument Flying</span>
+        <span class="phase-dates">June 1 – June 28</span>
+      </div>
+      <div class="phase-body">
+        <p>Build the instrument scan and establish discipline before adding procedure complexity.</p>
+        <ul>
+          <li>Instrument scan technique (the cross-check: PFD / ASI / AI / altimeter / VSI / HI)</li>
+          <li>Straight and level, climbs, descents, timed turns under the foggles</li>
+          <li>Steep turns (180°, 360°) — precision airwork under the hood</li>
+          <li>Unusual attitude recovery — both nose-high and nose-low, calm and aggressive</li>
+          <li>Partial panel flying — cover PFD, fly off MFD / standby instruments</li>
+          <li>Basic VOR and GPS tracking, course intercepts</li>
+          <li>Introduction to SoCal Approach on actual IFR flight following</li>
+          <li><strong>Written exam study:</strong> Sheppard Air daily sessions, target test passage by end of June</li>
+        </ul>
+        <div class="milestone">Fly a full hour under the foggles without losing altitude ±100ft or heading ±10°.</div>
+        <div class="milestone">Pass the IRA written exam.</div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-num">Phase 2</span>
+        <span class="phase-title">IFR Procedures — Departures, En Route, Holding</span>
+        <span class="phase-dates">July 1 – July 19</span>
+      </div>
+      <div class="phase-body">
+        <p>Learn the procedural infrastructure of IFR flight. Fly the system, not just the airplane.</p>
+        <ul>
+          <li>IFR flight plan filing — ForeFlight, DUATS, Leidos; practice daily</li>
+          <li>Standard Instrument Departures (SIDs/DPs) — including obstacle departure procedures from KCMA</li>
+          <li>En route operations: airways, MEAs, crossing restrictions, ATC clearances</li>
+          <li>Holding patterns — standard entry (parallel, teardrop, direct), timing, speed adjustments</li>
+          <li>STARs (Standard Terminal Arrival Routes) — loading and flying into LAX/Burbank area</li>
+          <li>Full IFR flights with actual clearances (even if VMC outside)</li>
+          <li>Communications discipline: read-backs, position reports, lost-comms procedures</li>
+        </ul>
+        <div class="milestone">File and fly a full IFR round trip (KCMA → KOXR → KSMX → KCMA) on an actual clearance.</div>
+        <div class="milestone">Fly and exit holding at a fix, on the first attempt, with correct entry.</div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-num">Phase 3</span>
+        <span class="phase-title">Instrument Approaches — Precision and Non-Precision</span>
+        <span class="phase-dates">July 20 – Aug 24</span>
+      </div>
+      <div class="phase-body">
+        <p>The heart of IFR. Fly every approach type available at KCMA and surrounding airports repeatedly.</p>
+        <ul>
+          <li><strong>ILS approaches:</strong> KOXR ILS 25, KVBG ILS 30 — full procedure and vectors-to-final. Fly to minimums.</li>
+          <li><strong>LPV approaches (RNAV/GPS):</strong> KCMA RNAV 26 LPV — your most-used approach at home. 200ft/½SM minimums.</li>
+          <li><strong>LNAV/VNAV and LNAV approaches:</strong> Understand the difference in minimums. Load and brief correctly.</li>
+          <li><strong>VOR approaches:</strong> KSMX VOR 12 — non-precision, step-down fixes, MDA discipline</li>
+          <li>Circling approaches — added difficulty, different minimums, pattern discipline</li>
+          <li>Missed approach procedures — every approach ends in a missed until Jason says otherwise</li>
+          <li>Autopilot coupled approaches — learn the sequence, monitor, be ready to disconnect</li>
+          <li>Hand-flown approaches — foggles, no autopilot, raw data on at least 50% of practice approaches</li>
+          <li>Partial panel approach — cover PFD, fly ILS off standby instruments</li>
+          <li>Night IFR operations — KCMA is active at night; schedule at least 3 night IFR sessions</li>
+        </ul>
+        <div class="milestone">Hand-fly a full ILS to minimums, stabilized at 1,000ft AGL, no autopilot, within ACS standards.</div>
+        <div class="milestone">Fly 3 different approach types in a single sortie with clean briefings and correct missed approach procedures each time.</div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header">
+        <span class="phase-num">Phase 4</span>
+        <span class="phase-title">Cross-Country IFR &amp; Checkride Preparation</span>
+        <span class="phase-dates">Aug 25 – Sept 30</span>
+      </div>
+      <div class="phase-body">
+        <p>Consolidate skills, complete requirements, and prepare for the practical test.</p>
+        <ul>
+          <li><strong>250nm IFR cross-country:</strong> KCMA → KLAS → KPHX → KCMA recommended. Hit ILS, LPV, and VOR approaches. Full IFR, actual conditions if available. Brief everything.</li>
+          <li>Oral exam prep — FAR/AIM deep dive with Jason. Do not wing the oral.</li>
+          <li>Mock checkride — full oral + flight, Jason in examiner role</li>
+          <li>Review and drill any weak areas identified in mock checkride</li>
+          <li>3 hours dual within 2 calendar months of checkride (regulatory requirement)</li>
+          <li>Ground review: weather judgment, aeronautical decision making (ADM), IMSAFE, PAVE</li>
+          <li>Schedule DPE (book 4–6 weeks in advance — good examiners fill up fast)</li>
+        </ul>
+        <div class="milestone">Complete the 250nm IFR cross-country with three approach types logged.</div>
+        <div class="milestone">Pass a full mock checkride — oral and flight — to Jason's standard.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="jason">
+    <h2>4 · Working with Jason Price</h2>
+    <p>Having a PPL CFI become your CFII is the best possible outcome — he already knows your scan, your habits, your strengths, and where you cheat.</p>
+
+    <h3>Confirm His CFII Before June 1</h3>
+    <p>Verify that Jason holds a <strong>CFII (Certified Flight Instructor – Instrument)</strong>, not just a CFI. Only a CFII can log instrument instruction and sign off your 15 hours. If he doesn't hold a CFII, ask him who he recommends. Most CFIs at busy airports like KCMA have their CFII or know someone who does.</p>
+
+    <h3>Establish a Rhythm</h3>
+    <ul>
+      <li><strong>Frequency:</strong> 2 flights per week is the sweet spot — keeps skills sharp without burning out. 3/week will compress the timeline; 1/week will lengthen it and cost you retention.</li>
+      <li><strong>Ground before every flight:</strong> IFR training demands it. Brief the maneuvers, review the procedure, study the chart. Don't show up cold and ask Jason to explain the IAP on the ramp.</li>
+      <li><strong>Debrief every flight:</strong> Immediately after shutdown, before going inside. What went well, what didn't, what to fix next time. Write it down.</li>
+      <li><strong>Log everything:</strong> Actual IMC, simulated IMC, approaches (type, name, airport), holds, time. ForeFlight's logbook makes this easy and is what the DPE will want to see.</li>
+    </ul>
+
+    <h3>Leverage His PPL Knowledge of You</h3>
+    <p>Jason knows if you have a left-turn tendency, if you rush the flare, if you aviate-navigate-communicate in the wrong order. Tell him explicitly: <em>"Your job is to break my bad habits before the examiner finds them."</em> That's the right framing for this phase of training.</p>
+
+    <h3>Communication Between Sessions</h3>
+    <p>IFR is heavily knowledge-driven. Between flights, you should be studying approaches, reading FARs, watching Garmin tutorial videos on the G1000 NXi, and flying the Perspective+ simulator in ForeFlight if available. Share your study questions with Jason via text between sessions. Good CFIIs appreciate students who engage between lessons.</p>
+
+    <div class="callout green">
+      <div class="label">Recommendation</div>
+      At the end of Phase 1, ask Jason directly: "Are you confident I'm on track for a checkride in October?" His honest answer is worth more than any syllabus.
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="timeline">
+    <h2>5 · Realistic Timeline</h2>
+
+    <table>
+      <thead>
+        <tr><th>Period</th><th>Phase</th><th>Est. Flight Hours</th><th>Key Event</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>May 2026</td>
+          <td>VFR Currency + Prep</td>
+          <td class="num">6–10</td>
+          <td>XC hours, Sheppard Air purchase, schedule Jason</td>
+        </tr>
+        <tr>
+          <td>June 1–28</td>
+          <td>Phase 1 · BAI &amp; Scan</td>
+          <td class="num">10–12</td>
+          <td>IRA written exam passed</td>
+        </tr>
+        <tr>
+          <td>July 1–19</td>
+          <td>Phase 2 · Procedures</td>
+          <td class="num">10–12</td>
+          <td>First actual IFR round trip</td>
+        </tr>
+        <tr>
+          <td>July 20–Aug 24</td>
+          <td>Phase 3 · Approaches</td>
+          <td class="num">14–16</td>
+          <td>Hand-flown ILS to minimums</td>
+        </tr>
+        <tr>
+          <td>Aug 25–Sept 30</td>
+          <td>Phase 4 · XC + Checkride Prep</td>
+          <td class="num">8–10</td>
+          <td>250nm XC complete, mock checkride passed</td>
+        </tr>
+        <tr>
+          <td><strong>October 2026</strong></td>
+          <td><strong>Checkride</strong></td>
+          <td class="num">—</td>
+          <td><strong>Instrument Rating issued</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout yellow">
+      <div class="label">Reality Check</div>
+      Southern California weather is unusual for IFR training. June Gloom (marine layer, low ceilings) through August is actually useful — you may get actual IMC time earlier than expected. That said, the layer often burns off by 10am, so schedule morning flights when you want actual IMC, afternoon when you want smooth VMC under the foggles.
+    </div>
+
+    <p>Most motivated PPL holders complete their instrument rating in <strong>4–6 months</strong> at 2 flights/week. October is achievable. November is conservative. If something slips — weather, schedule, a weak phase — don't rush; instrument training is not a race to cut corners.</p>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="cost">
+    <h2>6 · Estimated Cost</h2>
+    <p>Since you're flying your own aircraft (N269PG), you avoid rental costs. Your primary costs are fuel, CFII time, and test fees.</p>
+
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Estimate</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Fuel — training flights (~50 hrs × 15 GPH × $6.50)</td>
+          <td class="num">$4,875</td>
+          <td>Lower power settings during training; Sun Air prices</td>
+        </tr>
+        <tr>
+          <td>CFII time — Jason Price (~45 hrs dual × $150/hr)</td>
+          <td class="num">$6,750</td>
+          <td>Includes ground time; confirm his rate</td>
+        </tr>
+        <tr>
+          <td>IRA written exam</td>
+          <td class="num">$175</td>
+          <td>PSI testing center; KCMA area has several locations</td>
+        </tr>
+        <tr>
+          <td>DPE checkride fee</td>
+          <td class="num">$700–$1,200</td>
+          <td>DPE rates vary; book early, expect $900 average</td>
+        </tr>
+        <tr>
+          <td>Training materials (Sheppard Air, Sporty's, charts)</td>
+          <td class="num">$350</td>
+          <td>Sheppard Air ~$50, Sporty's course ~$300</td>
+        </tr>
+        <tr>
+          <td>Aircraft maintenance reserve (training wear)</td>
+          <td class="num">$500–$1,000</td>
+          <td>Training is hard on brakes, tires; include in budget</td>
+        </tr>
+        <tr>
+          <td class="total">Total — Low Estimate</td>
+          <td class="total-num">~$13,350</td>
+          <td>Everything goes right, first-attempt checkride</td>
+        </tr>
+        <tr>
+          <td class="total">Total — High Estimate</td>
+          <td class="total-num">~$16,500</td>
+          <td>Extra dual hours, second checkride attempt, higher fuel prices</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">Cost Context</div>
+      Flying a rental SR22T at $350–400/hr wet would put this training at $25,000–$35,000. Owning N269PG makes the instrument rating extremely cost-efficient by comparison. The CFII time is your primary controllable cost — come prepared to every lesson.
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="may">
+    <h2>7 · May: VFR Currency &amp; Mental Preparation</h2>
+    <p>You have May to enjoy flying without the pressure of training. Use it intentionally — not to train, but to build the foundation that makes June more efficient.</p>
+
+    <h3>Stay Current</h3>
+    <ul>
+      <li>3 takeoffs and landings every 90 days (day currency)</li>
+      <li>3 takeoffs and full-stop landings at night if you plan to fly nights (and you should)</li>
+      <li>Plan at least 2 flights per week in May — you want the airplane to feel natural, not foreign, on June 1</li>
+    </ul>
+
+    <h3>Build Cross-Country Hours</h3>
+    <p>You need 50 hours of PIC cross-country time before the checkride. Every XC you fly in May counts. Good destinations from KCMA in a day trip:</p>
+    <ul>
+      <li><strong>KSAN</strong> San Diego — Class B, busy airspace, long over-water leg, beautiful</li>
+      <li><strong>KTRK</strong> Truckee — mountain flying, density altitude, spectacular</li>
+      <li><strong>KSBP</strong> San Luis Obispo — coastline, PCH below, short hop west</li>
+      <li><strong>KHHR</strong> Hawthorne / <strong>KLGB</strong> Long Beach — practice urban SoCal airspace and ATC complexity</li>
+      <li><strong>KAVX</strong> Catalina — 3,250ft runway on a cliff. Pattern practice, short field discipline.</li>
+    </ul>
+
+    <h3>Mental Preparation</h3>
+    <ul>
+      <li><strong>Get Sheppard Air now.</strong> Do 20 questions a day starting May 15. The IRA written is not trivial — weather theory alone requires real study.</li>
+      <li><strong>Read the AIM, Chapters 1, 4, 5:</strong> Navigation aids, ATC procedures, IFR procedures. One chapter per week.</li>
+      <li><strong>Watch Garmin's Perspective+ tutorials</strong> on YouTube. There are 15+ hours of official G1000 NXi and GFC 700 content. Watch them on the ground, then practice the flows in the airplane.</li>
+      <li><strong>Download an approach plate for KCMA (RNAV 26).</strong> Learn to read every piece of information on it before June 1. If any symbol is mysterious, look it up.</li>
+      <li><strong>Get a logbook audit:</strong> How many PIC XC hours do you have today? How many hours of night? Know your numbers going into training.</li>
+    </ul>
+
+    <div class="callout green">
+      <div class="label">Mindset</div>
+      IFR is where aviation gets serious. Not dangerous — serious. The weather doesn't negotiate. The procedure doesn't care how you feel. The discipline you build in May (showing up, logging, briefing, debriefing) is the same discipline that keeps you safe when you're single-pilot IMC at night over the mountains. Enjoy May. Use it wisely.
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────────────────── -->
+  <section id="checkride">
+    <h2>8 · Checkride Preparation</h2>
+
+    <h3>The Oral</h3>
+    <p>DPEs for instrument checkrides conduct thorough orals — typically 2–3 hours. Be ready for:</p>
+    <ul>
+      <li>Weather: METARs, TAFs, PIREPs, SIGMETs, AIRMETs — decoding and go/no-go decision making</li>
+      <li>Regulations: 61.65, 91.167–91.185 (IFR flight rules), alternate minimums, fuel requirements</li>
+      <li>Approach charts: every symbol, every number, every line on a Jeppesen or NACO plate</li>
+      <li>Your aircraft's avionics: the examiner will ask how the GFC 700 couples to an ILS. Know it cold.</li>
+      <li>Lost comms procedure (91.185) — recite it without hesitation</li>
+      <li>IFR cross-country planning: file a flight plan, explain every decision</li>
+    </ul>
+
+    <h3>The Flight</h3>
+    <p>In the SR22T, the examiner will sit right seat. They've likely flown in glass cockpits before. Don't try to hide what you're doing — narrate your actions. "I'm briefing the ILS 25 approach — minimums 200 feet, ½ mile, inbound course 250…"</p>
+    <ul>
+      <li>Demonstrate the <strong>5 Ts</strong> at every fix: Turn, Time, Twist (course), Throttle, Talk</li>
+      <li>Brief every approach out loud — name, frequency, course, minimums, MAP, missed</li>
+      <li>If you bust a tolerance, don't freeze — correct, note it, move on</li>
+      <li>The examiner is not trying to fail you. They're evaluating judgment, not perfection.</li>
+    </ul>
+
+    <div class="callout green">
+      <div class="label">Final Thought</div>
+      You went from zero to PPL. You learned to land a 310-horsepower turbocharged aircraft at a busy California airport. IFR is a different challenge — more procedural, more discipline, less seat-of-the-pants — but you have the foundation. Jason knows your flying. The SR22T is the right airplane. October is realistic. Go get it.
+    </div>
+  </section>
+
+  <footer>
+    <p>Generated by <span>Mr. Nonce 🗝️</span> &nbsp;·&nbsp; N269PG / KCMA &nbsp;·&nbsp; May 7, 2026 &nbsp;·&nbsp; <span>mrnonce·com</span></p>
+  </footer>
+
+</div>
+</body>
+</html>
