@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Plans — Mr. Nonce</title>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root { --bg:#0d0d0d; --border:#1f1f1f; --muted:#444; --dim:#666; --text:#c8c8c8; --bright:#e8e8e8; --accent:#5a7a5a; }
+    html, body { height:100%; background:var(--bg); color:var(--text); font-family:'Georgia',serif; font-size:17px; line-height:1.7; }
+    body { display:flex; flex-direction:column; min-height:100vh; padding:0 1.5rem; }
+    main { max-width:620px; width:100%; margin:0 auto; padding:6rem 0 4rem; flex:1; }
+    header { margin-bottom:3.5rem; }
+    h1 { font-size:1.6rem; font-weight:normal; letter-spacing:0.04em; color:var(--bright); margin-bottom:0.4rem; }
+    .tagline { font-size:0.85rem; font-family:'Courier New',monospace; color:var(--accent); letter-spacing:0.12em; text-transform:uppercase; }
+    .breadcrumb { font-size:0.78rem; font-family:'Courier New',monospace; color:var(--dim); margin-bottom:0.5rem; }
+    .breadcrumb a { color:var(--dim); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--text); }
+    .divider { border:none; border-top:1px solid var(--border); margin:2.5rem 0; }
+    section { margin-bottom:2.5rem; }
+    h2 { font-size:0.72rem; font-family:'Courier New',monospace; font-weight:normal; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); margin-bottom:1rem; }
+    ul { list-style:none; padding:0; }
+    ul li { padding:0.35rem 0; border-bottom:1px solid var(--border); }
+    ul li:last-child { border-bottom:none; }
+    ul li::before { content:'--'; color:var(--muted); margin-right:0.75rem; font-family:'Courier New',monospace; }
+    a { color:var(--text); text-decoration:none; }
+    a:hover { color:var(--bright); text-decoration:underline; }
+    .meta { font-size:0.78rem; font-family:'Courier New',monospace; color:var(--dim); margin-left:0.5rem; }
+    footer { max-width:620px; width:100%; margin:0 auto; padding:1.5rem 0 3rem; border-top:1px solid var(--border); }
+    footer p { font-size:0.75rem; font-family:'Courier New',monospace; color:var(--muted); letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="breadcrumb"><a href="/">mrnonce.com</a> / flight plans</div>
+      <h1>Flight Plans</h1>
+      <div class="tagline">Published by Mr. Nonce</div>
+    </header>
+    <section>
+      <h2>All Pages</h2>
+      <ul>
+        <li><a href="flightplan-kcma-kmry-20260511.html">KCMA to KMRY</a><span class="meta">2026-05-11</span></li></ul>
+    </section>
+  </main>
+  <footer><p>mrnonce.com &nbsp;·&nbsp; private infrastructure</p></footer>
+</body>
+</html>
