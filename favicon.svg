@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Dark bg circle -->
+  <circle cx="32" cy="32" r="32" fill="#0d0d0d"/>
+
+  <!-- Body -->
+  <ellipse cx="32" cy="36" rx="9" ry="13" fill="#cc3300"/>
+  <!-- Body segments -->
+  <line x1="23" y1="32" x2="41" y2="32" stroke="#991f00" stroke-width="1"/>
+  <line x1="23" y1="36" x2="41" y2="36" stroke="#991f00" stroke-width="1"/>
+  <line x1="23" y1="40" x2="41" y2="40" stroke="#991f00" stroke-width="1"/>
+
+  <!-- Head -->
+  <ellipse cx="32" cy="22" rx="8" ry="7" fill="#dd3300"/>
+
+  <!-- Eyes -->
+  <circle cx="28" cy="19" r="2.5" fill="#111"/>
+  <circle cx="36" cy="19" r="2.5" fill="#111"/>
+  <circle cx="28.8" cy="18.3" r="0.8" fill="#fff"/>
+  <circle cx="36.8" cy="18.3" r="0.8" fill="#fff"/>
+
+  <!-- Rostrum (horn) -->
+  <polygon points="32,14 30,10 32,8 34,10" fill="#dd3300"/>
+
+  <!-- Antennae -->
+  <line x1="27" y1="17" x2="12" y2="8" stroke="#bb2200" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="37" y1="17" x2="52" y2="8" stroke="#bb2200" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Antennule pair -->
+  <line x1="27" y1="17" x2="16" y2="13" stroke="#bb2200" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="37" y1="17" x2="48" y2="13" stroke="#bb2200" stroke-width="0.8" stroke-linecap="round"/>
+
+  <!-- Big claws -->
+  <!-- Left claw arm -->
+  <path d="M24 28 Q14 24 10 20" stroke="#cc3300" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Left claw -->
+  <ellipse cx="9" cy="19" rx="5" ry="3.5" fill="#cc3300" transform="rotate(-30 9 19)"/>
+  <path d="M6 16 Q4 13 7 12 Q10 11 11 14" fill="#bb2200"/>
+
+  <!-- Right claw arm -->
+  <path d="M40 28 Q50 24 54 20" stroke="#cc3300" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Right claw -->
+  <ellipse cx="55" cy="19" rx="5" ry="3.5" fill="#cc3300" transform="rotate(30 55 19)"/>
+  <path d="M58 16 Q60 13 57 12 Q54 11 53 14" fill="#bb2200"/>
+
+  <!-- Walking legs (3 pairs) -->
+  <line x1="25" y1="34" x2="16" y2="42" stroke="#cc3300" stroke-width="2" stroke-linecap="round"/>
+  <line x1="25" y1="38" x2="15" y2="46" stroke="#cc3300" stroke-width="2" stroke-linecap="round"/>
+  <line x1="25" y1="42" x2="16" y2="50" stroke="#cc3300" stroke-width="2" stroke-linecap="round"/>
+  <line x1="39" y1="34" x2="48" y2="42" stroke="#cc3300" stroke-width="2" stroke-linecap="round"/>
+  <line x1="39" y1="38" x2="49" y2="46" stroke="#cc3300" stroke-width="2" stroke-linecap="round"/>
+  <line x1="39" y1="42" x2="48" y2="50" stroke="#cc3300" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Tail fan -->
+  <path d="M32 49 Q26 55 22 58 Q27 54 32 56 Q37 54 42 58 Q38 55 32 49Z" fill="#cc3300"/>
+  <path d="M32 49 Q29 58 27 62" stroke="#aa2200" stroke-width="1" fill="none"/>
+  <path d="M32 49 Q35 58 37 62" stroke="#aa2200" stroke-width="1" fill="none"/>
+</svg>
