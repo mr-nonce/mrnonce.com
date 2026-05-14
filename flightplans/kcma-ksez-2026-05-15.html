@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Plan: KCMA → KSEZ | May 15, 2026</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #161616;
+    --border: #2a2a2a;
+    --accent: #e8a020;
+    --accent2: #4a9eff;
+    --text: #e4e4e4;
+    --muted: #888;
+    --green: #4caf7d;
+    --yellow: #e8a020;
+    --red: #e85050;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 24px 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--green);
+    color: #000;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .badge.warn { background: var(--yellow); }
+  .badge.alert { background: var(--red); }
+  h1 { font-size: 26px; font-weight: 700; color: #fff; }
+  h1 span { color: var(--accent); }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .card h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--muted); font-size: 13px; }
+  .stat-value { font-weight: 600; font-size: 14px; }
+  .stat-value.ok { color: var(--green); }
+  .stat-value.warn { color: var(--yellow); }
+  .stat-value.alert { color: var(--red); }
+  section { margin-bottom: 28px; }
+  section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .route-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .route-bar .wp {
+    color: #fff;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 14px;
+  }
+  .route-bar .arr { color: var(--muted); font-size: 18px; }
+  .metar-block {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #ccc;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+  .wx-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .wx-card .wx-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .wx-card .icao { font-weight: 700; font-size: 16px; color: #fff; }
+  .wx-card .wx-name { color: var(--muted); font-size: 12px; }
+  .alert-box {
+    background: #1a1000;
+    border: 1px solid #4a3000;
+    border-left: 4px solid var(--yellow);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .alert-box.danger {
+    background: #1a0000;
+    border: 1px solid #4a0000;
+    border-left-color: var(--red);
+  }
+  .alert-box.info {
+    background: #001020;
+    border: 1px solid #003050;
+    border-left-color: var(--accent2);
+  }
+  .alert-box strong { display: block; margin-bottom: 4px; }
+  .fp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .fp-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .fp-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .fp-table tr:last-child td { border-bottom: none; }
+  .fp-table .leg-dep { font-weight: 700; color: #fff; }
+  .fp-table .ete { color: var(--muted); }
+  .verdict {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  .verdict-icon { font-size: 36px; flex-shrink: 0; }
+  .verdict h3 { font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+  .verdict h3.warn { color: var(--yellow); }
+  .verdict p { color: var(--muted); font-size: 14px; }
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 32px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .tag {
+    display: inline-block;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 3px;
+    font-size: 11px;
+    padding: 2px 7px;
+    color: var(--muted);
+    margin: 2px;
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 20px; }
+    .route-bar { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">VFR Flight Plan</div>
+  <h1>KCMA <span>→</span> KSEZ</h1>
+  <div class="meta">Cirrus SR22T G7+ · N269PG &nbsp;|&nbsp; May 15, 2026 &nbsp;|&nbsp; Dep 11:00 PDT &nbsp;|&nbsp; 7,500 ft MSL</div>
+  <div class="meta" style="margin-top:4px">Generated by Mr. Nonce · mrnonce.com</div>
+</header>
+
+<!-- ROUTE -->
+<div class="route-bar">
+  <span class="wp">KCMA</span>
+  <span class="arr">→</span>
+  <span class="wp">FIM</span>
+  <span class="arr">→</span>
+  <span class="wp">L70</span>
+  <span class="arr">→</span>
+  <span class="wp">VCV</span>
+  <span class="arr">→</span>
+  <span class="wp">HEC</span>
+  <span class="arr">→</span>
+  <span class="wp" style="border-color:var(--accent); color:var(--accent)">KSEZ</span>
+</div>
+
+<!-- GO/NO-GO VERDICT -->
+<div class="verdict">
+  <div class="verdict-icon">✅</div>
+  <div>
+    <h3>GO — With Terrain Advisory</h3>
+    <p>Weather is excellent end-to-end. VFR conditions confirmed at KCMA by 11am and throughout the route. KSEZ is clear with light winds. One advisory: <strong style="color:var(--yellow)">7,500 ft is marginal over the Arizona highlands (HEC→KSEZ leg).</strong> The Arizona plateau rises to 5,000–8,000 ft between Kingman and Sedona. Plan to climb to 9,500 ft or 11,500 ft for that segment, or route via the Verde Valley corridor below the Mogollon Rim.</p>
+  </div>
+</div>
+
+<!-- TOP STATS -->
+<div class="grid">
+  <div class="card">
+    <h3>Flight Summary</h3>
+    <div class="stat-row">
+      <span class="stat-label">Total Distance</span>
+      <span class="stat-value">~370 nm</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Est. Block Time</span>
+      <span class="stat-value">~2 hr 15 min</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Cruise Speed (7,500)</span>
+      <span class="stat-value">175 KTAS</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">ETD</span>
+      <span class="stat-value">11:00 PDT</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">ETA KSEZ</span>
+      <span class="stat-value">~13:15 PDT</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Fuel</h3>
+    <div class="stat-row">
+      <span class="stat-label">Usable Fuel</span>
+      <span class="stat-value">92 gal</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Est. Burn (cruise)</span>
+      <span class="stat-value">~16 GPH</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">En-Route Burn</span>
+      <span class="stat-value">~38 gal</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">45-Min Reserve</span>
+      <span class="stat-value">~13 gal</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Fuel Remaining (dest)</span>
+      <span class="stat-value ok">~54 gal ✓</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>KSEZ Airport</h3>
+    <div class="stat-row">
+      <span class="stat-label">Elevation</span>
+      <span class="stat-value">4,827 ft MSL</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Runway</span>
+      <span class="stat-value">03/21 — 5,130 ft</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Pattern</span>
+      <span class="stat-value warn">One-way ops ⚠</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Est. DA @ Arrival</span>
+      <span class="stat-value warn">~8,500 ft ⚠</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Winds (TAF 13Z)</span>
+      <span class="stat-value ok">VRB05KT ✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- DEPARTURE WEATHER -->
+<section>
+  <h2>Departure — KCMA (Camarillo)</h2>
+  <div class="wx-card">
+    <div class="wx-header">
+      <div>
+        <span class="icao">KCMA</span>
+        <span class="wx-name" style="margin-left:10px">Camarillo Airport · Elev 77 ft</span>
+      </div>
+      <div class="badge ok">Clear by 11am</div>
+    </div>
+    <div class="metar-block">METAR KCMA 142255Z 23012G18KT 10SM OVC025 20/13 A2998</div>
+    <div style="margin-top:12px; color: var(--muted); font-size:13px">Current (4pm Wed): OVC025 with 240@12G18. Not your problem — TAF clears it well before 11am.</div>
+    <div class="metar-block" style="margin-top:10px">TAF: FM150400 VRB03KT P6SM SKC → FM151400 VRB03KT SCT012</div>
+    <div style="margin-top:10px; font-size:13px; color: var(--text)">
+      <strong>At 11:00 departure:</strong> SKC, VRB03kt, 10SM+. Ideal. The SCT012 in the TAF doesn't appear until ~2pm local — after you're well clear.
+    </div>
+    <div class="alert-box info" style="margin-top:12px">
+      <strong>☁ Marine Layer — Dissipating</strong>
+      The OVC025 right now is typical Ventura County marine layer. TAF AMD confirms it burns off overnight. Watch for any lingering fog/low cloud delay if you get an early start, but 11am is safe margin.
+    </div>
+  </div>
+</section>
+
+<!-- EN-ROUTE WEATHER -->
+<section>
+  <h2>En-Route Weather</h2>
+
+  <div class="wx-card">
+    <div class="wx-header">
+      <div><span class="icao">KVCV</span> <span class="wx-name" style="margin-left:8px">Victorville / S. CA Logistics · Elev 2,885 ft</span></div>
+      <div class="badge ok">Clear</div>
+    </div>
+    <div class="metar-block">METAR KVCV 142315Z AUTO VRB05KT 10SM CLR 33/M02 A2993</div>
+    <div style="margin-top:8px; font-size:13px; color: var(--muted)">33°C and climbing — it'll be 38–40°C by 11am. Crystal clear, negligible winds. Pure Mojave. Density alt at VCV (~2,885 ft + 38°C): ~6,800 ft. Not a stop, just a checkpoint.</div>
+  </div>
+
+  <div class="wx-card">
+    <div class="wx-header">
+      <div><span class="icao">KPSP</span> <span class="wx-name" style="margin-left:8px">Palm Springs Intl · (General corridor ref)</span></div>
+      <div class="badge ok">Clear</div>
+    </div>
+    <div class="metar-block">TAF FM150700 VRB04KT P6SM SKC</div>
+    <div style="margin-top:8px; font-size:13px; color: var(--muted)">Corridor south of route. SKC, calm by morning. Confirms clear desert conditions east of the mountains at flight time.</div>
+  </div>
+
+  <div class="alert-box">
+    <strong>🌡 Desert Heat — Density Altitude Advisory</strong>
+    The Mojave will be 38–42°C by midday. At 7,500 ft the SR22T turbo normalizes engine power, so you're fine on performance. But expect turbulence over dark desert surfaces in the afternoon — light to moderate chop over VCV→HEC, increasing closer to noon. An 11am departure gets you through before the worst of it.
+  </div>
+</section>
+
+<!-- DESTINATION WEATHER -->
+<section>
+  <h2>Destination — KSEZ (Sedona)</h2>
+  <div class="wx-card">
+    <div class="wx-header">
+      <div><span class="icao">KSEZ</span> <span class="wx-name" style="margin-left:8px">Sedona Airport · Elev 4,827 ft</span></div>
+      <div class="badge ok">VFR / Clear</div>
+    </div>
+    <div class="metar-block">METAR KSEZ 142315Z AUTO 19009G16KT 10SM CLR 28/M04</div>
+    <div class="metar-block" style="margin-top:8px">TAF KSEZ 142320Z 1500/1524
+  19008G14KT P6SM SKC  (0000–0200Z = Midnight–2am)
+  FM150200 VRB04KT    (2am–7am local: calm)
+  FM150700 04007KT    (7am–3pm local: light NE)
+  FM151500 VRB05KT    (3pm–8pm: light variable)
+  FM152000 20009G18KT (after 8pm: S winds return)</div>
+    <div style="margin-top:12px; font-size:13px">
+      <strong>At your ~13:15 arrival:</strong> The FM151500 VRB05KT period starts at 3pm — you arrive just before that transition. Expect 040@07kt or lighter. SKC. Runway 03/21 aligned almost perfectly with those winds — minimal crosswind component.
+    </div>
+    <div class="alert-box" style="margin-top:12px">
+      <strong>⚠ KSEZ One-Way Pattern — Read Before You Go</strong>
+      Sedona has terrain-driven one-way operations. Standard VFR procedure: land Runway 03 (heading ~030°), depart Runway 21 (heading ~210°). Both maneuver over the Sedona valley — NOT over the mesa. Confirm ATIS/CTAF 123.0 before descent. Left traffic RWY 03. The mesa drops off steeply — don't let the visual illusion compress your final.
+    </div>
+  </div>
+</section>
+
+<!-- TERRAIN -->
+<section>
+  <h2>Terrain Assessment</h2>
+
+  <div class="alert-box danger">
+    <strong>🏔 7,500 ft INSUFFICIENT — HEC to KSEZ Leg</strong>
+    The Arizona Plateau between Kingman and Sedona rises to 5,000–8,000 ft. The Bradshaw Mountains (Mt. Union: 7,979 ft) sit directly between Prescott and Sedona. Continuing at 7,500 ft MSL in this segment is incompatible with safe terrain clearance. You need to either:
+    <br><br>
+    <strong>Option A:</strong> Climb to 9,500 ft (eastbound, odd+500) or 11,500 ft before the Kingman area. The SR22T climbs there easily.
+    <br>
+    <strong>Option B:</strong> Route via the Verde Valley approach — from HEC go north to I-40, east toward Flagstaff, then south via 89A following the Verde River valley. Terrain stays lower but adds ~30 nm.
+    <br><br>
+    7,500 ft works fine for the KCMA→VCV→HEC legs (Mojave Desert terrain: 1,500–3,000 ft).
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Leg 1: KCMA → FIM → VCV</h3>
+      <div class="stat-row"><span class="stat-label">Max terrain</span><span class="stat-value">~3,700 ft (Santa Susana Mtns)</span></div>
+      <div class="stat-row"><span class="stat-label">AGL clearance @ 7,500</span><span class="stat-value ok">~3,800 ft ✓</span></div>
+      <div class="stat-row"><span class="stat-label">Route via</span><span class="stat-value">Santa Clara Valley / Newhall Pass</span></div>
+      <div class="stat-row"><span class="stat-label">Notes</span><span class="stat-value">Skirts north of LAX Class B</span></div>
+    </div>
+    <div class="card">
+      <h3>Leg 2: VCV → HEC</h3>
+      <div class="stat-row"><span class="stat-label">Max terrain</span><span class="stat-value">~3,000 ft (Mojave Desert)</span></div>
+      <div class="stat-row"><span class="stat-label">AGL clearance @ 7,500</span><span class="stat-value ok">~4,500 ft ✓</span></div>
+      <div class="stat-row"><span class="stat-label">Notes</span><span class="stat-value">Flat Mojave, no issues</span></div>
+    </div>
+    <div class="card">
+      <h3>Leg 3: HEC → KSEZ</h3>
+      <div class="stat-row"><span class="stat-label">Max terrain</span><span class="stat-value">~8,000 ft (Bradshaw/AZ Plateau)</span></div>
+      <div class="stat-row"><span class="stat-label">AGL clearance @ 7,500</span><span class="stat-value alert">BELOW TERRAIN ✗</span></div>
+      <div class="stat-row"><span class="stat-label">Recommended alt</span><span class="stat-value warn">9,500 ft min / 11,500 ft preferred</span></div>
+      <div class="stat-row"><span class="stat-label">Notes</span><span class="stat-value">Climb before Kingman, AZ</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- AIRSPACE -->
+<section>
+  <h2>Airspace Advisory</h2>
+  <div class="alert-box info">
+    <strong>📡 LA Class B — Northern Periphery</strong>
+    The Class B outer shelf tops at 8,000 ft over the KCMA→FIM corridor and the Antelope Valley. At 7,500 ft in this area you may be inside the Class B (confirm exact shelf boundaries on SkyVector or ForeFlight before departure). Easiest resolution: stay at 6,500 ft departing Camarillo until clear of the Class B northern boundary near Fillmore, then climb to 7,500 ft. Or file/request VFR transition and SoCal approach will vector you through.
+  </div>
+  <div class="alert-box info">
+    <strong>🔴 Edwards AFB (R-2515) — Antelope Valley</strong>
+    The route via Palmdale/Antelope Valley passes adjacent to R-2515 (Edwards). Check NOTAM/TFR for active status. During normal operations, the restricted area is "hot" on weekdays but can be cold over portions of the area — confirm on 1800wxbrief the day of flight.
+  </div>
+  <div class="alert-box">
+    <strong>⚠ Mojave MOAs — Desert En Route</strong>
+    Several MOAs are active between VCV and HEC: Condor MOA, Sidewinder MOA, Jedi MOA near KDAG. These are generally east of Barstow. At cruise altitude they are typically active during weekday hours. Verify on ForeFlight — if active, fly below or above the MOA altitudes or request advisories from Joshua Approach / LA Center.
+  </div>
+  <div class="alert-box info">
+    <strong>📡 KSEZ Class D</strong>
+    Sedona is Class D — contact KSEZ CTAF 123.0 when in range. No control tower (A/FD confirms uncontrolled). Class D only applies if tower operating — confirm via ATIS/NOTAMs whether tower is staffed.
+  </div>
+</section>
+
+<!-- FLIGHT PLAN TABLE -->
+<section>
+  <h2>Route Detail</h2>
+  <table class="fp-table">
+    <thead>
+      <tr>
+        <th>Fix</th>
+        <th>Name / Notes</th>
+        <th>Lat/Lon (approx)</th>
+        <th>Dist from prev</th>
+        <th>Cumul</th>
+        <th>ETE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="leg-dep">KCMA</td>
+        <td>Camarillo — Depart 11:00 PDT</td>
+        <td>34°12N 119°05W</td>
+        <td>—</td>
+        <td>0 nm</td>
+        <td>+0:00</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">FIM</td>
+        <td>Fillmore VOR/DME · 114.5 MHz</td>
+        <td>34°20N 118°55W</td>
+        <td>~18 nm</td>
+        <td>18 nm</td>
+        <td>+0:06</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">L70</td>
+        <td>Fix (Antelope Valley corridor / PMD area)</td>
+        <td>~34°30N 118°00W</td>
+        <td>~55 nm</td>
+        <td>73 nm</td>
+        <td>+0:25</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">VCV</td>
+        <td>Victorville / S. CA Logistics — Altn if needed</td>
+        <td>34°35N 117°23W</td>
+        <td>~40 nm</td>
+        <td>113 nm</td>
+        <td>+0:39</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">HEC</td>
+        <td>Hector VOR · 112.5 MHz — Climb to 9,500+ here</td>
+        <td>34°44N 116°28W</td>
+        <td>~58 nm</td>
+        <td>171 nm</td>
+        <td>+0:59</td>
+      </tr>
+      <tr>
+        <td class="leg-dep" style="color: var(--accent)">KSEZ</td>
+        <td>Sedona Airport — ETA ~13:15 PDT</td>
+        <td>34°50N 111°47W</td>
+        <td>~200 nm</td>
+        <td>~371 nm</td>
+        <td>+2:08</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px; font-size:12px; color: var(--muted)">All ETEs at 175 KTAS TAS. Add 7 min block time (taxi, departure). Times are approximate — winds aloft will shift these ±10 min. Verify exact fix positions and distances in ForeFlight before filing.</div>
+</section>
+
+<!-- PERFORMANCE -->
+<section>
+  <h2>SR22T Performance Notes</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Engine / Power</h3>
+      <div class="stat-row"><span class="stat-label">Engine</span><span class="stat-value">Continental TSIO-550-K</span></div>
+      <div class="stat-row"><span class="stat-label">Rated HP</span><span class="stat-value">315 BHP</span></div>
+      <div class="stat-row"><span class="stat-label">7,500 ft turbo</span><span class="stat-value ok">Full rated power available ✓</span></div>
+      <div class="stat-row"><span class="stat-label">Fuel flow cruise</span><span class="stat-value">~16 GPH (LOP/70%)</span></div>
+      <div class="stat-row"><span class="stat-label">KTAS @ 7,500</span><span class="stat-value">~175 kt (65–70%)</span></div>
+    </div>
+    <div class="card">
+      <h3>KSEZ Landing</h3>
+      <div class="stat-row"><span class="stat-label">Airport elev</span><span class="stat-value">4,827 ft MSL</span></div>
+      <div class="stat-row"><span class="stat-label">Est. temp @ 13:15</span><span class="stat-value">~32°C (90°F)</span></div>
+      <div class="stat-row"><span class="stat-label">Density altitude</span><span class="stat-value warn">~8,500 ft DA ⚠</span></div>
+      <div class="stat-row"><span class="stat-label">Runway (03/21)</span><span class="stat-value">5,130 ft</span></div>
+      <div class="stat-row"><span class="stat-label">Landing distance</span><span class="stat-value warn">Increased — plan accordingly</span></div>
+    </div>
+  </div>
+  <div class="alert-box" style="margin-top:14px">
+    <strong>⚠ KSEZ High-DA Landing Technique</strong>
+    At 8,500 ft density altitude, approach speed will be higher TAS for same IAS. Use a stabilized approach at book Vref — do not reduce power early. The mesa at Sedona drops off suddenly past the runway ends; a go-around at 8,500 ft DA requires immediate full-power response. If unstabilized: go around early, not late. Turbo helps significantly vs. normally-aspirated, but respect the DA.
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section>
+  <h2>Pre-Departure Checklist</h2>
+  <div class="card">
+    <div class="stat-row"><span class="stat-label">□ ForeFlight wx brief</span><span class="stat-value">Verify TAFs / PIREPs morning of</span></div>
+    <div class="stat-row"><span class="stat-label">□ TFRs</span><span class="stat-value">FAA TFR site / ForeFlight — check Edwards R-2515, Mojave MOAs</span></div>
+    <div class="stat-row"><span class="stat-label">□ NOTAMs</span><span class="stat-value">KCMA, KVCV, KSEZ — check 1800wxbrief</span></div>
+    <div class="stat-row"><span class="stat-label">□ Fuel</span><span class="stat-value">Top off at KCMA — full tanks (92 gal) for comfort margin</span></div>
+    <div class="stat-row"><span class="stat-label">□ KSEZ pattern</span><span class="stat-value">Review one-way ops, CTAF 123.0, RWY 03 landing procedure</span></div>
+    <div class="stat-row"><span class="stat-label">□ Altitude plan</span><span class="stat-value">Confirm climb to 9,500+ ft at HEC for Arizona leg</span></div>
+    <div class="stat-row"><span class="stat-label">□ LA Class B</span><span class="stat-value">Confirm shelf altitudes near FIM on departure</span></div>
+    <div class="stat-row"><span class="stat-label">□ Flight plan filed</span><span class="stat-value">File VFR flight plan on ForeFlight / 1800wxbrief before engine start</span></div>
+    <div class="stat-row"><span class="stat-label">□ Altimeter</span><span class="stat-value">Set A2998 (KCMA) — update en route at VCV, KSEZ</span></div>
+    <div class="stat-row"><span class="stat-label">□ CAPS armed</span><span class="stat-value">Max deployment 140 KIAS</span></div>
+  </div>
+</section>
+
+<!-- ALTERNATES -->
+<section>
+  <h2>Alternates / Divert Options</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>KVCV — Victorville (En Route)</h3>
+      <div class="stat-row"><span class="stat-label">Distance off route</span><span class="stat-value">On route</span></div>
+      <div class="stat-row"><span class="stat-label">Fuel available</span><span class="stat-value">100LL / Jet-A</span></div>
+      <div class="stat-row"><span class="stat-label">Weather (TAF)</span><span class="stat-value ok">CLR indefinitely</span></div>
+    </div>
+    <div class="card">
+      <h3>KPRC — Prescott (Near KSEZ)</h3>
+      <div class="stat-row"><span class="stat-label">Distance from KSEZ</span><span class="stat-value">~60 nm SW</span></div>
+      <div class="stat-row"><span class="stat-label">Elev</span><span class="stat-value">5,046 ft</span></div>
+      <div class="stat-row"><span class="stat-label">Use if</span><span class="stat-value">KSEZ winds deteriorate</span></div>
+    </div>
+    <div class="card">
+      <h3>KFLG — Flagstaff (Northern Alt)</h3>
+      <div class="stat-row"><span class="stat-label">Distance from KSEZ</span><span class="stat-value">~30 nm N</span></div>
+      <div class="stat-row"><span class="stat-label">Elev</span><span class="stat-value">7,014 ft</span></div>
+      <div class="stat-row"><span class="stat-label">Use if</span><span class="stat-value">KSEZ terrain routing issue</span></div>
+    </div>
+  </div>
+</section>
+
+<div style="font-size:12px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius:6px; padding: 12px 16px; margin-bottom:16px;">
+  <strong style="color: #e85050">⚠ Disclaimer:</strong> This assessment is generated from live weather data and airspace databases as of May 14, 2026. It does not substitute for an official preflight weather brief, ForeFlight, or 1800wxbrief. NOTAMs and TFRs change hourly. The pilot-in-command bears full responsibility for all preflight planning decisions.
+</div>
+
+<div class="footer">
+  Generated by Mr. Nonce · <a href="https://mrnonce.com" style="color: var(--accent2)">mrnonce.com</a> · May 14, 2026 at 16:25 PDT<br>
+  Data sources: aviationweather.gov METAR/TAF API · N269PG aircraft data · ForeFlight recommended for final brief
+</div>
+
+</body>
+</html>
