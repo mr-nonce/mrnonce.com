@@ -219,10 +219,21 @@
     h1 { font-size: 20px; }
     .route-bar { font-size: 13px; }
   }
+
+  .breadcrumb {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .breadcrumb a { color: var(--muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--text); text-decoration: underline; }
+
 </style>
 </head>
 <body>
 
+  <div class="breadcrumb"><a href="/">mrnonce.com</a> / <a href="/flightplans/">flight plans</a> / kcma → ksez · 2026-05-15</div>
 <header>
   <div class="badge">VFR Flight Plan</div>
   <h1>KCMA <span>→</span> KSEZ</h1>
