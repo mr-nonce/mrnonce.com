@@ -183,10 +183,21 @@
   a { color: var(--accent2); text-decoration: none; }
   a:hover { text-decoration: underline; }
   strong { color: #fff; }
+
+  .breadcrumb {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .breadcrumb a { color: var(--muted); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--text); text-decoration: underline; }
+
 </style>
 </head>
 <body>
 
+  <div class="breadcrumb"><a href="/">mrnonce.com</a> / <a href="/flightplans/">flight plans</a> / ksez runway choice</div>
 <header>
   <div class="badge">Airport Intelligence</div>
   <h1>KSEZ Sedona<br><em>Why Runway 3 Wins — Even With a Tailwind</em></h1>
