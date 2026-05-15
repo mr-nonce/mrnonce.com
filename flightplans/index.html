@@ -3,7 +3,7 @@
 <head>
   <meta name="robots" content="noindex, nofollow">
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flight Plans — Mr. Nonce</title>
+  <title>Flight Plans & Airport Intel — Mr. Nonce</title>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
     :root { --bg:#0d0d0d; --border:#1f1f1f; --muted:#444; --dim:#666; --text:#c8c8c8; --bright:#e8e8e8; --accent:#5a7a5a; }
@@ -20,28 +20,51 @@
     section { margin-bottom:2.5rem; }
     h2 { font-size:0.72rem; font-family:'Courier New',monospace; font-weight:normal; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); margin-bottom:1rem; }
     ul { list-style:none; padding:0; }
-    ul li { padding:0.35rem 0; border-bottom:1px solid var(--border); }
+    ul li { padding:0.45rem 0; border-bottom:1px solid var(--border); }
     ul li:last-child { border-bottom:none; }
     ul li::before { content:'--'; color:var(--muted); margin-right:0.75rem; font-family:'Courier New',monospace; }
     a { color:var(--text); text-decoration:none; }
     a:hover { color:var(--bright); text-decoration:underline; }
     .meta { font-size:0.78rem; font-family:'Courier New',monospace; color:var(--dim); margin-left:0.5rem; }
+    .desc { font-size:0.82rem; color:var(--dim); font-family:'Courier New',monospace; display:block; padding-left:2.1rem; margin-top:2px; }
     footer { max-width:620px; width:100%; margin:0 auto; padding:1.5rem 0 3rem; border-top:1px solid var(--border); }
     footer p { font-size:0.75rem; font-family:'Courier New',monospace; color:var(--muted); letter-spacing:0.06em; }
-</style>
+  </style>
 </head>
 <body>
   <main>
     <header>
       <div class="breadcrumb"><a href="/">mrnonce.com</a> / flight plans</div>
-      <h1>Flight Plans</h1>
-      <div class="tagline">Published by Mr. Nonce</div>
+      <h1>Flight Plans &amp; Airport Intel</h1>
+      <div class="tagline">N269PG · Cirrus SR22T G7+</div>
     </header>
+
     <section>
-      <h2>All Pages</h2>
+      <h2>Flight Plans</h2>
       <ul>
-        <li><a href="flightplan-kcma-kmry-20260511.html">KCMA to KMRY</a><span class="meta">2026-05-11</span></li></ul>
+        <li>
+          <a href="kcma-ksez-2026-05-15.html">KCMA → KSEZ</a><span class="meta">2026-05-15</span>
+          <span class="desc">Camarillo to Sedona via FIM · L70 · VCV · HEC · 7,500 ft</span>
+        </li>
+        <li>
+          <a href="flightplan-kcma-kmry-20260511.html">KCMA → KMRY</a><span class="meta">2026-05-11</span>
+          <span class="desc">Camarillo to Monterey · VFR coastal</span>
+        </li>
+      </ul>
     </section>
+
+    <hr class="divider">
+
+    <section>
+      <h2>Airport Intelligence</h2>
+      <ul>
+        <li>
+          <a href="ksez-runway-choice.html">KSEZ — Runway Choice Explained</a><span class="meta">2026-05-14</span>
+          <span class="desc">Why pilots land Rwy 3 even with a tailwind · slope · downdrafts · accident record</span>
+        </li>
+      </ul>
+    </section>
+
   </main>
   <footer><p>mrnonce.com &nbsp;·&nbsp; private infrastructure</p></footer>
 </body>
