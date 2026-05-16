@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Plan: KCMA → KSEZ | May 16, 2026</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #161616;
+    --border: #2a2a2a;
+    --accent: #e8a020;
+    --accent2: #4a9eff;
+    --text: #e4e4e4;
+    --muted: #888;
+    --green: #4caf7d;
+    --yellow: #e8a020;
+    --red: #e85050;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 24px 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .breadcrumb a {
+    color: var(--accent2);
+    text-decoration: none;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--green);
+    color: #000;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .badge.warn { background: var(--yellow); }
+  .badge.alert { background: var(--red); }
+  h1 { font-size: 26px; font-weight: 700; color: #fff; }
+  h1 span { color: var(--accent); }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .card h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--muted); font-size: 13px; }
+  .stat-value { font-weight: 600; font-size: 14px; }
+  .stat-value.ok { color: var(--green); }
+  .stat-value.warn { color: var(--yellow); }
+  .stat-value.alert { color: var(--red); }
+  section { margin-bottom: 28px; }
+  section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .route-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .route-bar .wp {
+    color: #fff;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 14px;
+  }
+  .route-bar .arr { color: var(--muted); font-size: 18px; }
+  .metar-block {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #ccc;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+  .wx-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .wx-card .wx-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .wx-card .icao { font-weight: 700; font-size: 16px; color: #fff; }
+  .wx-card .wx-name { color: var(--muted); font-size: 12px; }
+  .alert-box {
+    background: #1a1000;
+    border: 1px solid #4a3000;
+    border-left: 4px solid var(--yellow);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .alert-box.danger {
+    background: #1a0000;
+    border: 1px solid #4a0000;
+    border-left-color: var(--red);
+  }
+  .alert-box.info {
+    background: #001020;
+    border: 1px solid #003050;
+    border-left-color: var(--accent2);
+  }
+  .alert-box strong { display: block; margin-bottom: 4px; }
+  .fp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .fp-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .fp-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .fp-table tr:last-child td { border-bottom: none; }
+  .fp-table .leg-dep { font-weight: 700; color: #fff; }
+  .fp-table .ete { color: var(--muted); }
+  .verdict {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  .verdict-icon { font-size: 36px; line-height: 1; }
+  .verdict h2 { font-size: 18px; color: #fff; margin-bottom: 6px; border: none; padding: 0; text-transform: none; letter-spacing: normal; }
+  .verdict p { color: var(--muted); font-size: 14px; }
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="breadcrumb">
+  <a href="https://mrnonce.com">mrnonce.com</a> › <a href="https://mrnonce.com/flightplans/">Flight Plans</a> › KCMA → KSEZ · May 16, 2026
+</div>
+
+<header>
+  <div class="badge warn">2 Advisories</div>
+  <h1>Flight Plan: <span>KCMA → KSEZ</span></h1>
+  <div class="meta">N269PG · SR22T G7+ · May 16, 2026 · Revised 9:00 AM departure</div>
+</header>
+
+<div class="route-bar">
+  <span class="wp">KCMA</span>
+  <span class="arr">→</span>
+  <span class="wp">FIM</span>
+  <span class="arr">→</span>
+  <span class="wp">L70</span>
+  <span class="arr">→</span>
+  <span class="wp">VCV</span>
+  <span class="arr">→</span>
+  <span class="wp">HEC</span>
+  <span class="arr">→</span>
+  <span class="wp">KSEZ</span>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>Departure</h3>
+    <div class="stat-row"><span class="stat-label">Airport</span><span class="stat-value">KCMA Camarillo</span></div>
+    <div class="stat-row"><span class="stat-label">Time</span><span class="stat-value">09:00 PDT (16:00Z)</span></div>
+    <div class="stat-row"><span class="stat-label">Wx at 0622 PDT</span><span class="stat-value warn">BKN009 OVC028 6SM BR</span></div>
+    <div class="stat-row"><span class="stat-label">TAF at dep</span><span class="stat-value ok">BKN030 P6SM</span></div>
+  </div>
+  <div class="card">
+    <h3>Arrival</h3>
+    <div class="stat-row"><span class="stat-label">Airport</span><span class="stat-value">KSEZ Sedona</span></div>
+    <div class="stat-row"><span class="stat-label">ETA</span><span class="stat-value">~11:20 PDT</span></div>
+    <div class="stat-row"><span class="stat-label">Wx</span><span class="stat-value ok">CLR 10SM 04005KT</span></div>
+    <div class="stat-row"><span class="stat-label">Elev / DA</span><span class="stat-value">4,827 ft / ~8,500 ft</span></div>
+  </div>
+  <div class="card">
+    <h3>Flight Summary</h3>
+    <div class="stat-row"><span class="stat-label">Distance</span><span class="stat-value">~370 nm</span></div>
+    <div class="stat-row"><span class="stat-label">ETE</span><span class="stat-value">~2h 20m</span></div>
+    <div class="stat-row"><span class="stat-label">Cruise Alt</span><span class="stat-value warn">7,500 ft (see advisory)</span></div>
+    <div class="stat-row"><span class="stat-label">Aircraft</span><span class="stat-value">N269PG</span></div>
+  </div>
+</div>
+
+<!-- ADVISORIES -->
+<section>
+  <h2>Advisories</h2>
+
+  <div class="alert-box danger">
+    <strong>⛰️ TERRAIN — HEC → KSEZ: Step Up Required</strong>
+    7,500 ft is insufficient for the Kingman-to-Sedona leg. The Arizona plateau between HEC and KSEZ tops out at 7,000–8,000+ ft MSL, with no margin at 7,500 ft. Step up to <strong>9,500–11,500 ft</strong> before or at HEC. Odd thousands eastbound: 9,500 ft works VFR. Resume 7,500 ft after clearing the plateau is not applicable — maintain higher until descent into KSEZ.
+  </div>
+
+  <div class="alert-box warn">
+    <strong>☁️ KCMA Marine Layer — Check Before You Go</strong>
+    At 06:22 PDT: BKN009 OVC028 6SM mist. Classic coastal marine layer. TAF calls for improvement to BKN030 P6SM by 9am — that's VFR legal (3,000 ft broken, 6+ SM). However, marine layer burn-off timing is not guaranteed. <strong>Check the KCMA METAR at 08:30 before taxi</strong>. If ceiling is still below 1,500 ft AGL, delay until it lifts. East of Camarillo (past the Santa Clara valley) skies should be clear rapidly.
+  </div>
+
+  <div class="alert-box info">
+    <strong>ℹ️ KSEZ Afternoon Winds — Good Timing</strong>
+    KSEZ TAF shows 18015G25 developing after 13:00 PDT. Your ~11:20 arrival catches KSEZ in its clean morning window: VRB04KT, SKC. Land before the afternoon south winds build. Don't linger — if you're wheels up on return by 14:00 you'll avoid the worst of it.
+  </div>
+</section>
+
+<!-- WAYPOINT TABLE -->
+<section>
+  <h2>Leg Breakdown</h2>
+  <table class="fp-table">
+    <thead>
+      <tr>
+        <th>From</th>
+        <th>To</th>
+        <th>Dist</th>
+        <th>ETE</th>
+        <th>Dep Time</th>
+        <th>Alt</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="leg-dep">KCMA</td>
+        <td>FIM</td>
+        <td>~60 nm</td>
+        <td class="ete">27 min</td>
+        <td>09:00 PDT</td>
+        <td>7,500 ft</td>
+        <td>Fillmore VOR — climb through/above marine layer, clear east of Santa Clara valley</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">FIM</td>
+        <td>L70</td>
+        <td>~60 nm</td>
+        <td class="ete">27 min</td>
+        <td>09:27 PDT</td>
+        <td>7,500 ft</td>
+        <td>Apple Valley — Mojave approach, desert terrain, winds typically benign AM</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">L70</td>
+        <td>VCV</td>
+        <td>~80 nm</td>
+        <td class="ete">35 min</td>
+        <td>09:54 PDT</td>
+        <td>7,500 ft</td>
+        <td>San Bernardino Intl — Class D, 22009G19KT from SW, stay clear of KONT/KSBD Class C shelves</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">VCV</td>
+        <td>HEC</td>
+        <td>~95 nm</td>
+        <td class="ete">42 min</td>
+        <td>10:29 PDT</td>
+        <td>7,500 ft</td>
+        <td>Needles — begin step-up climb here; plateau rises ahead</td>
+      </tr>
+      <tr>
+        <td class="leg-dep">HEC</td>
+        <td>KSEZ</td>
+        <td>~85 nm</td>
+        <td class="ete">38 min</td>
+        <td>11:11 PDT</td>
+        <td><strong style="color:var(--yellow)">9,500+ ft</strong></td>
+        <td>⚠️ Terrain. Arizona plateau. Step up required before HEC. VFR VRB04KT SKC at KSEZ arrival.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- WEATHER -->
+<section>
+  <h2>Weather — Key Stations</h2>
+
+  <div class="wx-card">
+    <div class="wx-header">
+      <div>
+        <div class="icao">KCMA</div>
+        <div class="wx-name">Camarillo — Departure</div>
+      </div>
+      <span class="badge warn">WATCH</span>
+    </div>
+    <div class="metar-block">SPECI KCMA 161311Z AUTO 00000KT 6SM BR BKN009 OVC028 14/12 A2991 RMK AO2</div>
+    <div style="margin-top:10px; font-size:13px; color:var(--muted);">
+      TAF: VRB03KT P6SM BKN030 through noon → SCT035 by 12:00 PDT. Marine layer currently solid — expected to lift to ~3,000 ft broken by 9am. Verify before departure.
+    </div>
+  </div>
+
+  <div class="wx-card">
+    <div class="wx-header">
+      <div>
+        <div class="icao">KVCV</div>
+        <div class="wx-name">San Bernardino Intl — Enroute</div>
+      </div>
+      <span class="badge" style="background:var(--green);">VFR</span>
+    </div>
+    <div class="metar-block">METAR KVCV 161315Z AUTO 22009G19KT 180V240 10SM CLR 17/01 A2989 RMK AO2</div>
+    <div style="margin-top:10px; font-size:13px; color:var(--muted);">
+      Clear, 10SM. SW winds 9G19kt — expect mild turbulence through the Cajon Pass area. No factor at cruise altitude.
+    </div>
+  </div>
+
+  <div class="wx-card">
+    <div class="wx-header">
+      <div>
+        <div class="icao">KSEZ</div>
+        <div class="wx-name">Sedona — Destination</div>
+      </div>
+      <span class="badge" style="background:var(--green);">VFR</span>
+    </div>
+    <div class="metar-block">METAR KSEZ 161255Z AUTO 04005KT 10SM CLR 16/M03 A2995 RMK AO2</div>
+    <div style="margin-top:10px; font-size:13px; color:var(--muted);">
+      Perfect morning conditions. NE 5kt, CLR, 10SM. DA ~8,500 ft — plan for longer ground roll and Vref +5. TAF goes 18015G25 after 1pm PDT — beat it.
+    </div>
+  </div>
+</section>
+
+<!-- VERDICT -->
+<div class="verdict">
+  <div class="verdict-icon">🟡</div>
+  <div>
+    <h2>Conditional Go</h2>
+    <p>Route and destination are excellent. KSEZ is clear with light winds — a perfect Sedona morning. The only real gate is KCMA: marine layer is sitting at 900 ft right now. TAF calls for BKN030 by 9am which is VFR legal, but verify with the 08:30 METAR before taxi. If it's still OVC below 1,500 ft, push to 10am and recheck — it will burn off. <strong>And step up to 9,500 ft by HEC, every single time — the terrain doesn't care about your filed altitude.</strong></p>
+  </div>
+</div>
+
+<footer>
+  <p>Generated by Mr. Nonce · N269PG SR22T G7+ · Weather data valid ~06:15 PDT May 16, 2026 · Verify all conditions before flight · Not a substitute for preflight briefing</p>
+</footer>
+
+</body>
+</html>
