@@ -564,12 +564,18 @@
       const byIcao = {};
       arr.forEach(a => { byIcao[(a.icaoId || '').toUpperCase()] = a; });
 
+      function cleanName(raw) {
+        if (!raw) return '';
+        // API returns "CAMARILLO/CAMARILLO " — take the part before the slash, title-case it
+        const base = raw.split('/')[0].trim();
+        return base.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+      }
       function setName(icao, elId) {
         const ap = byIcao[icao];
         if (ap) {
-          const parts = [ap.name];
+          const parts = [cleanName(ap.name)];
           if (ap.state) parts.push(ap.state);
-          document.getElementById(elId).textContent = parts.join(', ');
+          document.getElementById(elId).textContent = parts.filter(Boolean).join(', ');
         }
       }
       setName(from, 'disp-from-name');
@@ -580,7 +586,8 @@
 
   /* ── Weather ── */
   function flightCat(m) {
-    if (m.fltcat && m.fltcat !== 'UNKN') return m.fltcat;
+    const cat = m.fltCat || m.fltcat;
+    if (cat && cat !== 'UNKN') return cat;
     const ceil = (m.ceil != null) ? m.ceil : 99999;
     const vis  = parseFloat(m.visib) || 10;
     if (ceil < 500  || vis < 1)  return 'LIFR';
@@ -637,7 +644,11 @@
       const arr = await resp.json();
 
       const byIcao = {};
-      arr.forEach(m => { byIcao[(m.icaoId || '').toUpperCase()] = m; });
+      // Keep only mostRecent record per station
+      arr.forEach(m => {
+        const id = (m.icaoId || '').toUpperCase();
+        if (!byIcao[id] || m.mostRecent === 1) byIcao[id] = m;
+      });
 
       const fromLabel = document.getElementById('disp-from-name').textContent || from;
       const toLabel   = document.getElementById('disp-to-name').textContent   || to;
