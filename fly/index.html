@@ -31,7 +31,7 @@
       padding: 28px 0 20px;
     }
     header .tail {
-      font-size: 2rem;
+      font-size: 1.9rem;
       font-weight: 700;
       letter-spacing: 0.02em;
     }
@@ -39,7 +39,7 @@
     header .subtitle {
       color: var(--muted);
       font-size: 0.95rem;
-      margin-top: 4px;
+      margin-top: 5px;
     }
     .card {
       background: var(--card);
@@ -50,96 +50,122 @@
     }
     .card h3 {
       color: var(--gold);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 14px;
     }
+    /* ── Flight Details ── */
+    .route-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .airport-block { flex: 1; }
+    .airport-block.right { text-align: right; }
+    .airport-icao {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .airport-name {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .route-arrow {
+      color: var(--gold);
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .flight-time-block {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .flight-time-block .time-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .flight-time-block .date-line {
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+    .flight-time-block strong { color: var(--text); }
+    /* ── Data rows ── */
     .row {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       padding: 5px 0;
       border-bottom: 1px solid #1a1a1a;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     .row:last-child { border-bottom: none; }
     .row .label { color: var(--muted); }
     .row .val { font-weight: 500; text-align: right; max-width: 65%; }
-    .route-display {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 12px 0 6px;
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-    .route-display .arrow { color: var(--gold); font-size: 1.2rem; }
-    .times-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.82rem;
-      color: var(--muted);
-      padding: 0 2px;
-    }
+    /* ── Weather ── */
     .wx-station { margin-bottom: 12px; }
     .wx-station:last-child { margin-bottom: 0; }
-    .wx-station .station-header {
+    .wx-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 6px;
     }
-    .wx-station .icao {
+    .wx-label {
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
     .fltcat {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 7px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 8px;
       border-radius: 4px;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
     .fltcat.VFR  { background: var(--vfr);  color: #000; }
     .fltcat.MVFR { background: var(--mvfr); color: #fff; }
     .fltcat.IFR  { background: var(--ifr);  color: #fff; }
     .fltcat.LIFR { background: var(--lifr); color: #fff; }
-    .fltcat.NA   { background: #333; color: var(--muted); }
+    .fltcat.UNK  { background: #333; color: var(--muted); }
     .wx-details {
       font-size: 0.82rem;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.7;
     }
     .wx-raw {
-      font-size: 0.72rem;
-      color: #555;
+      font-size: 0.68rem;
+      color: #444;
       font-family: monospace;
-      margin-top: 4px;
+      margin-top: 5px;
       word-break: break-all;
     }
     .wx-divider {
       border: none;
       border-top: 1px solid #1a1a1a;
-      margin: 10px 0;
+      margin: 12px 0;
     }
-    .note-text { font-size: 0.9rem; color: var(--text); line-height: 1.5; }
-    form label {
+    /* ── Form (passenger) ── */
+    .pax-form label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--muted);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
       margin-bottom: 5px;
       margin-top: 14px;
     }
-    form label:first-of-type { margin-top: 0; }
-    form input {
+    .pax-form label:first-of-type { margin-top: 0; }
+    .pax-form input {
       width: 100%;
-      padding: 10px 12px;
+      padding: 11px 13px;
       background: #1a1a1a;
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -147,19 +173,20 @@
       font-size: 0.95rem;
       outline: none;
       transition: border-color 0.2s;
+      -webkit-appearance: none;
     }
-    form input:focus { border-color: var(--gold); }
+    .pax-form input:focus { border-color: var(--gold); }
     .form-hint {
       font-size: 0.78rem;
       color: var(--muted);
       margin-top: 10px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
     .submit-btn {
       display: block;
       width: 100%;
       margin-top: 16px;
-      padding: 13px;
+      padding: 14px;
       background: var(--gold);
       color: #000;
       border: none;
@@ -170,8 +197,94 @@
       letter-spacing: 0.03em;
       transition: opacity 0.2s;
     }
-    .submit-btn:hover { opacity: 0.88; }
-    #loading-wx { color: var(--muted); font-size: 0.85rem; }
+    .submit-btn:hover { opacity: 0.85; }
+    /* ── Pilot form (link builder) ── */
+    .pilot-form label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      margin-top: 16px;
+    }
+    .pilot-form label:first-of-type { margin-top: 0; }
+    .pilot-form input,
+    .pilot-form textarea {
+      width: 100%;
+      padding: 11px 13px;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .pilot-form textarea { resize: vertical; min-height: 72px; }
+    .pilot-form input:focus,
+    .pilot-form textarea:focus { border-color: var(--gold); }
+    .icao-row {
+      display: flex;
+      gap: 10px;
+    }
+    .icao-row > div { flex: 1; }
+    .time-row-inputs {
+      display: flex;
+      gap: 10px;
+    }
+    .time-row-inputs > div { flex: 1; }
+    .link-output {
+      display: none;
+      margin-top: 14px;
+    }
+    .link-output .link-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .link-output input {
+      flex: 1;
+      padding: 10px 12px;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      outline: none;
+    }
+    .copy-btn {
+      padding: 10px 14px;
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s;
+    }
+    .copy-btn:hover { border-color: var(--gold); }
+    .preview-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 11px;
+      background: transparent;
+      border: 1px solid var(--gold);
+      border-radius: 7px;
+      color: var(--gold);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.2s;
+      text-align: center;
+      text-decoration: none;
+    }
+    .preview-btn:hover { background: rgba(232,197,71,0.08); }
+    /* ── Misc ── */
     .plane-photo {
       width: 100%;
       border-radius: 7px;
@@ -179,201 +292,402 @@
       margin-bottom: 14px;
       border: 1px solid var(--border);
     }
+    .note-text { font-size: 0.9rem; line-height: 1.6; }
     footer {
       text-align: center;
-      font-size: 0.72rem;
-      color: #333;
-      padding: 20px 0 10px;
+      font-size: 0.7rem;
+      color: #2a2a2a;
+      padding: 20px 0 12px;
     }
+    .err { color: #555; font-size: 0.85rem; }
   </style>
 </head>
 <body>
 
 <header>
   <div class="tail">✈️ <span>N269PG</span> · Cirrus SR22T G7+</div>
-  <div class="subtitle">Your flight with Brett Morrison</div>
+  <div class="subtitle">Pilot Brett Morrison</div>
 </header>
 
-<div class="card" id="flight-card">
-  <h3>Flight Details</h3>
-  <div class="route-display">
-    <span id="disp-from">—</span>
-    <span class="arrow">→</span>
-    <span id="disp-to">—</span>
+<!-- ══════════════ PILOT LINK-BUILDER (shown when no params) ══════════════ -->
+<div id="pilot-mode" style="display:none">
+  <div class="card">
+    <h3>Build Passenger Briefing Link</h3>
+    <form class="pilot-form" id="builder-form" novalidate>
+
+      <div class="icao-row">
+        <div>
+          <label for="b-from">Departure ICAO</label>
+          <input type="text" id="b-from" placeholder="KCMA" maxlength="4" autocapitalize="characters" autocomplete="off" required>
+        </div>
+        <div>
+          <label for="b-to">Destination ICAO</label>
+          <input type="text" id="b-to" placeholder="KSEZ" maxlength="4" autocapitalize="characters" autocomplete="off" required>
+        </div>
+      </div>
+
+      <label for="b-date">Departure Date</label>
+      <input type="date" id="b-date" required>
+
+      <div class="time-row-inputs">
+        <div>
+          <label for="b-dep-time">Departs</label>
+          <input type="time" id="b-dep-time" required>
+        </div>
+        <div>
+          <label for="b-arr-time">Arrives (approx)</label>
+          <input type="time" id="b-arr-time" required>
+        </div>
+      </div>
+
+      <label for="b-note">Pilot Note <span style="color:#555;font-size:0.85em">(optional)</span></label>
+      <textarea class="pilot-form" id="b-note" placeholder="e.g. Dress in layers — it'll be cooler at cruise altitude"></textarea>
+
+      <button type="submit" class="submit-btn" style="margin-top:18px">Generate Link →</button>
+
+      <div class="link-output" id="link-output">
+        <div class="link-box">
+          <input type="text" id="link-text" readonly>
+          <button type="button" class="copy-btn" id="copy-btn">Copy</button>
+        </div>
+        <a class="preview-btn" id="preview-btn" href="#" target="_blank">Preview as Passenger →</a>
+      </div>
+
+    </form>
   </div>
-  <div class="times-row">
-    <span>Departure</span>
-    <span>Arrival</span>
+</div>
+
+<!-- ══════════════ PASSENGER VIEW (shown when params present) ══════════════ -->
+<div id="pax-mode" style="display:none">
+
+  <div class="card">
+    <h3>Your Flight</h3>
+    <div class="route-block">
+      <div class="airport-block">
+        <div class="airport-icao" id="disp-from">—</div>
+        <div class="airport-name" id="disp-from-name"></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="airport-block right">
+        <div class="airport-icao" id="disp-to">—</div>
+        <div class="airport-name" id="disp-to-name"></div>
+      </div>
+    </div>
+    <div class="flight-time-block" id="flight-time-block"></div>
   </div>
-  <div style="height:10px"></div>
-  <div class="row"><span class="label">ETD</span><span class="val" id="disp-etd">—</span></div>
-  <div class="row"><span class="label">ETA</span><span class="val" id="disp-eta">—</span></div>
-</div>
 
-<div class="card">
-  <h3>Aircraft</h3>
-  <img src="n269pg.jpg" alt="N269PG Cirrus SR22T" class="plane-photo">
-  <div class="row"><span class="label">Registration</span><span class="val">N269PG</span></div>
-  <div class="row"><span class="label">Type</span><span class="val">Cirrus SR22T G7+</span></div>
-  <div class="row"><span class="label">Seats</span><span class="val">4 passengers</span></div>
-  <div class="row"><span class="label">Engine</span><span class="val">Continental TSIO-550-K (turbocharged)</span></div>
-  <div class="row" style="border-bottom:none"><span class="label">Baggage</span><span class="val">Soft bags only · 130 lb max</span></div>
-</div>
+  <div class="card">
+    <h3>Aircraft</h3>
+    <img src="n269pg.jpg" alt="N269PG Cirrus SR22T" class="plane-photo">
+    <div class="row"><span class="label">Registration</span><span class="val">N269PG</span></div>
+    <div class="row"><span class="label">Type</span><span class="val">Cirrus SR22T G7+</span></div>
+    <div class="row"><span class="label">Engine</span><span class="val">Continental TSIO-550-K turbocharged</span></div>
+    <div class="row" style="border-bottom:none"><span class="label">Baggage</span><span class="val">Soft bags only · 130 lb max</span></div>
+  </div>
 
-<div class="card" id="wx-card">
-  <h3>Live Weather</h3>
-  <div id="wx-content"><span id="loading-wx">Loading weather…</span></div>
-</div>
+  <div class="card">
+    <h3>Live Weather</h3>
+    <div id="wx-content"><span class="err">Loading weather…</span></div>
+  </div>
 
-<div class="card" id="note-card" style="display:none">
-  <h3>Pilot Note</h3>
-  <p class="note-text" id="note-text"></p>
-</div>
+  <div class="card" id="note-card" style="display:none">
+    <h3>Note from Your Pilot</h3>
+    <p class="note-text" id="note-text"></p>
+  </div>
 
-<div class="card">
-  <h3>Passenger Info</h3>
-  <form id="pax-form">
-    <label for="pax-name">Your name</label>
-    <input type="text" id="pax-name" placeholder="First and last name" required>
+  <div class="card">
+    <h3>Passenger Info</h3>
+    <form class="pax-form" id="pax-form" novalidate>
+      <label for="pax-name">Your name</label>
+      <input type="text" id="pax-name" placeholder="First and last name" autocomplete="name">
 
-    <label for="pax-weight">Body weight (lbs)</label>
-    <input type="number" id="pax-weight" placeholder="Your weight in lbs" min="50" max="500" required>
+      <label for="pax-weight">Body weight (lbs)</label>
+      <input type="number" id="pax-weight" placeholder="Your weight in lbs" min="50" max="500" inputmode="numeric">
 
-    <label for="pax-bag">Baggage weight (lbs)</label>
-    <input type="number" id="pax-bag" placeholder="Estimated luggage weight in lbs" min="0" max="130" required>
+      <label for="pax-bag">Baggage weight (lbs)</label>
+      <input type="number" id="pax-bag" placeholder="Estimated luggage weight in lbs" min="0" max="130" inputmode="numeric">
 
-    <p class="form-hint">This helps ensure the aircraft is loaded within safe weight &amp; balance limits. Your information is sent only to your pilot.</p>
+      <p class="form-hint">This helps your pilot verify the aircraft is loaded within safe weight &amp; balance limits. Sent only to your pilot.</p>
 
-    <button type="submit" class="submit-btn">Send to Pilot →</button>
-  </form>
+      <button type="submit" class="submit-btn">Send to Pilot →</button>
+    </form>
+  </div>
+
 </div>
 
 <footer>mrnonce.com · N269PG · Cirrus SR22T G7+</footer>
 
 <script>
-(function() {
-  // Parse URL params
-  const p = new URLSearchParams(window.location.search);
-  const from = (p.get('from') || '').toUpperCase();
-  const to   = (p.get('to')   || '').toUpperCase();
-  const etd  = p.get('etd') || '';
-  const eta  = p.get('eta') || '';
-  const note = p.get('note') || '';
+(function () {
+  'use strict';
 
-  // Populate flight details
-  if (from) document.getElementById('disp-from').textContent = from;
-  if (to)   document.getElementById('disp-to').textContent   = to;
+  /* ── URL params ── */
+  const sp   = new URLSearchParams(window.location.search);
+  const from = (sp.get('from') || '').toUpperCase().trim();
+  const to   = (sp.get('to')   || '').toUpperCase().trim();
+  const etd  = sp.get('etd') || '';
+  const eta  = sp.get('eta') || '';
+  const note = sp.get('note') || '';
 
-  function fmtTime(s) {
-    if (!s) return '—';
-    // Try ISO parse
-    const d = new Date(s);
-    if (!isNaN(d)) {
-      return d.toLocaleString('en-US', {
-        weekday: 'short', month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+  const hasRoute = from.length >= 3 && to.length >= 3;
+
+  /* ══════════════════════════════════════
+     PILOT LINK-BUILDER MODE
+  ══════════════════════════════════════ */
+  if (!hasRoute) {
+    document.getElementById('pilot-mode').style.display = 'block';
+
+    // Default date to today
+    const today = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('b-date').value =
+      `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+
+    document.getElementById('builder-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const bFrom = document.getElementById('b-from').value.trim().toUpperCase();
+      const bTo   = document.getElementById('b-to').value.trim().toUpperCase();
+      const bDate = document.getElementById('b-date').value;
+      const bDep  = document.getElementById('b-dep-time').value;
+      const bArr  = document.getElementById('b-arr-time').value;
+      const bNote = document.getElementById('b-note').value.trim();
+
+      // Validation
+      if (!bFrom || bFrom.length < 3) { alert('Enter a valid departure ICAO (e.g. KCMA)'); return; }
+      if (!bTo   || bTo.length < 3)   { alert('Enter a valid destination ICAO (e.g. KSEZ)'); return; }
+      if (!bDate) { alert('Select a departure date'); return; }
+      if (!bDep)  { alert('Enter departure time'); return; }
+      if (!bArr)  { alert('Enter arrival time'); return; }
+
+      const etdVal = bDate + 'T' + bDep;
+      const etaVal = bDate + 'T' + bArr;
+
+      const params = new URLSearchParams({ from: bFrom, to: bTo, etd: etdVal, eta: etaVal });
+      if (bNote) params.set('note', bNote);
+
+      const link = window.location.origin + window.location.pathname + '?' + params.toString();
+      document.getElementById('link-text').value = link;
+      document.getElementById('preview-btn').href = link;
+      document.getElementById('link-output').style.display = 'block';
+    });
+
+    document.getElementById('copy-btn').addEventListener('click', function() {
+      const input = document.getElementById('link-text');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      }).catch(() => {
+        document.execCommand('copy');
       });
-    }
-    return s;
+    });
+
+    // Force ICAO inputs uppercase as you type
+    ['b-from','b-to'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function() {
+        const pos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(pos, pos);
+      });
+    });
+
+    return; // Don't run passenger view code
   }
 
-  document.getElementById('disp-etd').textContent = fmtTime(etd) || '—';
-  document.getElementById('disp-eta').textContent = fmtTime(eta) || '—';
+  /* ══════════════════════════════════════
+     PASSENGER VIEW MODE
+  ══════════════════════════════════════ */
+  document.getElementById('pax-mode').style.display = 'block';
 
-  // Pilot note
+  /* ── Set ICAO codes immediately ── */
+  document.getElementById('disp-from').textContent = from;
+  document.getElementById('disp-to').textContent   = to;
+
+  /* ── Format times ── */
+  function fmtDateTime(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', hour12: true
+    });
+  }
+
+  function fmtTimeOnly(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+
+  function fmtDateOnly(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d)) return null;
+    return d.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  const dateStr = fmtDateOnly(etd);
+  const depStr  = fmtTimeOnly(etd);
+  const arrStr  = fmtTimeOnly(eta);
+
+  const ftb = document.getElementById('flight-time-block');
+  if (dateStr || depStr) {
+    let html = '';
+    if (dateStr) html += `<div class="date-line">${dateStr}</div>`;
+    if (depStr && arrStr) {
+      html += `<div class="time-row"><span>Departs <strong>${depStr}</strong></span><span>Arrives <strong>${arrStr}</strong></span></div>`;
+    } else if (depStr) {
+      html += `<div>Departs <strong>${depStr}</strong></div>`;
+    }
+    ftb.innerHTML = html;
+  } else {
+    ftb.style.display = 'none';
+  }
+
+  /* ── Pilot note ── */
   if (note) {
     document.getElementById('note-card').style.display = 'block';
     document.getElementById('note-text').textContent = note;
   }
 
-  // Weather
-  function flightCat(data) {
-    if (data.fltcat) return data.fltcat;
-    // Derive from ceiling/vis if missing
-    const ceil = data.ceil;
-    const vis  = parseFloat(data.visib);
-    if (ceil < 500 || vis < 1)    return 'LIFR';
-    if (ceil < 1000 || vis < 3)   return 'IFR';
-    if (ceil < 3000 || vis < 5)   return 'MVFR';
+  /* ── Airport name lookup ── */
+  async function loadAirportNames() {
+    const ids = [from, to].filter((v, i, a) => a.indexOf(v) === i).join(',');
+    try {
+      const resp = await fetch(`https://aviationweather.gov/api/data/airport?ids=${ids}&format=json`);
+      if (!resp.ok) return;
+      const arr = await resp.json();
+      const byIcao = {};
+      arr.forEach(a => { byIcao[(a.icaoId || '').toUpperCase()] = a; });
+
+      function setName(icao, elId) {
+        const ap = byIcao[icao];
+        if (ap) {
+          const parts = [ap.name];
+          if (ap.state) parts.push(ap.state);
+          document.getElementById(elId).textContent = parts.join(', ');
+        }
+      }
+      setName(from, 'disp-from-name');
+      setName(to,   'disp-to-name');
+    } catch (_) {}
+  }
+  loadAirportNames();
+
+  /* ── Weather ── */
+  function flightCat(m) {
+    if (m.fltcat && m.fltcat !== 'UNKN') return m.fltcat;
+    const ceil = (m.ceil != null) ? m.ceil : 99999;
+    const vis  = parseFloat(m.visib) || 10;
+    if (ceil < 500  || vis < 1)  return 'LIFR';
+    if (ceil < 1000 || vis < 3)  return 'IFR';
+    if (ceil < 3000 || vis < 5)  return 'MVFR';
     return 'VFR';
   }
 
-  function wxHtml(data) {
-    if (!data) return '<span style="color:#555">Weather unavailable</span>';
-    const cat   = flightCat(data);
-    const wdir  = data.wdir != null ? data.wdir : '—';
-    const wspd  = data.wspd != null ? data.wspd + ' kt' : '—';
-    const wgst  = data.wgst ? ` G${data.wgst}kt` : '';
-    const vis   = data.visib != null ? data.visib + ' sm' : '—';
-    const temp  = data.temp  != null ? data.temp + '°C' : '—';
-    const clouds = Array.isArray(data.clouds) && data.clouds.length
-      ? data.clouds.map(c => c.cover + (c.base ? ' ' + c.base*100 + 'ft' : '')).join(', ')
-      : '—';
+  function wxHtml(m, label) {
+    if (!m) return `<div class="wx-station"><div class="wx-header"><span class="wx-label">${label}</span></div><div class="err">No data</div></div>`;
+    const cat  = flightCat(m);
+    const wdir = (m.wdir != null) ? m.wdir + '°' : '—';
+    const wspd = (m.wspd != null) ? m.wspd + ' kt' : '—';
+    const wgst = m.wgst  ? ` G${m.wgst}` : '';
+    const vis  = (m.visib != null) ? m.visib + ' sm' : '—';
+    const temp = (m.temp  != null) ? `${m.temp}°C (${Math.round(m.temp * 9/5 + 32)}°F)` : '—';
+
+    let cloudStr = '—';
+    if (Array.isArray(m.clouds) && m.clouds.length) {
+      cloudStr = m.clouds.map(c => {
+        if (!c.cover) return '';
+        const base = c.base != null ? ` ${c.base} ft` : '';
+        return c.cover + base;
+      }).filter(Boolean).join(', ');
+    }
+
+    const timeStr = m.reportTime ? m.reportTime.replace('T',' ').slice(0,16) + ' UTC' : '';
 
     return `<div class="wx-station">
-      <div class="station-header">
-        <span class="icao">${data.icaoId || data.station_id || '—'}</span>
+      <div class="wx-header">
+        <span class="wx-label">${label}</span>
         <span class="fltcat ${cat}">${cat}</span>
+        ${timeStr ? `<span style="font-size:0.68rem;color:#555;margin-left:auto">${timeStr}</span>` : ''}
       </div>
       <div class="wx-details">
-        Wind: ${wdir}° @ ${wspd}${wgst} &nbsp;·&nbsp; Vis: ${vis}<br>
-        Sky: ${clouds} &nbsp;·&nbsp; Temp: ${temp}
+        Wind: ${wdir} @ ${wspd}${wgst} &nbsp;·&nbsp; Vis: ${vis}<br>
+        Sky: ${cloudStr} &nbsp;·&nbsp; Temp: ${temp}
       </div>
-      ${data.rawOb ? '<div class="wx-raw">' + data.rawOb + '</div>' : ''}
+      ${m.rawOb ? `<div class="wx-raw">${m.rawOb}</div>` : ''}
     </div>`;
   }
 
   async function loadWeather() {
     const stations = [from, to].filter(Boolean);
     if (!stations.length) {
-      document.getElementById('wx-content').innerHTML = '<span style="color:#555">No airports specified.</span>';
+      document.getElementById('wx-content').innerHTML = '<span class="err">No airports specified.</span>';
       return;
     }
     try {
-      const ids = stations.join(',');
-      const resp = await fetch(`https://aviationweather.gov/api/data/metar?ids=${ids}&format=json`);
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const ids  = [...new Set(stations)].join(',');
+      const url  = `https://aviationweather.gov/api/data/metar?ids=${encodeURIComponent(ids)}&format=json&hours=2`;
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const arr = await resp.json();
 
-      // Build a map by ICAO
       const byIcao = {};
       arr.forEach(m => { byIcao[(m.icaoId || '').toUpperCase()] = m; });
 
+      const fromLabel = document.getElementById('disp-from-name').textContent || from;
+      const toLabel   = document.getElementById('disp-to-name').textContent   || to;
+
       let html = '';
-      stations.forEach((icao, i) => {
-        if (i > 0) html += '<hr class="wx-divider">';
-        html += wxHtml(byIcao[icao] || null);
-      });
+      if (from === to) {
+        html = wxHtml(byIcao[from] || null, fromLabel || from);
+      } else {
+        html  = wxHtml(byIcao[from] || null, fromLabel || from);
+        html += '<hr class="wx-divider">';
+        html += wxHtml(byIcao[to]   || null, toLabel   || to);
+      }
       document.getElementById('wx-content').innerHTML = html;
-    } catch(e) {
-      document.getElementById('wx-content').innerHTML = '<span style="color:#555">Weather unavailable — ' + e.message + '</span>';
+    } catch (e) {
+      document.getElementById('wx-content').innerHTML = `<span class="err">Weather unavailable — ${e.message}</span>`;
     }
   }
 
-  loadWeather();
+  // Small delay so airport names can load first (for better labels)
+  setTimeout(loadWeather, 600);
 
-  // Form submission → mailto
+  /* ── Passenger form → mailto ── */
   document.getElementById('pax-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const name   = document.getElementById('pax-name').value.trim();
     const weight = document.getElementById('pax-weight').value;
     const bag    = document.getElementById('pax-bag').value;
-    const now    = new Date().toLocaleString('en-US', {dateStyle:'medium', timeStyle:'short'});
 
-    const subject = `Flight Passenger Info – ${name} – ${from||'?'} to ${to||'?'}`;
+    if (!name)   { alert('Please enter your name.');            return; }
+    if (!weight) { alert('Please enter your body weight.');     return; }
+    if (!bag && bag !== '0') { alert('Please enter baggage weight (enter 0 if none).'); return; }
+
+    const now    = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+    const fromName = document.getElementById('disp-from-name').textContent || from;
+    const toName   = document.getElementById('disp-to-name').textContent   || to;
+
+    const subject = `Flight Passenger Info – ${name} – ${from} → ${to}`;
     const body = [
       'Passenger Info',
-      '─────────────',
+      '─────────────────────',
       `Name:           ${name}`,
       `Body weight:    ${weight} lbs`,
       `Baggage weight: ${bag} lbs`,
       '',
       'Flight',
-      '─────────────',
-      `From:  ${from||'—'}`,
-      `To:    ${to||'—'}`,
-      `ETD:   ${etd||'—'}`,
-      `ETA:   ${eta||'—'}`,
+      '─────────────────────',
+      `From:   ${from}${fromName ? ' (' + fromName + ')' : ''}`,
+      `To:     ${to}${toName ? ' (' + toName + ')' : ''}`,
+      `Departs: ${fmtDateTime(etd) || etd || '—'}`,
+      `Arrives: ${fmtDateTime(eta) || eta || '—'}`,
       '',
       `Submitted: ${now}`,
     ].join('\n');
@@ -382,6 +696,7 @@
       + '?subject=' + encodeURIComponent(subject)
       + '&body='    + encodeURIComponent(body);
   });
+
 })();
 </script>
 </body>
