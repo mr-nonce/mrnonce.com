@@ -554,107 +554,129 @@
     document.getElementById('note-text').textContent = note;
   }
 
-  /* ── Airport names resolved from METAR response ── */
+  /* ── Airport database (common US airports; Nominatim fallback for unknowns) ── */
+  const AIRPORTS = {
+    KCMA:{name:'Camarillo Airport',state:'CA',lat:34.2114,lon:-119.0876},
+    KSBA:{name:'Santa Barbara Municipal',state:'CA',lat:34.4262,lon:-119.8403},
+    KSEZ:{name:'Sedona Airport',state:'AZ',lat:34.8486,lon:-111.7884},
+    KLAX:{name:'Los Angeles Intl',state:'CA',lat:33.9425,lon:-118.4081},
+    KBUR:{name:'Hollywood Burbank',state:'CA',lat:34.2007,lon:-118.3588},
+    KVNY:{name:'Van Nuys Airport',state:'CA',lat:34.2098,lon:-118.4899},
+    KONT:{name:'Ontario Intl',state:'CA',lat:34.0560,lon:-117.6012},
+    KSAN:{name:'San Diego Intl',state:'CA',lat:32.7338,lon:-117.1933},
+    KMRY:{name:'Monterey Regional',state:'CA',lat:36.5870,lon:-121.8428},
+    KSFO:{name:'San Francisco Intl',state:'CA',lat:37.6213,lon:-122.3790},
+    KPHX:{name:'Phoenix Sky Harbor',state:'AZ',lat:33.4373,lon:-112.0078},
+    KLAS:{name:'Las Vegas Harry Reid',state:'NV',lat:36.0840,lon:-115.1537},
+    KDEN:{name:'Denver Intl',state:'CO',lat:39.8561,lon:-104.6737},
+    KSLC:{name:'Salt Lake City Intl',state:'UT',lat:40.7884,lon:-111.9778},
+    KPSP:{name:'Palm Springs Intl',state:'CA',lat:33.8297,lon:-116.5067},
+    KFAT:{name:'Fresno Yosemite Intl',state:'CA',lat:36.7762,lon:-119.7181},
+    KSMF:{name:'Sacramento Intl',state:'CA',lat:38.6954,lon:-121.5908},
+    KOAK:{name:'Oakland Intl',state:'CA',lat:37.7213,lon:-122.2208},
+    KSNA:{name:'John Wayne Airport',state:'CA',lat:33.6776,lon:-117.8678},
+    KLGB:{name:'Long Beach Airport',state:'CA',lat:33.8177,lon:-118.1516},
+    KTRK:{name:'Truckee-Tahoe Airport',state:'CA',lat:39.3197,lon:-120.1397},
+    KPGA:{name:'Page Municipal Airport',state:'AZ',lat:36.9261,lon:-111.4483},
+    KPRC:{name:'Prescott Municipal',state:'AZ',lat:34.6545,lon:-112.4197},
+    KSBP:{name:'San Luis Obispo County',state:'CA',lat:35.2368,lon:-120.6413},
+    KBFL:{name:'Meadows Field',state:'CA',lat:35.4336,lon:-119.0568},
+    KHND:{name:'Henderson Executive',state:'NV',lat:35.9728,lon:-115.1344},
+    KSCK:{name:'Stockton Metropolitan',state:'CA',lat:37.8942,lon:-121.2377},
+    KRDD:{name:'Redding Municipal',state:'CA',lat:40.5090,lon:-122.2934},
+    KEED:{name:'Needles Airport',state:'CA',lat:34.7664,lon:-114.6231},
+    KASE:{name:'Aspen/Pitkin County',state:'CO',lat:39.2232,lon:-106.8690},
+    KTEX:{name:'Telluride Regional',state:'CO',lat:37.9538,lon:-107.9088},
+  };
 
-  /* ── Weather ── */
-  function flightCat(m) {
-    const cat = m.fltCat || m.fltcat;
-    if (cat && cat !== 'UNKN') return cat;
-    const ceil = (m.ceil != null) ? m.ceil : 99999;
-    const vis  = parseFloat(m.visib) || 10;
-    if (ceil < 500  || vis < 1)  return 'LIFR';
-    if (ceil < 1000 || vis < 3)  return 'IFR';
-    if (ceil < 3000 || vis < 5)  return 'MVFR';
+  async function resolveAirport(icao) {
+    if (AIRPORTS[icao]) return AIRPORTS[icao];
+    try {
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(icao+' airport')}&format=json&limit=1`,
+        { headers: { 'User-Agent': 'mrnonce-fly/1.0 (brett@brettmorrison.com)' } }
+      );
+      if (!resp.ok) return null;
+      const arr = await resp.json();
+      if (!arr.length) return null;
+      const r = arr[0];
+      const parts = r.display_name.split(', ');
+      return { name: parts[0], state: parts.length > 2 ? parts[parts.length-2] : '', lat: parseFloat(r.lat), lon: parseFloat(r.lon) };
+    } catch (_) { return null; }
+  }
+
+  function wmoDesc(code) {
+    const m = {0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',
+      45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+      61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',
+      80:'Light showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',
+      95:'Thunderstorm',96:'Thunderstorm/hail',99:'Thunderstorm/hail'};
+    return m[code] || `Wx ${code}`;
+  }
+
+  function deriveFlightCat(visMeters, wmoCode) {
+    const sm = visMeters / 1609.34;
+    if ([45,48].includes(wmoCode) && sm < 3) return sm < 1 ? 'LIFR' : 'IFR';
+    if (sm < 1) return 'LIFR';
+    if (sm < 3) return 'IFR';
+    if (sm < 5) return 'MVFR';
     return 'VFR';
   }
 
-  function wxHtml(m, label) {
-    if (!m) return `<div class="wx-station"><div class="wx-header"><span class="wx-label">${label}</span></div><div class="err">No data</div></div>`;
-    const cat  = flightCat(m);
-    const wdir = (m.wdir != null) ? m.wdir + '°' : '—';
-    const wspd = (m.wspd != null) ? m.wspd + ' kt' : '—';
-    const wgst = m.wgst  ? ` G${m.wgst}` : '';
-    const vis  = (m.visib != null) ? m.visib + ' sm' : '—';
-    const temp = (m.temp  != null) ? `${m.temp}°C (${Math.round(m.temp * 9/5 + 32)}°F)` : '—';
-
-    let cloudStr = '—';
-    if (Array.isArray(m.clouds) && m.clouds.length) {
-      cloudStr = m.clouds.map(c => {
-        if (!c.cover) return '';
-        const base = c.base != null ? ` ${c.base} ft` : '';
-        return c.cover + base;
-      }).filter(Boolean).join(', ');
-    }
-
-    const timeStr = m.reportTime ? m.reportTime.replace('T',' ').slice(0,16) + ' UTC' : '';
-
+  function wxHtml(wx, label, cat) {
+    if (!wx) return `<div class="wx-station"><div class="wx-header"><span class="wx-label">${label}</span></div><div class="err">No data</div></div>`;
+    const tempF = Math.round(wx.temperature_2m * 9/5 + 32);
+    const visSm = Math.round(wx.visibility / 1609.34);
+    const wdir  = wx.wind_direction_10m != null ? `${wx.wind_direction_10m}°` : '—';
+    const wspd  = wx.wind_speed_10m     != null ? `${Math.round(wx.wind_speed_10m)} kt` : '—';
+    const desc  = wmoDesc(wx.weather_code);
+    const cov   = wx.cloud_cover != null ? ` · ${wx.cloud_cover}% clouds` : '';
     return `<div class="wx-station">
       <div class="wx-header">
         <span class="wx-label">${label}</span>
         <span class="fltcat ${cat}">${cat}</span>
-        ${timeStr ? `<span style="font-size:0.68rem;color:#555;margin-left:auto">${timeStr}</span>` : ''}
       </div>
       <div class="wx-details">
-        Wind: ${wdir} @ ${wspd}${wgst} &nbsp;·&nbsp; Vis: ${vis}<br>
-        Sky: ${cloudStr} &nbsp;·&nbsp; Temp: ${temp}
+        Wind: ${wdir} @ ${wspd} &nbsp;·&nbsp; Vis: ${visSm}+ sm<br>
+        ${desc}${cov} &nbsp;·&nbsp; Temp: ${wx.temperature_2m}°C (${tempF}°F)
       </div>
-      ${m.rawOb ? `<div class="wx-raw">${m.rawOb}</div>` : ''}
     </div>`;
   }
 
-  async function loadWeather() {
-    const stations = [from, to].filter(Boolean);
-    if (!stations.length) {
-      document.getElementById('wx-content').innerHTML = '<span class="err">No airports specified.</span>';
-      return;
-    }
+  async function fetchOpenMeteo(lat, lon) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,visibility,cloud_cover&wind_speed_unit=kn&timezone=auto`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return (await resp.json()).current;
+  }
+
+  async function loadFlightData() {
+    const [fromAp, toAp] = await Promise.all([resolveAirport(from), resolveAirport(to)]);
+    const fromEl = document.getElementById('disp-from-name');
+    const toEl   = document.getElementById('disp-to-name');
+    if (fromAp) fromEl.textContent = fromAp.state ? `${fromAp.name}, ${fromAp.state}` : fromAp.name;
+    if (toAp)   toEl.textContent   = toAp.state   ? `${toAp.name}, ${toAp.state}`     : toAp.name;
+
     try {
-      const ids      = [...new Set(stations)].join(',');
-      const metarUrl = `https://aviationweather.gov/api/data/metar?ids=${encodeURIComponent(ids)}&format=json&hours=2`;
-      const url      = `https://api.allorigins.win/raw?url=${encodeURIComponent(metarUrl)}`;
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const arr = await resp.json();
+      const wxArr = await Promise.all([
+        fromAp ? fetchOpenMeteo(fromAp.lat, fromAp.lon) : Promise.resolve(null),
+        (toAp && from !== to) ? fetchOpenMeteo(toAp.lat, toAp.lon) : Promise.resolve(null),
+      ]);
+      const [fromWx, toWx] = wxArr;
+      const fromCat = fromWx ? deriveFlightCat(fromWx.visibility, fromWx.weather_code) : 'UNK';
+      const toCat   = toWx   ? deriveFlightCat(toWx.visibility,   toWx.weather_code)   : 'UNK';
+      const fLabel  = fromEl.textContent || from;
+      const tLabel  = toEl.textContent   || to;
 
-      const byIcao = {};
-      // Keep only mostRecent record per station
-      arr.forEach(m => {
-        const id = (m.icaoId || '').toUpperCase();
-        if (!byIcao[id] || m.mostRecent === 1) byIcao[id] = m;
-      });
-
-      // Extract airport names from METAR and populate display if not yet set
-      function cleanMetarName(raw) {
-        if (!raw) return '';
-        // Format from API: "Camarillo Arpt, CA, US" — drop the country
-        const parts = raw.split(', ');
-        return parts.length >= 2 ? parts.slice(0, 2).join(', ') : raw;
-      }
-      const fromEl = document.getElementById('disp-from-name');
-      const toEl   = document.getElementById('disp-to-name');
-      if (byIcao[from] && byIcao[from].name && !fromEl.textContent)
-        fromEl.textContent = cleanMetarName(byIcao[from].name);
-      if (byIcao[to] && byIcao[to].name && !toEl.textContent)
-        toEl.textContent = cleanMetarName(byIcao[to].name);
-
-      const fromLabel = fromEl.textContent || from;
-      const toLabel   = toEl.textContent   || to;
-
-      let html = '';
-      if (from === to) {
-        html = wxHtml(byIcao[from] || null, fromLabel || from);
-      } else {
-        html  = wxHtml(byIcao[from] || null, fromLabel || from);
-        html += '<hr class="wx-divider">';
-        html += wxHtml(byIcao[to]   || null, toLabel   || to);
-      }
+      let html = wxHtml(fromWx, fLabel, fromCat);
+      if (from !== to) { html += '<hr class="wx-divider">'; html += wxHtml(toWx, tLabel, toCat); }
       document.getElementById('wx-content').innerHTML = html;
     } catch (e) {
       document.getElementById('wx-content').innerHTML = `<span class="err">Weather unavailable — ${e.message}</span>`;
     }
   }
 
-  loadWeather();
+  loadFlightData();
 
   /* ── Passenger form → mailto ── */
   document.getElementById('pax-form').addEventListener('submit', function(e) {
