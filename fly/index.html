@@ -554,35 +554,7 @@
     document.getElementById('note-text').textContent = note;
   }
 
-  /* ── Airport name lookup ── */
-  async function loadAirportNames() {
-    const ids = [from, to].filter((v, i, a) => a.indexOf(v) === i).join(',');
-    try {
-      const resp = await fetch(`https://aviationweather.gov/api/data/airport?ids=${ids}&format=json`);
-      if (!resp.ok) return;
-      const arr = await resp.json();
-      const byIcao = {};
-      arr.forEach(a => { byIcao[(a.icaoId || '').toUpperCase()] = a; });
-
-      function cleanName(raw) {
-        if (!raw) return '';
-        // API returns "CAMARILLO/CAMARILLO " — take the part before the slash, title-case it
-        const base = raw.split('/')[0].trim();
-        return base.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-      }
-      function setName(icao, elId) {
-        const ap = byIcao[icao];
-        if (ap) {
-          const parts = [cleanName(ap.name)];
-          if (ap.state) parts.push(ap.state);
-          document.getElementById(elId).textContent = parts.filter(Boolean).join(', ');
-        }
-      }
-      setName(from, 'disp-from-name');
-      setName(to,   'disp-to-name');
-    } catch (_) {}
-  }
-  loadAirportNames();
+  /* ── Airport names resolved from METAR response ── */
 
   /* ── Weather ── */
   function flightCat(m) {
@@ -637,8 +609,9 @@
       return;
     }
     try {
-      const ids  = [...new Set(stations)].join(',');
-      const url  = `https://aviationweather.gov/api/data/metar?ids=${encodeURIComponent(ids)}&format=json&hours=2`;
+      const ids      = [...new Set(stations)].join(',');
+      const metarUrl = `https://aviationweather.gov/api/data/metar?ids=${encodeURIComponent(ids)}&format=json&hours=2`;
+      const url      = `https://api.allorigins.win/raw?url=${encodeURIComponent(metarUrl)}`;
       const resp = await fetch(url);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const arr = await resp.json();
@@ -650,8 +623,22 @@
         if (!byIcao[id] || m.mostRecent === 1) byIcao[id] = m;
       });
 
-      const fromLabel = document.getElementById('disp-from-name').textContent || from;
-      const toLabel   = document.getElementById('disp-to-name').textContent   || to;
+      // Extract airport names from METAR and populate display if not yet set
+      function cleanMetarName(raw) {
+        if (!raw) return '';
+        // Format from API: "Camarillo Arpt, CA, US" — drop the country
+        const parts = raw.split(', ');
+        return parts.length >= 2 ? parts.slice(0, 2).join(', ') : raw;
+      }
+      const fromEl = document.getElementById('disp-from-name');
+      const toEl   = document.getElementById('disp-to-name');
+      if (byIcao[from] && byIcao[from].name && !fromEl.textContent)
+        fromEl.textContent = cleanMetarName(byIcao[from].name);
+      if (byIcao[to] && byIcao[to].name && !toEl.textContent)
+        toEl.textContent = cleanMetarName(byIcao[to].name);
+
+      const fromLabel = fromEl.textContent || from;
+      const toLabel   = toEl.textContent   || to;
 
       let html = '';
       if (from === to) {
@@ -667,8 +654,7 @@
     }
   }
 
-  // Small delay so airport names can load first (for better labels)
-  setTimeout(loadWeather, 600);
+  loadWeather();
 
   /* ── Passenger form → mailto ── */
   document.getElementById('pax-form').addEventListener('submit', function(e) {
