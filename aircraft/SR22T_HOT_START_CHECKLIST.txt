@@ -1,0 +1,177 @@
+CIRRUS SR22T G7+ HOT START CHECKLIST
+N269PG | Continental TSIO-550-K
+Based on: G7 AFM + COPA Community Knowledge
+
+═══════════════════════════════════════════════════════════════
+
+DEFINITION: "Hot Start" = Engine shutdown less than 15 minutes
+If warm but longer ground time, use normal start with reduced priming
+
+═══════════════════════════════════════════════════════════════
+
+PRE-START SETUP (Engine Warm)
+───────────────────────────────────────────────────────────────
+
+□ Flight Controls                                          FREE & CORRECT
+□ Flight Instruments                                         CHECKED
+□ Fuel Quantity                                            VERIFIED
+□ CAS Messages                                             CHECK (clear before start)
+
+═══════════════════════════════════════════════════════════════
+
+HOT START SEQUENCE
+───────────────────────────────────────────────────────────────
+
+FUEL & MIXTURE SETUP:
+□ Fuel Pump                                                BOOST (ON)
+□ Mixture Control                  FULL LEAN or ALMOST CLOSED
+  * Critical: Cold = almost closed, warm = full lean
+  * Community tip: Start lean, advance slowly during crank
+
+ENGINE PREPARATION:
+□ Power Lever                         1/4 to 3/4 FORWARD
+  * Less is more: 1/4 open is often sufficient
+  * If no start after 2 attempts, try 3/4 open
+□ Engine Knob                                              BOTH
+□ Propeller Area                                           CLEAR
+□ Brakes                                                   HOLD
+
+═══════════════════════════════════════════════════════════════
+
+STARTING
+───────────────────────────────────────────────────────────────
+
+□ Starter                                                  ENGAGE
+□ While Cranking                              SLOWLY ADVANCE MIXTURE
+  * Advance mixture control smoothly toward RICH
+  * Engine should fire as mixture reaches operating range
+  * Stop advancing when engine catches
+
+POST-CRANK / ENGINE FIRES:
+□ Starter                                         RELEASE immediately
+□ Power Lever                      RETARD to maintain ~1000 RPM
+  * Don't let engine surge; keep it steady at idle
+□ Monitor Oil Pressure               MUST RISE within 30 seconds
+  * Cold weather: may take up to 60 seconds; shut down if no rise
+
+═══════════════════════════════════════════════════════════════
+
+AFTER START (Taxi Prep)
+───────────────────────────────────────────────────────────────
+
+□ Mixture Control                LEAN until RPM PEAKS, then leave it
+  * This is peak-RPM lean for taxi, not full lean
+  * Adjust as needed for rough running
+□ ALT 1 & ALT 2 Switches                                    ON
+□ Engine Parameters                                    MONITOR
+□ Avionics Initialization                    ALL INITS COMPLETE
+□ CAPS Pin                                          REMOVE & STOW
+□ External Power (if used)                         DISCONNECT
+
+═══════════════════════════════════════════════════════════════
+
+FLOODED ENGINE RECOVERY (If Engine Won't Start)
+───────────────────────────────────────────────────────────────
+
+Signs of flooding: Weak intermittent firing, black smoke from exhaust
+
+□ Fuel Pump                                                  OFF
+□ Let fuel drain from intake tubes              WAIT 5-10 seconds
+□ Mixture Control                                     FULL LEAN
+□ Power Lever                                       FULL FORWARD
+□ Starter                                 CRANK several revolutions
+  * 10-15 seconds of cranking
+□ When engine fires:
+  □ Starter                                          RELEASE
+  □ Power Lever                                      RETARD
+  □ Mixture Control                SLOWLY advance toward RICH
+□ Fuel Pump                                                  ON
+□ Stabilize at ~1000 RPM
+
+═══════════════════════════════════════════════════════════════
+
+STARTUP TROUBLESHOOTING
+───────────────────────────────────────────────────────────────
+
+SYMPTOMS: Won't crank at all
+→ Verify: Battery charge, fuel pump ON, mixture not CUTOFF
+
+SYMPTOMS: Sluggish cranking
+→ Community fix: Check starter condition
+  * Stock Cirrus starter is weak; Tempest starter much better
+  * Weak starter + hot day = extended crank time = battery drain
+
+SYMPTOMS: Engine cranks but won't fire
+→ Verify: Engine Knob BOTH (not one mag)
+→ Try: Fuel Pump to HIGH BOOST/PRIME for 2 seconds (AFM note)
+→ Try: Power Lever to 3/4 open (lean start might be too lean)
+
+SYMPTOMS: Rough running after start
+→ Verify: Oil pressure rising normally
+→ Check: Mixture control position (may need slight adjustment)
+→ Normal: Some rough running resolves as engine warms
+
+═══════════════════════════════════════════════════════════════
+
+CRITICAL NOTES (AFM + COPA Consensus)
+───────────────────────────────────────────────────────────────
+
+1. WARM ENGINE = NO PRIME NEEDED
+   If engine warm, do NOT hold fuel pump to HIGH BOOST
+   Normal BOOST is sufficient
+
+2. MIXTURE IS THE KEY
+   Community pilots emphasize: start lean, advance slowly while
+   cranking. Do not advance mixture before cranking or too fast.
+
+3. POWER LEVER (THROTTLE) MANAGEMENT
+   • Less throttle is often better than full forward
+   • If engine fires and power is high, pull back immediately
+   • Target idle speed after start: 1000 RPM
+
+4. STARTER DUTY CYCLES
+   AFM limit: 10 seconds crank / 20 seconds cool between attempts
+   Protects battery and starter
+
+5. OIL PRESSURE IS YOUR CHECK
+   Engine must show rising oil pressure within 30 sec of start
+   If no pressure rise: SHUT DOWN and troubleshoot
+
+═══════════════════════════════════════════════════════════════
+
+ENGINE SHUTDOWN (for reference)
+───────────────────────────────────────────────────────────────
+
+□ Power Lever                                               IDLE
+□ Engine Knob                                             CYCLE
+  * Verify engine hesitates as knob passes "OFF" position
+  * If no hesitation: one or both mags not grounded (ERROR)
+□ Mixture Control                                        CUTOFF
+□ All Switches (ALT 1, ALT 2, STRB, etc.)                 OFF
+□ Engine Knob                                              OFF
+□ CAPS Pin                                              REPLACE
+□ Aircraft                                 SECURE (chocks/tie-downs)
+
+═══════════════════════════════════════════════════════════════
+
+REFERENCE DATA
+───────────────────────────────────────────────────────────────
+
+Engine:          Continental TSIO-550-K
+Power:           315 BHP (2500 RPM @ 35.5-36.5 in.Hg)
+Max RPM:         2500
+Service Ceiling: FL250
+Fuel Capacity:   92 gal (usable)
+CAPS Max:        140 KIAS
+
+═══════════════════════════════════════════════════════════════
+
+VERSION NOTES
+───────────────────────────────────────────────────────────────
+Created: 2026-07-10
+Sources: G7 SR22T AFM (FAA-approved) + COPA Forum Consensus
+Verified: Multiple COPA pilot procedures for SR22T (TN & T variants)
+Aircraft: N269PG (Cirrus SR22T G7+)
+Engine: Continental TSIO-550-K
+
+═══════════════════════════════════════════════════════════════
