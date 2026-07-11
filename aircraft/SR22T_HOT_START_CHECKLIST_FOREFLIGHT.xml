@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checklist>
+  <metadata>
+    <title>SR22T G7+ Hot Start</title>
+    <aircraft>Cirrus SR22T G7+</aircraft>
+    <tail>N269PG</tail>
+    <engine>Continental TSIO-550-K</engine>
+    <revision>1</revision>
+    <date>2026-07-10</date>
+    <notes>Based on AFM procedures and COPA community consensus. Hot start = engine shutdown less than 15 minutes.</notes>
+  </metadata>
+  
+  <section name="Pre-Start Setup">
+    <item>Flight Controls</item>
+    <check>FREE &amp; CORRECT</check>
+    
+    <item>Flight Instruments</item>
+    <check>CHECKED</check>
+    
+    <item>Fuel Quantity</item>
+    <check>VERIFIED</check>
+    
+    <item>CAS Messages</item>
+    <check>CHECK (clear before start)</check>
+  </section>
+  
+  <section name="Fuel &amp; Mixture Setup">
+    <item>Fuel Pump</item>
+    <check>BOOST (ON)</check>
+    
+    <item>Mixture Control</item>
+    <check>FULL LEAN or ALMOST CLOSED</check>
+    <note>Cold engine: almost closed. Warm engine: full lean. Advance slowly during crank.</note>
+  </section>
+  
+  <section name="Engine Preparation">
+    <item>Power Lever</item>
+    <check>1/4 to 3/4 FORWARD</check>
+    <note>Less is more: 1/4 open often sufficient. If no start after 2 attempts, try 3/4 open.</note>
+    
+    <item>Engine Knob</item>
+    <check>BOTH</check>
+    
+    <item>Propeller Area</item>
+    <check>CLEAR</check>
+    
+    <item>Brakes</item>
+    <check>HOLD</check>
+  </section>
+  
+  <section name="Starting">
+    <item>Starter</item>
+    <check>ENGAGE</check>
+    
+    <item>While Cranking: Mixture Control</item>
+    <check>SLOWLY ADVANCE toward RICH</check>
+    <note>Advance smoothly. Engine fires as mixture reaches operating range. Stop advancing when it catches.</note>
+    
+    <item>Starter (when engine fires)</item>
+    <check>RELEASE immediately</check>
+    
+    <item>Power Lever</item>
+    <check>RETARD to maintain ~1000 RPM</check>
+    <note>Keep steady at idle. Don't let engine surge.</note>
+    
+    <item>Oil Pressure</item>
+    <check>MONITOR - must rise within 30 seconds</check>
+    <note>Cold weather may take up to 60 sec. Shut down if no rise.</note>
+  </section>
+  
+  <section name="After Start (Taxi Prep)">
+    <item>Mixture Control</item>
+    <check>LEAN until RPM PEAKS, leave it there</check>
+    <note>This is peak-RPM lean for taxi, not full lean. Adjust if rough.</note>
+    
+    <item>ALT 1 &amp; ALT 2 Switches</item>
+    <check>ON</check>
+    
+    <item>Engine Parameters</item>
+    <check>MONITOR</check>
+    
+    <item>Avionics Initialization</item>
+    <check>ALL INITS COMPLETE</check>
+    
+    <item>CAPS Pin</item>
+    <check>REMOVE &amp; STOW</check>
+    
+    <item>External Power (if used)</item>
+    <check>DISCONNECT</check>
+  </section>
+  
+  <section name="Flooded Engine Recovery">
+    <item>Sign of Flooding</item>
+    <check>Weak intermittent firing, black smoke from exhaust</check>
+    
+    <item>Fuel Pump</item>
+    <check>OFF</check>
+    
+    <item>Fuel Drain</item>
+    <check>WAIT 5-10 seconds</check>
+    
+    <item>Mixture Control</item>
+    <check>FULL LEAN</check>
+    
+    <item>Power Lever</item>
+    <check>FULL FORWARD</check>
+    
+    <item>Starter</item>
+    <check>CRANK several revolutions (10-15 seconds)</check>
+    
+    <item>When Engine Fires: Starter</item>
+    <check>RELEASE</check>
+    
+    <item>Power Lever</item>
+    <check>RETARD</check>
+    
+    <item>Mixture Control</item>
+    <check>SLOWLY advance toward RICH</check>
+    
+    <item>Fuel Pump</item>
+    <check>ON</check>
+    
+    <item>Stabilize</item>
+    <check>~1000 RPM</check>
+  </section>
+  
+  <section name="Startup Troubleshooting">
+    <item>Won't crank at all</item>
+    <check>Verify: Battery, fuel pump ON, mixture not CUTOFF</check>
+    
+    <item>Sluggish cranking</item>
+    <check>Stock starter is weak; Tempest upgrade available</check>
+    
+    <item>Engine cranks but won't fire</item>
+    <check>Verify Engine Knob BOTH. Try fuel pump HIGH BOOST for 2 sec. Try power 3/4 open.</check>
+    
+    <item>Rough running after start</item>
+    <check>Verify oil pressure rising. Check mixture position. Normal as engine warms.</check>
+  </section>
+
+</checklist>
