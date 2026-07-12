@@ -32,25 +32,29 @@
     <div style="margin: 1.5em 0; padding-bottom: 1em; border-bottom: 1px solid #30363d;">
         <p><strong>Aircraft:</strong> Cirrus SR22T G7+ (N269PG)</p>
         <p><strong>Engine:</strong> Continental TSIO-550-K (315 BHP)</p>
-        <p><strong>Verified:</strong> 2026-07-10 | AFM + COPA Community + Field Expert Review</p>
+        <p><strong>Last reviewed:</strong> 2026-07-11</p>
         <p><strong>Status:</strong> Ready for ForeFlight import</p>
-        <p class="timestamp">Last updated: 2026-07-11</p>
+        <p class="timestamp">Checklist: SR22T_N269PG_Hot_Start.fmd (v2)</p>
+    </div>
+
+    <div class="warning">
+        <strong>⚠️ DISCLAIMER:</strong> This procedure is for informational reference only. You must verify all steps with your aircraft's AFM and your CFI before using this procedure. Incorrect hot-start technique can damage the engine or prevent engine start during flight. The owner has reviewed Technique B with their CFI; Technique A is a community technique and has not been independently CFI-verified for this aircraft. Always prioritize the AFM and your CFI's guidance.
     </div>
 
     <h2>Overview</h2>
     
-    <p>This is a verified hot-start procedure for the Cirrus SR22T G7+, synthesized from the G7 AFM (FAA-approved), COPA forum consensus, and direct field experience from experienced SR22T pilots.</p>
+    <p>This hot-start procedure for the Cirrus SR22T G7+ is based on the AFM start sequence adapted for high engine temperatures, supplemented by community techniques and CFI review.</p>
 
     <div class="info">
         <strong>Key Definition:</strong> A "hot start" is determined by <strong>engine oil temperature</strong>, not elapsed time since shutdown.<br>
         <ul style="margin: 0.5em 0;">
             <li><strong>Oil temp &lt; 100°F:</strong> Normal start technique</li>
-            <li><strong>Oil temp 100–130°F:</strong> Try hot start first; fall back to normal if unsuccessful</li>
-            <li><strong>Oil temp ≥ 130°F:</strong> Hot start technique required</li>
+            <li><strong>Oil temp 100–130°F:</strong> Technique B first; normal start if unsuccessful</li>
+            <li><strong>Oil temp ≥ 130°F:</strong> Hot start technique required — Technique B first; if no start, Technique A. Do not attempt a normal full-rich start.</li>
         </ul>
     </div>
 
-    <p><strong>Critical Finding:</strong> Warm engine = NO priming required. The AFM explicitly states this. Use BOOST pump only (not HIGH BOOST).</p>
+    <p><strong>Critical Finding:</strong> Warm engine = NO priming required. The AFM explicitly states this. Use BOOST pump only (not HIGH BOOST/PRIME).</p>
 
     <h2>Downloads</h2>
 
@@ -61,17 +65,69 @@
         </ul>
     </div>
 
-    <h2>Technique A: Mixture Advance During Crank (AFM-Based)</h2>
+    <h2>Technique B: AFM-Aligned Method (Primary)</h2>
+
+    <p>This technique follows the AFM start sequence. Reliable when followed correctly.</p>
 
     <h3>Pre-Start</h3>
     <ul>
-        <li>Flight controls, instruments, fuel quantity verified</li>
-        <li>CAS messages cleared</li>
+        <li>CAS Messages: <strong>CHECK</strong></li>
+        <li>Strobe Lights: <strong>ON</strong></li>
+        <li>Propeller Area: <strong>CLEAR</strong></li>
+        <li>Flight controls verified</li>
+        <li>Instruments verified</li>
+        <li>Fuel quantity verified</li>
     </ul>
 
     <h3>Start Setup</h3>
     <ul>
-        <li>Fuel Pump: <strong>BOOST (ON)</strong></li>
+        <li>Fuel Pump: <strong>BOOST</strong> (The SR22T fuel pump switch has two positions: BOOST and HIGH BOOST/PRIME. There is no LOW BOOST position. Do not use HIGH BOOST/PRIME for a hot start.)</li>
+        <li>Mixture: <strong>RICH</strong></li>
+        <li>Power Lever: <strong>1/2 inch open</strong></li>
+        <li>Engine Knob: <strong>BOTH</strong></li>
+        <li>Brakes: <strong>HOLD</strong></li>
+    </ul>
+
+    <h3>Crank &amp; Start</h3>
+    <ul>
+        <li>Starter: <strong>PRESS AT FIRST INDICATION OF FUEL FLOW</strong> (Limit cranking to 10-second intervals with a 20-second cooling period between cranks, per AFM caution)</li>
+        <li>Engine should fire within 2–5 cranks</li>
+    </ul>
+
+    <h3>Critical After-Start Step</h3>
+    <ul>
+        <li>Reduce power lever to <strong>1000 RPM</strong> immediately after start</li>
+        <li><strong>DO NOT INCREASE POWER LEVER if engine momentarily stumbles</strong></li>
+        <li>Engine will typically stumble as vapor flows through the system—this is normal</li>
+        <li>Engine will recover on its own without intervention</li>
+        <li>Advancing power lever during this stumble will cause engine shutdown</li>
+    </ul>
+
+    <h3>After Start</h3>
+    <ul>
+        <li>Mixture: Lean as needed for altitude</li>
+        <li>ALT 1 &amp; 2 switches ON</li>
+        <li>Avionics: Initialize</li>
+        <li>CAPS pin: Remove &amp; stow</li>
+    </ul>
+
+    <h2>Technique A: Vapor Purge — Mixture Advance During Crank (COPA Community Technique)</h2>
+
+    <p><strong>This is a community-sourced technique. It is NOT an AFM procedure.</strong> Use when Technique B is unsuccessful in extreme hot-start conditions.</p>
+
+    <h3>Pre-Start</h3>
+    <ul>
+        <li>CAS Messages: <strong>CHECK</strong></li>
+        <li>Strobe Lights: <strong>ON</strong></li>
+        <li>Propeller Area: <strong>CLEAR</strong></li>
+        <li>Flight controls verified</li>
+        <li>Instruments verified</li>
+        <li>Fuel quantity verified</li>
+    </ul>
+
+    <h3>Start Setup</h3>
+    <ul>
+        <li>Fuel Pump: <strong>BOOST</strong></li>
         <li>Mixture: <strong>FULL LEAN</strong> (or nearly closed for very warm engine)</li>
         <li>Power Lever: <strong>1/4 to 3/4 forward</strong> (start at 1/4; less is often better)</li>
         <li>Engine Knob: <strong>BOTH</strong></li>
@@ -80,10 +136,10 @@
 
     <h3>Crank &amp; Start</h3>
     <ul>
-        <li>Starter: <strong>ENGAGE</strong></li>
+        <li>Starter: <strong>ENGAGE</strong> (Limit cranking to 10-second intervals with a 20-second cooling period between cranks, per AFM caution)</li>
         <li><strong>While Cranking:</strong> Slowly advance mixture toward RICH</li>
         <li>Engine fires as mixture reaches operating range</li>
-        <li>When fires: Release starter, retard power to ~1000 RPM</li>
+        <li>When fires: Release starter, retard power lever to ~1000 RPM</li>
         <li>Oil Pressure: Must rise within 30 seconds</li>
     </ul>
 
@@ -95,45 +151,9 @@
         <li>CAPS pin: Remove &amp; stow</li>
     </ul>
 
-    <h2>Technique B: Simpler AFM-Aligned Method (Field-Proven ~99% Reliability)</h2>
-
-    <p>This technique is from the AFM and verified field experience. It is simpler than Technique A and works nearly 100% of the time when followed correctly.</p>
-
-    <h3>Start Setup</h3>
-    <ul>
-        <li>Fuel Pump: <strong>LOW BOOST (ON)</strong></li>
-        <li>Mixture: <strong>RICH</strong></li>
-        <li>Throttle: <strong>1/2 inch open</strong></li>
-        <li>Magnetos: <strong>BOTH</strong></li>
-        <li>Brakes: <strong>HOLD</strong></li>
-    </ul>
-
-    <h3>Crank &amp; Start</h3>
-    <ul>
-        <li>Starter: <strong>PRESS AT FIRST INDICATION OF FUEL FLOW</strong></li>
-        <li>Engine should fire within 2–5 cranks</li>
-    </ul>
-
-    <h3>Critical After-Start Step</h3>
-    <ul>
-        <li>Reduce throttle to <strong>1000 RPM</strong> immediately after start</li>
-        <li><strong>DO NOT INCREASE THROTTLE if engine momentarily stumbles</strong></li>
-        <li>Engine will typically stumble as vapor flows through the system—this is normal</li>
-        <li>Engine will recover on its own without intervention</li>
-        <li>Advancing throttle during this stumble will cause engine shutdown</li>
-    </ul>
-
-    <h3>After Start</h3>
-    <ul>
-        <li>Mixture: Lean as needed for altitude</li>
-        <li>ALT 1 &amp; 2 switches ON</li>
-        <li>Avionics: Initialize</li>
-        <li>CAPS pin: Remove &amp; stow</li>
-    </ul>
-
     <h2>Which Technique to Use?</h2>
 
-    <p>Both techniques are AFM-compliant and proven in the field. Choose based on your comfort level:</p>
+    <p>Technique B follows the AFM start sequence. Technique A is a community technique for difficult hot starts; it is not in the AFM.</p>
 
     <table>
         <tr>
@@ -142,29 +162,29 @@
             <th>Best For</th>
         </tr>
         <tr>
-            <td><strong>A: Mixture Advance</strong></td>
-            <td>More hands-on; requires practice</td>
-            <td>Pilots who want full control; high-altitude/high-temp scenarios (Sedona, etc.)</td>
+            <td><strong>B: AFM-Aligned (Primary)</strong></td>
+            <td>Simpler; less coordination needed</td>
+            <td>Primary method. Most conditions, most pilots.</td>
         </tr>
         <tr>
-            <td><strong>B: Simpler AFM Method</strong></td>
-            <td>Simpler; less coordination needed</td>
-            <td>Pilots who want simplicity and high reliability; most normal conditions</td>
+            <td><strong>A: Vapor Purge (Fallback)</strong></td>
+            <td>More hands-on; requires practice</td>
+            <td>Only if Technique B fails in extreme heat (high altitude + high ambient temp + prolonged ground ops)</td>
         </tr>
     </table>
 
-    <p><strong>Recommendation:</strong> Practice Technique B first. It works 99% of the time and requires less coordination. Move to Technique A if you encounter difficult hot-start conditions (high altitude, extreme heat, cooled descent followed by immediate restart).</p>
+    <p><strong>Recommendation:</strong> Master Technique B. If you encounter a no-start after two attempts with Technique B, try Technique A.</p>
 
     <h2>Critical Points (All Techniques)</h2>
 
     <h3>1. Oil Pressure is Your Go/No-Go</h3>
     <p>Engine must show rising oil pressure within 30 seconds of start. If no pressure rise after 60 seconds in cold weather, shut down and troubleshoot. This is not optional.</p>
 
-    <h3>2. Power Lever (Throttle) — Start Conservative</h3>
+    <h3>2. Power Lever — Start Conservative</h3>
     <p>Start with 1/4 to 1/2 open depending on technique. If the engine fires and power is high, pull back immediately to prevent surge. Too much power during start causes rough running and unnecessary strain.</p>
 
-    <h3>3. Starter Condition Matters (Historical Note)</h3>
-    <p><em>Newer aircraft come with robust starters that work well in hot-start scenarios. If you're in an older G5 or G6, a Tempest aftermarket starter can improve reliability, but it is not required for G7+ aircraft.</em></p>
+    <h3>3. Starter Condition (G7+ Note)</h3>
+    <p><em>Newer aircraft come with robust starters that work well in hot-start scenarios. The G7+ starter is adequate for hot starts when AFM procedures are followed.</em></p>
 
     <h2>Flooded Engine Recovery</h2>
 
@@ -175,8 +195,8 @@
         <li>Wait 5–10 seconds for fuel to drain</li>
         <li>Mixture Control → <strong>FULL LEAN</strong></li>
         <li>Power Lever → <strong>FULL FORWARD</strong></li>
-        <li>Starter → <strong>CRANK 10–15 seconds</strong></li>
-        <li>When engine fires: Starter RELEASE, Power RETARD to ~1000 RPM, Mixture SLOWLY advance</li>
+        <li>Starter → <strong>ENGAGE</strong> (Limit cranking to 10-second intervals with a 20-second cooling period between cranks, per AFM caution)</li>
+        <li>When engine fires: Starter RELEASE, Power Lever RETARD to ~1000 RPM, Mixture SLOWLY advance</li>
         <li>Fuel Pump → <strong>ON</strong></li>
         <li>Stabilize at ~1000 RPM and cool down before attempting flight</li>
     </ul>
@@ -198,7 +218,7 @@
         </tr>
         <tr>
             <td>Cranks but won't fire</td>
-            <td>Engine Knob BOTH (not one mag), verify fuel pump on, try alternate power setting (1/4 vs 3/4), oil temp correct?</td>
+            <td>Engine Knob BOTH (not one mag), verify fuel pump on, try alternate power lever setting (1/4 vs 3/4), oil temp correct?</td>
         </tr>
         <tr>
             <td>Rough after start</td>
@@ -206,24 +226,21 @@
         </tr>
         <tr>
             <td>Engine stumbles post-start (Technique B)</td>
-            <td><strong>NORMAL—do not touch throttle.</strong> Engine will recover on its own.</td>
+            <td><strong>NORMAL—do not touch power lever.</strong> Engine will recover on its own.</td>
         </tr>
     </table>
+
+    <h2>Provenance</h2>
+
+    <p>Technique B follows the AFM start sequence (G7+ SR22T AFM Rev 1, Section 4) adapted for a hot engine, and has been reviewed with the owner's CFI. Technique A is a COPA community technique and has not been independently CFI-verified. The flooded-engine procedure follows the AFM flooded-start sequence and AFM cranking limits.</p>
 
     <h2>Sources</h2>
 
     <ul>
         <li><strong>G7 SR22T AFM</strong> (FAA-approved, authoritative) — Engine Start, Engine Shutdown, Emergency procedures</li>
-        <li><strong>COPA Forum:</strong> "Best Technique for Hot Starting a 2013 SR22T?" (2015) — Posted by Gary Troop (COPA Member, 2009 SR22 TN verified)</li>
-        <li><strong>COPA Forum:</strong> "Help With Hot Starting Engine SR22T" (2013–2023) — Multiple pilot reports and mechanic insights (157+ posts)</li>
-        <li><strong>Field Experience:</strong> Jason Price, Platinum CSIP CFI II — Technique B verification and AFM correlation (2026-07-11)</li>
+        <li><strong>COPA Forum:</strong> "Best Technique for Hot Starting a 2013 SR22T?" (2015) and "Help With Hot Starting Engine SR22T" (2013–2023) — COPA forum contributors and mechanic insights</li>
+        <li><strong>Field Review:</strong> Owner's CFI (CSIP) — Technique B verification and AFM correlation</li>
     </ul>
-
-    <h2>Verification</h2>
-
-    <p><strong>Status:</strong> All procedures cross-checked against AFM and multiple COPA pilot reports. No conflicts. Consensus is strong across all sources.</p>
-
-    <p><strong>Recommendation:</strong> Verify this procedure with your CFI/CSIP before first use. The key variable is engine response during start—practice the cognitive steps on the ground (engine OFF) to build muscle memory.</p>
 
     <hr style="border: none; border-top: 1px solid #30363d; margin: 2em 0;">
 
