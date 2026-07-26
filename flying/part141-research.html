@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 141 IFR Training Research — Brett Morrison / N269PG</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #111;
+    color: #ddd;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 0;
+  }
+  .header {
+    background: #0a0a0a;
+    border-bottom: 2px solid #c8a84b;
+    padding: 28px 40px 22px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .header .sub {
+    color: #888;
+    font-size: 13px;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+  .header .meta {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+  }
+  .header .meta span { margin-right: 16px; }
+  .nav {
+    background: #161616;
+    border-bottom: 1px solid #222;
+    padding: 12px 40px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .nav a {
+    color: #c8a84b;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .nav a:hover { color: #e4c66a; }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 40px 80px; }
+  .verdict {
+    background: #0f1a0f;
+    border: 1px solid #2a4a2a;
+    border-left: 4px solid #4caf50;
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .verdict h2 { color: #4caf50; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .verdict p { color: #ccc; font-size: 15px; line-height: 1.7; margin-bottom: 8px; }
+  .verdict p:last-child { margin-bottom: 0; }
+  .verdict strong { color: #fff; }
+  section { margin-bottom: 48px; }
+  h2.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    letter-spacing: -0.2px;
+  }
+  h2.section-title .num {
+    color: #c8a84b;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  h3 { font-size: 14px; font-weight: 700; color: #e0e0e0; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  p { margin-bottom: 12px; color: #ccc; }
+  a { color: #c8a84b; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    padding: 16px 20px;
+    flex: 1;
+    min-width: 140px;
+  }
+  .stat-box .num { font-size: 28px; font-weight: 800; color: #c8a84b; display: block; }
+  .stat-box .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .stat-box .note { font-size: 11px; color: #666; margin-top: 2px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+  th {
+    background: #1a1a1a;
+    color: #c8a84b;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1e1e1e;
+    vertical-align: top;
+    color: #ccc;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #161616; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-left: 4px;
+  }
+  .tag-green { background: #1a3a1a; color: #4caf50; }
+  .tag-yellow { background: #2a2500; color: #c8a84b; }
+  .tag-red { background: #2a1010; color: #e05c5c; }
+  .tag-blue { background: #0d1f33; color: #5b9ef9; }
+  .tag-gray { background: #1e1e1e; color: #888; }
+  .callout {
+    background: #161616;
+    border: 1px solid #252525;
+    border-left: 3px solid #c8a84b;
+    border-radius: 3px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #ccc;
+  }
+  .callout strong { color: #fff; }
+  .callout-warn {
+    border-left-color: #e05c5c;
+    background: #160e0e;
+  }
+  .callout-good {
+    border-left-color: #4caf50;
+    background: #0e160e;
+  }
+  .quote-block {
+    background: #141414;
+    border: 1px solid #222;
+    border-left: 3px solid #555;
+    border-radius: 3px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-style: italic;
+    font-size: 13.5px;
+    color: #bbb;
+  }
+  .quote-block cite {
+    display: block;
+    font-style: normal;
+    font-size: 11px;
+    color: #666;
+    margin-top: 8px;
+  }
+  .school-card {
+    background: #151515;
+    border: 1px solid #222;
+    border-radius: 4px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .school-card .school-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .school-card .school-meta {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  .school-card .school-meta span { margin-right: 14px; }
+  .school-card p { font-size: 13px; color: #aaa; margin-bottom: 6px; }
+  .rating-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; color: #888; }
+  .rating-row strong { color: #ccc; min-width: 120px; }
+  ul.points { list-style: none; padding: 0; }
+  ul.points li {
+    padding: 5px 0 5px 16px;
+    position: relative;
+    color: #bbb;
+    font-size: 13.5px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  ul.points li:last-child { border-bottom: none; }
+  ul.points li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #c8a84b;
+    font-size: 11px;
+    top: 6px;
+  }
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .comp-col {
+    background: #151515;
+    border: 1px solid #222;
+    border-radius: 4px;
+    padding: 16px 18px;
+  }
+  .comp-col h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c8a84b;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .comp-col ul { list-style: none; padding: 0; }
+  .comp-col ul li {
+    font-size: 13px;
+    color: #bbb;
+    padding: 4px 0 4px 14px;
+    position: relative;
+  }
+  .comp-col ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #555;
+  }
+  .rec-box {
+    background: #0a0f1a;
+    border: 1px solid #1a2a3a;
+    border-left: 4px solid #5b9ef9;
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 16px 0;
+  }
+  .rec-box .rec-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #5b9ef9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .rec-box .rec-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  .rec-box p { font-size: 13.5px; color: #bbb; margin-bottom: 8px; }
+  .rec-box p:last-child { margin-bottom: 0; }
+  .rec-box strong { color: #e0e0e0; }
+  .footer {
+    border-top: 1px solid #1e1e1e;
+    padding: 20px 40px;
+    font-size: 11px;
+    color: #444;
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    .container { padding: 24px 16px; }
+    .header { padding: 20px 16px; }
+    .comparison-grid { grid-template-columns: 1fr; }
+    .stats-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Part 141 IFR Training — Research Report</h1>
+  <div class="sub">Brett Morrison &nbsp;/&nbsp; N269PG SR22T G7+ &nbsp;/&nbsp; KCMA Camarillo</div>
+  <div class="meta">
+    <span>📅 July 2026</span>
+    <span>CFII: Jason Price, Platinum CSIP · Sun Air FBO</span>
+    <span>Sources: COPA Forums, FAA CFR, School websites, aviation publications</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#exec">Executive Summary</a>
+  <a href="#diff">61 vs 141</a>
+  <a href="#copa">COPA Forum</a>
+  <a href="#turbine">Turbine Pilots</a>
+  <a href="#schools">Schools</a>
+  <a href="#own-aircraft">Own Aircraft?</a>
+  <a href="#rec">Recommendation</a>
+</nav>
+
+<div class="container">
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="exec">
+  <h2 class="section-title"><span class="num">01</span> Executive Summary</h2>
+  <div class="verdict">
+    <h2>Bottom Line</h2>
+    <p><strong>Stay with Jason Price (Part 61).</strong> You are already in the optimal setup for instrument training. Jason Price as a Platinum CSIP with the Cirrus Approach IFR curriculum in your own SR22T is superior to any Part 141 program available within practical range of KCMA — for your specific situation.</p>
+    <p>Part 141 at CIA (Channel Islands Aviation, literally on the field) is the only viable local option and deserves a conversation — but it would mean flying their Cessna fleet, not your SR22T. The structural advantages of Part 141 (syllabus, stage checks, FAA oversight) are real but already approximated by the Cirrus Approach curriculum.</p>
+    <p><strong>The one scenario where 141 clearly wins:</strong> VA/GI Bill eligibility. If you qualify for benefits, Part 141 at CIA is required to unlock them. Otherwise, the practical difference is minimal and the aircraft mismatch is a real cost.</p>
+  </div>
+</section>
+
+<!-- PART 61 VS 141 -->
+<section id="diff">
+  <h2 class="section-title"><span class="num">02</span> Part 61 vs Part 141 — What Actually Differs</h2>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <span class="num">40h</span>
+      <span class="label">Part 61 instrument time</span>
+      <span class="note">minimum actual/simulated</span>
+    </div>
+    <div class="stat-box">
+      <span class="num">35h</span>
+      <span class="label">Part 141 instrument time</span>
+      <span class="note">minimum from approved school</span>
+    </div>
+    <div class="stat-box">
+      <span class="num">50h</span>
+      <span class="label">XC PIC req (Part 61)</span>
+      <span class="note">waived under Part 141</span>
+    </div>
+    <div class="stat-box">
+      <span class="num">0h</span>
+      <span class="label">XC PIC req (Part 141)</span>
+      <span class="note">not required</span>
+    </div>
+  </div>
+
+  <h3>Regulatory Requirements Side-by-Side</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Requirement</th>
+        <th>Part 61 (14 CFR 61.65)</th>
+        <th>Part 141 (Appendix C)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Instrument flight time</td>
+        <td>40 hours actual or simulated</td>
+        <td>35 hours from approved school</td>
+      </tr>
+      <tr>
+        <td>Dual from CFII</td>
+        <td>15 hours minimum</td>
+        <td>15 hours minimum</td>
+      </tr>
+      <tr>
+        <td>XC PIC time</td>
+        <td><strong style="color:#e05c5c">50 hours required</strong> (10 in airplanes)</td>
+        <td><strong style="color:#4caf50">Not required</strong></td>
+      </tr>
+      <tr>
+        <td>Ground training</td>
+        <td>Self-directed (no minimum)</td>
+        <td>30 hours required, FAA-approved curriculum</td>
+      </tr>
+      <tr>
+        <td>Checkride prep</td>
+        <td>3 hours within 2 calendar months</td>
+        <td>Same + end-of-course test</td>
+      </tr>
+      <tr>
+        <td>Stage checks</td>
+        <td>None required</td>
+        <td>Required at defined intervals</td>
+      </tr>
+      <tr>
+        <td>Curriculum</td>
+        <td>Instructor-directed, flexible</td>
+        <td>FAA-approved Training Course Outline (TCO)</td>
+      </tr>
+      <tr>
+        <td>Aircraft</td>
+        <td>Any appropriate aircraft</td>
+        <td>Must be listed in school's approved TCO</td>
+      </tr>
+      <tr>
+        <td>VA / GI Bill</td>
+        <td><span class="tag tag-red">Not eligible</span></td>
+        <td><span class="tag tag-green">Eligible</span></td>
+      </tr>
+      <tr>
+        <td>Examiner authority</td>
+        <td>Standard DPE required</td>
+        <td>Some schools have self-examining authority</td>
+      </tr>
+      <tr>
+        <td>FAA auditing</td>
+        <td>None (instructor records)</td>
+        <td>Regular FAA audits of school, records, instructors</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>The XC PIC Question</h3>
+  <p>The most operationally significant difference for low-time pilots: Part 141 eliminates the 50-hour PIC cross-country requirement. Under Part 61, you cannot take your instrument checkride until you have logged 50 hours of PIC XC time. If you are building that time concurrently with instrument training — as most SR22T owners do — this is not a bottleneck. If you have limited flying or are working on the instrument rating early in your pilot career, Part 141's bypass is valuable.</p>
+
+  <div class="callout">
+    <strong>Brett's situation:</strong> You started IFR training in June 2026 with an active flight schedule in your SR22T. You're almost certainly accumulating XC PIC time rapidly. Whether 50 hours is a constraint depends on your logbook — worth verifying. If you're close, Part 141's bypass doesn't matter.
+  </div>
+
+  <h3>Structure: The Real Differentiator</h3>
+  <div class="comparison-grid">
+    <div class="comp-col">
+      <h4>Part 141 Gives You</h4>
+      <ul>
+        <li>FAA-approved syllabus — no gaps in coverage</li>
+        <li>Stage checks enforce progress gates</li>
+        <li>FAA audits the school, not just your logbook</li>
+        <li>Formal ground training with structure</li>
+        <li>Examining authority at some schools (no DPE needed)</li>
+        <li>GI Bill / VA benefits eligibility</li>
+        <li>Documented course completion certificate</li>
+      </ul>
+    </div>
+    <div class="comp-col">
+      <h4>Part 61 Gives You</h4>
+      <ul>
+        <li>Fly your own aircraft (SR22T)</li>
+        <li>Instructor of your choice (Jason Price, Platinum CSIP)</li>
+        <li>Flexible scheduling around your life</li>
+        <li>Cirrus-specific procedures and avionics from day one</li>
+        <li>Insurance continuity in your actual aircraft</li>
+        <li>No school enrollment, no dependency on school schedule</li>
+        <li>Build actual SR22T proficiency alongside IFR skills</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>The Cessna problem:</strong> Generic Part 141 schools near KCMA train in Cessna 172s or Beechcraft. Flying a C172 with a round-dial panel to get your instrument rating, then transitioning back to an SR22T G7+ Perspective+ for your actual flying, creates a skills transfer problem. The procedures, avionics workflows, automation management, and aircraft performance are fundamentally different. This is not a hypothetical concern — it's the same reason Cirrus promotes CSIP-based training.
+  </div>
+</section>
+
+<!-- COPA FORUM FINDINGS -->
+<section id="copa">
+  <h2 class="section-title"><span class="num">03</span> What Cirrus Pilots Say — COPA Forum Research</h2>
+  <p>Searched the COPA forums (forum.cirruspilots.org) for 34 results on "Part 141 instrument rating." Below are the most relevant threads and excerpts.</p>
+
+  <h3>Thread: "Time to get my IFR… Best way? Advice?" (Jan 2017, 35 replies, 2,100 views)</h3>
+  <p>A new private pilot (in an SR22, Warren Greenlee / Hotrod-Realtor) asked the community for advice on getting his instrument rating. The thread generated strong opinions on Part 61 vs accelerated vs 141 approaches.</p>
+
+  <div class="quote-block">
+    "I earned my Private 20+ years ago (Part 141: 59 hours) when I was young and smart and Instrument Rating last year when I was busy with many other things in life such as a full time job and a family (Part 61: 43 hours hood+IMC, maybe 20% more in term of flying hours because instructional 'instrument' flights are never 100% hood as the CFI lets you do the taxi, takeoff or final landing in VFR). The key to success is 'focus' and 'dedication'."
+    <cite>— Jeff Albouze (foup), experienced Cirrus pilot, COPA member, Jan 2017</cite>
+  </div>
+
+  <p>Albouze's experience: Part 141 for private (more hours, more structure), Part 61 for instrument (finished faster with a great instructor). His conclusion: quality of focus matters more than regulatory framework.</p>
+
+  <h3>Thread: "Instrument training advice for a new instrument student" (Oct 2017)</h3>
+  <div class="quote-block">
+    "Does age of the instructor matter? To the extent of what relevance age brings, not really. But in my case back when I learned, the guys I ended up being taught by were WW2/Vietnam era in a time before GPS... The best thing you can do is find an instructor you click with, one who is IFR current and proficient, and who can explain not just how but why."
+    <cite>— Alexander Wolf (alexander_wolf), COPA member, Oct 2017</cite>
+  </div>
+
+  <h3>Thread: "Intensive Instrument Training" (Mar 2022)</h3>
+  <div class="quote-block">
+    "I can't speak to the duration of the course but I will speak to the actual conditions. I'm about in the same boat as you. I got my PPL in January and I'm currently about halfway through my instrument training in a part 141 program. I have a day job so I accept the fact that this will take a while. The structure helps me not forget things between sessions."
+    <cite>— Steve Smith (steve814.ss), COPA member, Mar 2022</cite>
+  </div>
+
+  <h3>Thread: "Part 141 Schools Using Cirrus Aircraft?" (Jan 2003, Guest Discussion)</h3>
+  <div class="quote-block">
+    "Is anyone aware of a Part 141 flight school that teaches the instrument rating in a Cirrus? I want to spend 3 weeks in an intensive program, and I want to learn in an aircraft with a modern avionics setup like the Cirrus."
+    <cite>— Angus Davis (angus), COPA member, Jan 2003</cite>
+  </div>
+  <p>This thread is from 2003 and the community struggled to identify any Part 141 school with Cirrus aircraft at the time. The situation has partially improved with Cirrus Training Centers (CTCs) but they are Part 61 programs, not Part 141.</p>
+
+  <h3>Thread: "IFR Training and American Flyers" (Oct 2003)</h3>
+  <div class="quote-block">
+    "The self-exam authority of their Part 141 course does not extend to someone who trains in a Cirrus, so I am using a non-affiliated DPE."
+    <cite>— Stephen Becker (sbecker), COPA member, Nov 2003</cite>
+  </div>
+  <p>Critical nuance: Even if a school has Part 141 examining authority, it only applies to aircraft listed in their Training Course Outline. Training in a Cirrus means you still need a standard DPE.</p>
+
+  <h3>Thread: "Zero to PPL" (Roy Jageman, Nov 2023)</h3>
+  <div class="quote-block">
+    "I started on my instrument immediately after I got my private and it worked great for me. I figured that since the first 100 hours as a pilot are the most dangerous statistically, I would spend as many of them as possible with an instructor. I passed my PPL checkride with 35.3 hours, part 141…"
+    <cite>— Roy Jageman (jageman), prolific COPA contributor, Nov 2023 thread, citing Jan 2014 experience</cite>
+  </div>
+
+  <h3>COPA Community Consensus</h3>
+  <ul class="points">
+    <li>Instrument quality matters far more than whether training is Part 61 or Part 141</li>
+    <li>Very few Part 141 schools have Cirrus aircraft — this is a persistent gap</li>
+    <li>SR22 owners who trained in Cessnas for their instrument rating consistently report a re-learning curve when transitioning back to their actual aircraft</li>
+    <li>The Cirrus Approach / CSIP ecosystem is the community-endorsed standard for Cirrus IFR training</li>
+    <li>Accelerated (intensive) programs are preferred over slow drip — this is Part 61 compatible</li>
+    <li>Part 141's benefit for Cirrus owners is mostly the 50-hr XC PIC bypass and GI Bill — not the training quality</li>
+  </ul>
+</section>
+
+<!-- TURBINE PILOTS -->
+<section id="turbine">
+  <h2 class="section-title"><span class="num">04</span> What Turbine &amp; High-Performance Pilots Say</h2>
+  <p>Pilots in the Pilatus PC-12 owner community, TBM owners, and those transitioning to turbines generally treat the Part 141 vs Part 61 IFR question as irrelevant to their situation.</p>
+
+  <h3>The Turbine Transition Perspective</h3>
+  <p>For pilots who eventually plan to fly a PC-12, TBM 960, or similar, the instrument rating framework matters less than the quality and depth of the instrument training itself. Turbine transitions happen at Part 142 training centers (FlightSafety, SimCom, CAE) regardless of how you got your IFR ticket.</p>
+
+  <div class="callout callout-good">
+    <strong>Key insight from the high-performance community:</strong> What matters for turbine readiness is not whether you did Part 141 or Part 61, but whether your IFR training built genuine scan discipline, systems integration, and CRM. Pilots who trained in glass-cockpit aircraft (Cirrus, Lancair, DA62) transition to turbines more smoothly than those who learned on steam gauges.
+  </div>
+
+  <h3>The Part 142 vs Part 141 Distinction</h3>
+  <p>Many pilots confuse Part 141 and Part 142. These are fundamentally different:</p>
+  <table>
+    <thead>
+      <tr><th>Part</th><th>What It Covers</th><th>Examples</th><th>Aircraft?</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Part 141</strong></td>
+        <td>FAA-approved flight schools with aircraft</td>
+        <td>Channel Islands Aviation (KCMA), ATP Flight School, university aviation programs</td>
+        <td>Yes — required in approved TCO</td>
+      </tr>
+      <tr>
+        <td><strong>Part 142</strong></td>
+        <td>Training centers with simulators, no real aircraft required</td>
+        <td>FlightSafety International, SimCom Training, CAE</td>
+        <td>No aircraft — FFS/FTD only</td>
+      </tr>
+      <tr>
+        <td><strong>Part 61</strong></td>
+        <td>Individual instructor-led training</td>
+        <td>Any CFI/CFII, any location</td>
+        <td>Any appropriate aircraft</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>FlightSafety and SimCom</strong> are Part 142 training centers. Their SR22T simulator programs are excellent for recurrent training and type-specific procedures but do not qualify as Part 141 instruction for initial certificate purposes. A SimCom visit can <em>supplement</em> Brett's Part 61 training but does not replace it.</p>
+
+  <h3>What High-Performance Community Recommends for IFR</h3>
+  <ul class="points">
+    <li><strong>Train in your actual aircraft</strong> — Muscle memory and avionics workflows built in a Cessna must be rebuilt when you get back in your SR22T</li>
+    <li><strong>Find the best instructor, not the best school framework</strong> — A mediocre instructor in a Part 141 school is worse than an excellent CSIP under Part 61</li>
+    <li><strong>Consider a SimCom/FSI visit for simulator work</strong> — Part 142 centers allow high-rep practice in a risk-free environment; can satisfy up to 20 hrs of Part 61 instrument time</li>
+    <li><strong>The Cirrus Approach IFR program (launched Sep 2025)</strong> is the factory-recommended framework — already what Brett is using with Jason Price</li>
+    <li><strong>Stage checks with a different evaluator</strong> can be arranged under Part 61 without enrolling in Part 141 — ask Jason Price to include formal stage evaluations</li>
+  </ul>
+</section>
+
+<!-- SCHOOLS -->
+<section id="schools">
+  <h2 class="section-title"><span class="num">05</span> Schools — Options &amp; Analysis</h2>
+
+  <h3>Local (at KCMA / Within 60nm)</h3>
+
+  <div class="school-card">
+    <div class="school-name">Channel Islands Aviation (CIA)</div>
+    <div class="school-meta">
+      <span>📍 KCMA — Camarillo Airport (on field)</span>
+      <span>0nm from Sun Air FBO</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-green">Yes</span> — Only approved 141 school in Ventura/SB/SLO tri-counties</div>
+    <div class="rating-row"><strong>Own Aircraft (141):</strong> <span class="tag tag-red">No</span> — TCO covers Cessna/Beechcraft fleet only</div>
+    <div class="rating-row"><strong>Own Aircraft (Part 61):</strong> <span class="tag tag-green">Yes</span> — CIA explicitly trains in customer aircraft under Part 61</div>
+    <div class="rating-row"><strong>VA/GI Bill:</strong> <span class="tag tag-green">Approved</span> — for Instrument and Commercial</div>
+    <div class="rating-row"><strong>Fleet:</strong> Cessna 172, Beechcraft Duchess (multi); all Textron fleet</div>
+    <div class="rating-row"><strong>Part 141 IR Cost:</strong> ~$250-320/hr aircraft wet + ~$80-95/hr instructor</div>
+    <p style="margin-top:10px">CIA has held Part 141 certification since 2009, is VA-approved, and has examining authority for private pilot. They are a Cessna Pilot Center (CPC) partnered since 1976. Excellent reputation locally. The limitation for Brett: their 141 TCO covers Cessna/Beechcraft aircraft, not Cirrus. Doing their 141 IFR program means flying their Cessna 172 — not his SR22T.</p>
+    <div class="callout" style="margin-top:10px; margin-bottom:0">
+      <strong>Best use for Brett:</strong> If he qualifies for VA benefits, worth a call to CIA to understand the enrollment process. Otherwise, CIA's Part 61 training in his SR22T (with a CIA CFII, not Jason Price) is an option but offers no clear advantage over continuing with Jason Price.
+    </div>
+  </div>
+
+  <div class="school-card">
+    <div class="school-name">Sun Air FBO / Jason Price</div>
+    <div class="school-meta">
+      <span>📍 KCMA — Camarillo Airport (on field)</span>
+      <span>Brett's current training setup</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-red">No</span> — Part 61 only</div>
+    <div class="rating-row"><strong>Own Aircraft:</strong> <span class="tag tag-green">Yes</span> — Brett's SR22T G7+</div>
+    <div class="rating-row"><strong>CSIP Level:</strong> <span class="tag tag-green">Platinum</span> — Highest Cirrus certification</div>
+    <div class="rating-row"><strong>Curriculum:</strong> Cirrus Approach IFR Program (factory curriculum, launched Sep 2025)</div>
+    <p style="margin-top:10px">Jason Price is a Platinum CSIP — the highest level of Cirrus training certification. The Cirrus Approach IFR program provides a structured, stage-based curriculum equivalent to Part 141 in rigor, but without FAA approval. Brett is already in the optimal setup for Cirrus-specific IFR training.</p>
+  </div>
+
+  <div class="school-card">
+    <div class="school-name">ATP Flight School — Van Nuys (KVNY)</div>
+    <div class="school-meta">
+      <span>📍 KVNY — Van Nuys Airport</span>
+      <span>~35nm from KCMA</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-green">Yes</span></div>
+    <div class="rating-row"><strong>Own Aircraft:</strong> <span class="tag tag-red">No</span></div>
+    <div class="rating-row"><strong>Target Student:</strong> Career/airline-track pilots</div>
+    <p style="margin-top:10px">ATP Flight School is the largest Part 141 operator in the US. Their Van Nuys location exists, but they are laser-focused on career pilot training and R-ATP pathways. Their fleet is Cessna 172/182. Not relevant for an SR22T owner pursuing personal IFR.</p>
+    <div class="callout callout-warn" style="margin-top:10px; margin-bottom:0">
+      <strong>Not recommended for Brett.</strong> ATP is built for students aiming at airline careers, not for owner-pilots building personal GA capability.
+    </div>
+  </div>
+
+  <h3>National Specialist Programs</h3>
+
+  <div class="school-card">
+    <div class="school-name">Cirrus Approach (Factory IFR Program)</div>
+    <div class="school-meta">
+      <span>📍 Global network via Cirrus Training Centers</span>
+      <span>Launched September 2025</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-red">No</span> — Part 61 curriculum through CTCs</div>
+    <div class="rating-row"><strong>Own Aircraft:</strong> <span class="tag tag-green">Yes</span> — trains in student's Cirrus with CSIP</div>
+    <div class="rating-row"><strong>Instructor:</strong> Must be a CSIP-certified instructor</div>
+    <p style="margin-top:10px">Cirrus launched their Instrument Rating Program in September 2025, designed specifically for SR20/SR22/SR22T pilots. The program combines online ground school modules with in-aircraft training by a CSIP at a Cirrus Training Center. <strong>Jason Price, being a Platinum CSIP, is qualified to deliver this curriculum.</strong> Brett is already in this program.</p>
+    <div class="callout callout-good" style="margin-top:10px; margin-bottom:0">
+      <strong>Bottom line:</strong> This is the gold standard for Cirrus IFR training. Brett already has access to it through Jason Price.
+    </div>
+  </div>
+
+  <div class="school-card">
+    <div class="school-name">SimCom Training Centers (SIMCOM)</div>
+    <div class="school-meta">
+      <span>📍 Orlando, FL (primary); other locations</span>
+      <span>Part 142 Training Center</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-red">No — Part 142</span></div>
+    <div class="rating-row"><strong>Own Aircraft:</strong> <span class="tag tag-gray">N/A — simulator only</span></div>
+    <div class="rating-row"><strong>SR22T Simulator:</strong> <span class="tag tag-green">Yes</span> — Level 6 Cirrus FTD</div>
+    <div class="rating-row"><strong>Cost:</strong> ~$2,000–5,000 per course depending on program</div>
+    <p style="margin-top:10px">SimCom is the world's largest provider of Cirrus-specific training. Their SR22T FTD (Flight Training Device) allows high-rep practice of approaches, failures, and emergency procedures in a risk-free environment. Under Part 61, up to 20 hours of instrument time in an approved FTD can count toward the 40-hour requirement. A 3–4 day SimCom visit can accelerate Brett's instrument training significantly — especially for approach proficiency and unusual attitude recovery.</p>
+    <div class="callout" style="margin-top:10px; margin-bottom:0">
+      <strong>Recommended as a supplement</strong> to Part 61 training with Jason Price. Not a replacement, and not Part 141. Requires travel to Orlando.
+    </div>
+  </div>
+
+  <div class="school-card">
+    <div class="school-name">FlightSafety International</div>
+    <div class="school-meta">
+      <span>📍 Multiple US locations</span>
+      <span>Part 142 Training Center</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-red">No — Part 142</span></div>
+    <div class="rating-row"><strong>SR22-Specific Program:</strong> <span class="tag tag-red">No</span> — FSI does not have SR22 FFS</div>
+    <p style="margin-top:10px">FlightSafety is the go-to for turbine type ratings and recurrent training. They do not offer a Cirrus-specific initial IFR program. Not relevant for Brett's current training.</p>
+  </div>
+
+  <div class="school-card">
+    <div class="school-name">CAE (Collins Aerospace Training)</div>
+    <div class="school-meta">
+      <span>📍 Various locations</span>
+      <span>Part 142 Training Center</span>
+    </div>
+    <div class="rating-row"><strong>Part 141 Status:</strong> <span class="tag tag-red">No — Part 142</span></div>
+    <div class="rating-row"><strong>SR22-Specific Program:</strong> <span class="tag tag-red">No</span></div>
+    <p style="margin-top:10px">CAE focuses on commercial/airline training. No Cirrus-specific private/instrument programs. Not relevant.</p>
+  </div>
+
+  <h3>Schools Summary Table</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>School</th>
+        <th>Location</th>
+        <th>Part 141?</th>
+        <th>Own SR22T?</th>
+        <th>Cirrus-Specific?</th>
+        <th>Relevance for Brett</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Jason Price / Sun Air</strong></td>
+        <td>KCMA (0nm)</td>
+        <td><span class="tag tag-red">No</span></td>
+        <td><span class="tag tag-green">Yes</span></td>
+        <td><span class="tag tag-green">Platinum CSIP</span></td>
+        <td>Current, optimal</td>
+      </tr>
+      <tr>
+        <td><strong>CIA (Channel Islands)</strong></td>
+        <td>KCMA (0nm)</td>
+        <td><span class="tag tag-green">Yes</span></td>
+        <td><span class="tag tag-red">Not for 141</span></td>
+        <td><span class="tag tag-red">Cessna fleet</span></td>
+        <td>GI Bill only</td>
+      </tr>
+      <tr>
+        <td><strong>ATP Flight School (KVNY)</strong></td>
+        <td>35nm</td>
+        <td><span class="tag tag-green">Yes</span></td>
+        <td><span class="tag tag-red">No</span></td>
+        <td><span class="tag tag-red">Career-focused</span></td>
+        <td>Not relevant</td>
+      </tr>
+      <tr>
+        <td><strong>SimCom (Orlando)</strong></td>
+        <td>Fly in</td>
+        <td><span class="tag tag-red">No (142)</span></td>
+        <td><span class="tag tag-gray">Sim only</span></td>
+        <td><span class="tag tag-green">SR22T FTD</span></td>
+        <td>Supplement only</td>
+      </tr>
+      <tr>
+        <td><strong>FlightSafety</strong></td>
+        <td>Various</td>
+        <td><span class="tag tag-red">No (142)</span></td>
+        <td><span class="tag tag-gray">N/A</span></td>
+        <td><span class="tag tag-red">No SR22 prog</span></td>
+        <td>Not relevant</td>
+      </tr>
+      <tr>
+        <td><strong>Cirrus Approach (CTC)</strong></td>
+        <td>Via Jason Price</td>
+        <td><span class="tag tag-red">No (Pt 61)</span></td>
+        <td><span class="tag tag-green">Yes</span></td>
+        <td><span class="tag tag-green">Factory IFR program</span></td>
+        <td>Already enrolled</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- OWN AIRCRAFT -->
+<section id="own-aircraft">
+  <h2 class="section-title"><span class="num">06</span> The Own-Aircraft Question</h2>
+  <p>Can Brett do Part 141 training in his SR22T G7+ (N269PG)?</p>
+
+  <div class="callout callout-warn">
+    <strong>Short answer: Almost certainly not, without significant coordination.</strong> Part 141 training must be conducted in aircraft listed in the school's FAA-approved Training Course Outline (TCO). Adding a student's personal aircraft to a TCO requires school agreement, FAA application, and approval — this is rarely done for one student.
+  </div>
+
+  <h3>The Regulatory Reality</h3>
+  <p>14 CFR Part 141.79 requires that training only be conducted when "each airport, aircraft, and facility necessary for that training meets the standards specified in the holder's approved training course outline." CIA's TCO was approved for their Cessna and Beechcraft fleet. Brett's SR22T is not in their TCO.</p>
+
+  <p>To use Brett's SR22T in CIA's Part 141 IFR program, CIA would need to:</p>
+  <ul class="points">
+    <li>Formally inspect and approve Brett's SR22T against Part 141.39 aircraft requirements</li>
+    <li>Amend their Training Course Outline to include the SR22T (or SR22-category aircraft)</li>
+    <li>Obtain FAA approval for the TCO amendment (can take weeks to months)</li>
+    <li>Have a CFI on staff qualified and current in the SR22T</li>
+    <li>Accept ongoing liability for training in a student-owned aircraft</li>
+  </ul>
+
+  <p>This is not impossible in theory, but no practical school will do this for one student. The economics don't work for the school, and the FAA process is not trivial.</p>
+
+  <h3>CIA's "Customer Aircraft" Policy</h3>
+  <p>CIA's website states they "provide training in our fleet as well as customer aircraft." This applies to their <strong>Part 61 programs</strong>, not their Part 141 programs. Under Part 61, any approved CFI can train in any appropriate aircraft — CIA's instructors can fly with Brett in his SR22T, but that instruction counts as Part 61, not Part 141.</p>
+
+  <h3>Accelerated IFR Programs in Your Own Aircraft</h3>
+  <p>Several providers offer intensive IFR training that comes to your airport and trains you in your own aircraft. These are <strong>all Part 61</strong> programs, not Part 141. Options include:</p>
+
+  <table>
+    <thead>
+      <tr><th>Provider</th><th>Format</th><th>Own Aircraft</th><th>Cirrus Experience</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Cirrus Approach / CSIP Network</td>
+        <td>Ongoing Part 61 with factory curriculum</td>
+        <td><span class="tag tag-green">Yes</span></td>
+        <td><span class="tag tag-green">Cirrus-specific</span></td>
+      </tr>
+      <tr>
+        <td>Accelerated-IFR.com</td>
+        <td>10–12 day intensive, your aircraft/airport</td>
+        <td><span class="tag tag-green">Yes</span></td>
+        <td><span class="tag tag-yellow">Some Cirrus experience</span></td>
+      </tr>
+      <tr>
+        <td>American Flyers (various)</td>
+        <td>Structured Part 61 with syllabus</td>
+        <td><span class="tag tag-yellow">Sometimes</span></td>
+        <td><span class="tag tag-gray">Not Cirrus-specific</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-good">
+    <strong>The best "Part 141 in your own aircraft" is actually what Jason Price is already doing:</strong> The Cirrus Approach IFR curriculum is a structured, stage-based program with defined milestones, in Brett's own SR22T, with the best-qualified Cirrus instructor available locally. It doesn't have an FAA-issued course number, but it has everything that matters.
+  </div>
+</section>
+
+<!-- RECOMMENDATION -->
+<section id="rec">
+  <h2 class="section-title"><span class="num">07</span> Recommendation</h2>
+
+  <div class="rec-box">
+    <div class="rec-num">Option 1 — Primary Recommendation</div>
+    <div class="rec-title">Continue with Jason Price (Part 61 / Cirrus Approach)</div>
+    <p><strong>You are already in the best possible setup for your situation.</strong> Jason Price as a Platinum CSIP with the Cirrus Approach IFR curriculum in your SR22T G7+ is the correct answer. No restructuring needed.</p>
+    <p>If the concern is accountability and structure: ask Jason to implement formal stage checks at defined milestones (similar to Part 141). Many Platinum CSIPs do this as a matter of practice. You can also have a second CSIP do a stage evaluation to get external feedback.</p>
+    <p><strong>What you should add:</strong> A 3–4 day SimCom visit in Orlando (Part 142) for SR22T simulator work. This does not replace Jason's instruction but accelerates approach proficiency, failure scenarios, and high-stress workload practice in a risk-free environment. Up to 20 hours in an approved FTD counts toward your Part 61 40-hour instrument requirement.</p>
+  </div>
+
+  <div class="rec-box">
+    <div class="rec-num">Option 2 — If VA/GI Bill Benefits Apply</div>
+    <div class="rec-title">Enroll at CIA (Part 141) for Benefits Access</div>
+    <p>Channel Islands Aviation at KCMA is the only Part 141 school in the tri-counties and is VA-approved for the Instrument Rating. If Brett qualifies for VA education benefits, CIA's Part 141 IFR program is directly on the field and worth pursuing — even though it means flying their Cessna fleet rather than the SR22T.</p>
+    <p>In this scenario: <strong>complete the CIA Part 141 IFR certificate in their Cessna, then immediately do a structured transition back to the SR22T with Jason Price</strong> after rating issuance. The cost of re-familiarization in the SR22T is lower than paying for a Part 61 IFR certificate without benefits.</p>
+    <p><strong>Call CIA to confirm:</strong> (805) 987-1301 — ask specifically about VA benefit enrollment process and current instrument course waitlist/availability.</p>
+  </div>
+
+  <div class="rec-box" style="border-left-color: #888;">
+    <div class="rec-num" style="color: #888;">Option 3 — Not Recommended</div>
+    <div class="rec-title" style="color: #bbb;">Switch to a Generic Part 141 School</div>
+    <p style="color: #999;">Enrolling at CIA, ATP, or any Cessna-based Part 141 school <em>without VA benefits</em> and <em>without a specific compelling reason</em> is the wrong move. You would give up:</p>
+    <p style="color: #999;">— Your SR22T (the aircraft you will actually fly IFR in)<br>— Jason Price (Platinum CSIP, highest Cirrus certification)<br>— Cirrus Approach curriculum (factory IFR program)<br>— The avionics/automation training you need for real-world SR22T IFR</p>
+    <p style="color: #999;">In exchange for: an FAA-issued course number, stage check formality, and 5 fewer minimum hours — none of which matter in practice for your flying goals.</p>
+  </div>
+
+  <h3>Immediate Action Items</h3>
+  <table>
+    <thead>
+      <tr><th>Action</th><th>Priority</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Verify your XC PIC hours in logbook</td>
+        <td><span class="tag tag-yellow">High</span></td>
+        <td>If you're under 50 hours XC PIC, Part 141 bypass is actually useful. If you're above 50, it doesn't matter.</td>
+      </tr>
+      <tr>
+        <td>Ask Jason Price to add formal stage check gates</td>
+        <td><span class="tag tag-yellow">Medium</span></td>
+        <td>Formalize the milestones in writing. This gives you Part 141-equivalent accountability without switching programs.</td>
+      </tr>
+      <tr>
+        <td>Explore SimCom visit</td>
+        <td><span class="tag tag-blue">Low / When Ready</span></td>
+        <td>After basic IFR scan is established (~15-20 hours in), a SimCom week in Orlando can compress approach proficiency significantly.</td>
+      </tr>
+      <tr>
+        <td>Call CIA if VA eligible</td>
+        <td><span class="tag tag-yellow">Conditional</span></td>
+        <td>(805) 987-1301. Only relevant if VA/GI Bill benefits apply.</td>
+      </tr>
+      <tr>
+        <td>Review Cirrus Approach IFR curriculum</td>
+        <td><span class="tag tag-blue">Low</span></td>
+        <td>learning.cirrusapproach.com — confirm you and Jason have aligned on using the official program framework.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>The Jason Price Factor</h3>
+  <div class="callout callout-good">
+    <strong>This matters more than people think.</strong> "Platinum CSIP" is not a marketing label. It's the highest level of Cirrus training certification, requiring extensive documented experience, ongoing evaluation, and recurrency. There are very few Platinum CSIPs in California. The fact that Brett has direct access to one at his home airport is a significant advantage. The question is never "should I find a different framework than Part 61?" — the question is "am I fully using what Jason Price brings to the table?"
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>Part 141 IFR Training Research Report &nbsp;·&nbsp; Brett Morrison / N269PG &nbsp;·&nbsp; KCMA Camarillo Airport &nbsp;·&nbsp; July 2026</p>
+  <p style="margin-top:6px">Research sources: COPA Forums (forum.cirruspilots.org), FAA eCFR (14 CFR Part 141, Appendix C), CIA Flight School (ciaflightschool.com), Cirrus Aircraft (cirrusaircraft.com), AOPA, Plane &amp; Pilot Magazine, SimCom Training</p>
+  <p style="margin-top:6px"><a href="/flying/ifr-plan.html">← Back to IFR Training Plan</a></p>
+</div>
+
+</body>
+</html>
