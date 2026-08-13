@@ -303,13 +303,17 @@ function buildMosLookup(mavRows,mexRows){
     const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
     while(t.getTime()<nextMs){lk[t.toISOString().slice(0,13)]={src:'mav',cat,ceilFt,visSm,cld:r.cld};t.setUTCHours(t.getUTCHours()+1);}
   }
-  // Process MEX (12h intervals, cloud cover only - no cig/vis)
+  // Process MEX (12h intervals, LCL-derived ceiling from TMP/DPT spread)
   for(let i=0;i<mexRows.length;i++){
     const r=mexRows[i];
     const ftMs=iemUtc(r.ftime_utc);
     const nextMs=i<mexRows.length-1?iemUtc(mexRows[i+1].ftime_utc):ftMs+12*3600000;
-    const cat=r.cig!=null?cigVisCat(r.cig,r.vis):mexCldCat(r.cld);
-    const ceilFt=r.cig!=null?(CIG_CEIL[r.cig]??null):null;
+    let ceilFt=null;
+    if(r.cig!=null){ceilFt=CIG_CEIL[r.cig]??null;}
+    else if(r.tmp!=null&&r.dpt!=null&&(r.cld==='OV'||r.cld==='BK'||r.cld==='BKN'||r.cld==='OVC')){
+      ceilFt=Math.round((r.tmp-r.dpt)*228); // LCL: ~228ft per °F of surface T/Td spread
+    }
+    const cat=r.cig!=null?cigVisCat(r.cig,r.vis):fltCat(ceilFt,r.vis!=null?(VIS_SM[r.vis]||6):6);
     const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
     while(t.getTime()<nextMs){
       const key=t.toISOString().slice(0,13);
