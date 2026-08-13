@@ -21,6 +21,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);
 a{color:var(--accent);text-decoration:none}
 #app{max-width:960px;margin:0 auto;padding:16px 12px 40px}
 header{text-align:center;margin-bottom:20px}
+.breadcrumb{font-size:.72rem;color:var(--text-muted);text-align:center;margin-bottom:10px;font-family:var(--mono);letter-spacing:.02em}
+.breadcrumb a{color:var(--text-dim);}
+.breadcrumb a:hover{color:var(--accent);}
 .logo{font-size:1.4rem;font-weight:700;margin-bottom:14px;letter-spacing:-.02em}
 .logo span{opacity:.6;font-weight:400}
 
@@ -145,6 +148,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
 <body>
 <div id="app">
   <header>
+    <div class="breadcrumb"><a href="/">mrnonce.com</a> / Airport Weather</div>
     <div class="logo">✈️ Airport Weather <span>Daily</span></div>
     <div class="search-wrap">
       <input type="text" id="code-input" placeholder="ICAO" maxlength="4" autocomplete="off" spellcheck="false">
