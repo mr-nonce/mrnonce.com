@@ -292,6 +292,7 @@ async function fetchAvwxTaf(stationId){
 function iemUtc(s){return new Date(s.split('.')[0]+'Z').getTime();}
 function buildMosLookup(mavRows,mexRows){
   const lk={};
+  let mavLastCeil=null;
   // Process MAV (3h intervals, exact cig/vis codes)
   for(let i=0;i<mavRows.length;i++){
     const r=mavRows[i];
@@ -301,8 +302,9 @@ function buildMosLookup(mavRows,mexRows){
     const ceilFt=r.cig!=null?(CIG_CEIL[r.cig]??null):null;
     const visSm=r.vis!=null?(VIS_SM[r.vis]||6):6;
     const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
-    while(t.getTime()<nextMs){lk[t.toISOString().slice(0,13)]={src:'mav',cat,ceilFt,visSm,cld:r.cld};t.setUTCHours(t.getUTCHours()+1);}
+    while(t.getTime()<nextMs){lk[t.toISOString().slice(0,13)]={src:'mav',cat,ceilFt,visSm,cld:r.cld};mavLastCeil=ceilFt;t.setUTCHours(t.getUTCHours()+1);}
   }
+  let prevHourCeil=mavLastCeil; // anchor MEX start to MAV boundary
   // Process MEX (12h intervals, per-hour LCL ceiling via TMP/DPT linear interpolation)
   for(let i=0;i<mexRows.length;i++){
     const r=mexRows[i];const nextR=mexRows[i+1]||null;
@@ -319,16 +321,18 @@ function buildMosLookup(mavRows,mexRows){
         if(r.cig!=null){ceilFt=CIG_CEIL[r.cig]??null;}
         else{
           const frac=h/durH;
-          const cld=frac<0.5||!nextR?r.cld:(nextR.cld||r.cld);
+          const cld=frac<0.75||!nextR?r.cld:(nextR.cld||r.cld); // 3/4 window before cloud transition
           if((cld==='OV'||cld==='BK'||cld==='BKN'||cld==='OVC')&&r.tmp!=null&&r.dpt!=null){
             const tmpH=nextR&&nextR.tmp!=null?r.tmp+frac*(nextR.tmp-r.tmp):r.tmp;
             const dptH=nextR&&nextR.dpt!=null?r.dpt+frac*(nextR.dpt-r.dpt):r.dpt;
             ceilFt=Math.round((tmpH-dptH)*228);
+            if(prevHourCeil!==null&&ceilFt>prevHourCeil+300)ceilFt=prevHourCeil+300; // 300ft/hr max rise
           }
         }
         const cat=r.cig!=null?cigVisCat(r.cig,r.vis):fltCat(ceilFt,visSm);
         lk[key]={src:'mex',cat,ceilFt,visSm,cld:r.cld};
-      }
+        prevHourCeil=ceilFt;
+      }else{prevHourCeil=lk[key].ceilFt;}
       t.setUTCHours(t.getUTCHours()+1);h++;
     }
   }
