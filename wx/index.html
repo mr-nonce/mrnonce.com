@@ -164,12 +164,13 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
       <div class="daily-hourly" id="daily-hourly"></div>
     </section>
   </main>
-  <footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a></footer>
+  <footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · <a href="https://avwx.rest" target="_blank">AVWX TAF</a></footer>
 </div>
 <script>
 'use strict';
 const RECENT_KEY='wx_recent',MAX_RECENT=8;
-let _fc=null,_stn=null,_initDay=0;
+const AVWX_TOKEN='t5DGYfV-N6Y4h7r8S_zNKaPyZut0VFUyisQszQySEcw';
+let _fc=null,_stn=null,_initDay=0,_taf=null;
 
 /* ========== WMO WEATHER CODES ========== */
 const WMO={
@@ -294,6 +295,42 @@ async function nwsObs(code){
     };
   }catch(e){return null;}
 }
+/* ========== AVWX TAF ========== */
+function parseTafDDHH(repr,nowMs){
+  const dd=parseInt(repr.slice(0,2)),hh=parseInt(repr.slice(2,4));
+  const ref=new Date(nowMs);
+  const d=new Date(Date.UTC(ref.getUTCFullYear(),ref.getUTCMonth(),dd,hh));
+  if(d.getTime()<nowMs-15*86400000)d.setUTCMonth(d.getUTCMonth()+1);
+  return d.getTime();
+}
+function buildTafLookup(tafData){
+  const lk={};
+  const now=Date.now();
+  for(const g of tafData.forecast||[]){
+    if(g.type==='TEMPO')continue;
+    const stMs=parseTafDDHH(g.start_time.repr,now);
+    const etMs=parseTafDDHH(g.end_time.repr,now);
+    let ceilFt=null;
+    for(const c of g.clouds||[]){
+      if((c.type==='BKN'||c.type==='OVC')&&(ceilFt===null||c.altitude*100<ceilFt))ceilFt=c.altitude*100;
+    }
+    const cat=g.flight_rules||'VFR',visSm=g.visibility?.value||6;
+    const t=new Date(stMs);t.setUTCMinutes(0,0,0);
+    while(t.getTime()<etMs){
+      lk[t.toISOString().slice(0,13)]={cat,ceilFt,visSm};
+      t.setUTCHours(t.getUTCHours()+1);
+    }
+  }
+  return lk;
+}
+async function fetchAvwxTaf(stationId){
+  try{
+    const d=await fetchJSON('https://avwx.rest/api/taf/'+stationId+'?token='+AVWX_TOKEN);
+    if(d.error||!d.forecast)return null;
+    return buildTafLookup(d);
+  }catch(e){return null;}
+}
+
 async function omForecast(lat,lon){
   const q=[
     'latitude='+lat,'longitude='+lon,
@@ -410,8 +447,15 @@ function renderDayHourly(dayIdx){
     const nh=isNow?' hr-now-hdr':'';
     if(isNow)scrollTo=j;
 
+    // TAF lookup — key is UTC hour
+    const utcKey=dt.toISOString().slice(0,13);
+    const tafHr=_taf&&_taf[utcKey];
+
     const night=isNightTime(dt,sun.sr,sun.ss);
-    thead+='<th class="'+nh+'">'+hr+'</th>';
+    const srcBadge=tafHr
+      ?'<span style="font-size:.5rem;color:var(--accent);display:block;font-weight:700;letter-spacing:.04em">TAF</span>'
+      :'<span style="font-size:.5rem;color:var(--text-muted);display:block">~est</span>';
+    thead+='<th class="'+nh+'">'+hr+srcBadge+'</th>';
 
     const wi=wmoInfo(h.weather_code[i],night);
     let sunMark='';
@@ -420,9 +464,15 @@ function renderDayHourly(dayIdx){
     else if(thisH===ssH)sunMark='<div class="hr-sun">🌇'+fmtTime(sun.ss,tz)+'</div>';
     R.icon+='<td class="'+nc+'"><span class="hr-icon">'+wi.icon+'</span>'+sunMark+'</td>';
 
-    const visSm=h.visibility[i]/1609.34;
-    const ceiling=estCeiling(h.cloud_cover_low[i],h.temperature_2m[i],h.dewpoint_2m[i]);
-    const cat=fltCat(ceiling,visSm);
+    // Flight category: TAF when available, else estimate
+    let cat,ceiling,visSm;
+    if(tafHr){
+      cat=tafHr.cat;ceiling=tafHr.ceilFt;visSm=tafHr.visSm;
+    }else{
+      visSm=h.visibility[i]/1609.34;
+      ceiling=estCeiling(h.cloud_cover_low[i],h.temperature_2m[i],h.dewpoint_2m[i]);
+      cat=fltCat(ceiling,visSm);
+    }
     R.cat+='<td class="'+nc+'">'+catHTML(cat)+'</td>';
     R.ceil+='<td class="'+nc+'"><span class="hr-ceil">'+(ceiling!=null?ceiling.toLocaleString()+'\'':'None')+'</span></td>';
     R.vis+='<td class="'+nc+'"><span class="hr-vis">'+fmtVis(visSm)+'</span></td>';
@@ -540,10 +590,10 @@ async function loadAirport(rawCode,dayIdx){  dayIdx=dayIdx||0;
       }else throw new Error('NOT_FOUND');
     }
 
-    const [obs,fc]=await Promise.all([nwsObs(stn.id),omForecast(stn.lat,stn.lon)]);
+    const [obs,fc,tafLookup]=await Promise.all([nwsObs(stn.id),omForecast(stn.lat,stn.lon),fetchAvwxTaf(stn.id)]);
     if(!fc||!fc.hourly||!fc.hourly.time){throw new Error('Forecast data unavailable');}
 
-    _fc=fc;_stn=stn;_initDay=dayIdx;
+    _fc=fc;_stn=stn;_initDay=dayIdx;_taf=tafLookup;
     history.replaceState(null,'','#'+stn.id+'/'+dayIdx);
     addRecent(stn.id,stn.name);
     document.title=stn.id+' Weather';
