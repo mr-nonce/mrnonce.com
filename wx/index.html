@@ -169,7 +169,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
 <script>
 'use strict';
 const RECENT_KEY='wx_recent',MAX_RECENT=8;
-let _fc=null,_stn=null;
+let _fc=null,_stn=null,_initDay=0;
 
 /* ========== WMO WEATHER CODES ========== */
 const WMO={
@@ -464,7 +464,7 @@ function renderDaily(fc,stn){
     const wi=wmoInfo(d.weather_code[i],false);
     const hi=Math.round(d.temperature_2m_max[i]),lo=Math.round(d.temperature_2m_min[i]);
 
-    strip+='<div class="day-card'+(i===0?' active':'')+'" data-day="'+i+'">';
+    strip+='<div class="day-card'+(i===(_initDay||0)?' active':'')+'" data-day="'+i+'">';
     strip+='<div class="day-name">'+dayN+'</div><div class="day-date">'+dayD+'</div>';
     strip+='<div class="day-icon">'+wi.icon+'</div>';
     strip+='<div class="day-temps">'+hi+'° <span class="lo">/ '+lo+'°</span></div></div>';
@@ -491,12 +491,14 @@ function renderDaily(fc,stn){
     c.addEventListener('click',()=>{
       $('daily-strip').querySelectorAll('.day-card').forEach(x=>x.classList.remove('active'));
       c.classList.add('active');
-      renderDayHourly(parseInt(c.dataset.day));
+      const di=parseInt(c.dataset.day);
+      history.replaceState(null,'','#'+_stn.id+'/'+di);
+      renderDayHourly(di);
     });
   });
 
-  // Default: show today's hourly
-  renderDayHourly(0);
+  // Show requested day's hourly (from URL hash or default 0)
+  renderDayHourly(_initDay||0);  _initDay=0;
 }
 
 /* ========== RECENT SEARCHES ========== */
@@ -520,7 +522,7 @@ function renderRecent(){
 }
 
 /* ========== MAIN LOAD ========== */
-async function loadAirport(rawCode){
+async function loadAirport(rawCode,dayIdx){  dayIdx=dayIdx||0;
   let code=rawCode.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
   if(!code)return;
   if(code.length===3&&/^[A-Z]{3}$/.test(code))code='K'+code;
@@ -528,7 +530,7 @@ async function loadAirport(rawCode){
 
   hide('results');hide('error-box');show('loading');
   $('code-input').value=code;
-  history.replaceState(null,'','#'+code);
+  history.replaceState(null,'','#'+code+'/0');
 
   try{
     let stn;
@@ -541,7 +543,8 @@ async function loadAirport(rawCode){
     const [obs,fc]=await Promise.all([nwsObs(stn.id),omForecast(stn.lat,stn.lon)]);
     if(!fc||!fc.hourly||!fc.hourly.time){throw new Error('Forecast data unavailable');}
 
-    _fc=fc;_stn=stn;
+    _fc=fc;_stn=stn;_initDay=dayIdx;
+    history.replaceState(null,'','#'+stn.id+'/'+dayIdx);
     addRecent(stn.id,stn.name);
     document.title=stn.id+' Weather';
 
@@ -572,9 +575,15 @@ $('code-input').addEventListener('input',e=>{e.target.value=e.target.value.toUpp
   }
   renderRecent();
   const hash=location.hash.replace('#','').trim();
-  if(hash)loadAirport(hash);
+  if(hash){
+    const parts=hash.split('/');
+    loadAirport(parts[0],parts[1]?parseInt(parts[1]):0);
+  }
 })();
-window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','').trim();if(h)loadAirport(h);});
+window.addEventListener('hashchange',()=>{
+  const h=location.hash.replace('#','').trim();
+  if(h){const p=h.split('/');loadAirport(p[0],p[1]?parseInt(p[1]):0);}
+});
 </script>
 </body>
 </html>
