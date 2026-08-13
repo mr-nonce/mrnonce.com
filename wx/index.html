@@ -330,23 +330,32 @@ function tafCeiling(group){
 
 /* ========== API FUNCTIONS ========== */
 const AWX_BASE='https://aviationweather.gov/api/data';
-function awxUrl(path){return'https://api.allorigins.win/raw?url='+encodeURIComponent(AWX_BASE+path);}
-async function apiFetch(url){
-  const r=await fetch(url);
-  if(!r.ok)throw new Error('API '+r.status);
-  return r.json();
+function awxUrl(path){return'https://api.allorigins.win/get?url='+encodeURIComponent(AWX_BASE+path);}
+async function apiFetch(url,proxied){
+  const ctrl=new AbortController();
+  const tid=setTimeout(()=>ctrl.abort(),12000);
+  try{
+    const r=await fetch(url,{signal:ctrl.signal});
+    clearTimeout(tid);
+    if(!r.ok)throw new Error('API '+r.status);
+    if(proxied){
+      const wrap=await r.json();
+      return JSON.parse(wrap.contents);
+    }
+    return r.json();
+  }catch(e){clearTimeout(tid);throw e;}
 }
 async function fetchStation(code){
-  const d=await apiFetch(awxUrl('/stationinfo?ids='+code+'&format=json'));
+  const d=await apiFetch(awxUrl('/stationinfo?ids='+code+'&format=json'),true);
   if(!d.length)throw new Error('NOT_FOUND');
   return d[0];
 }
 async function fetchMetar(code){
-  try{const d=await apiFetch(awxUrl('/metar?ids='+code+'&format=json'));return d[0]||null;}
+  try{const d=await apiFetch(awxUrl('/metar?ids='+code+'&format=json'),true);return d[0]||null;}
   catch(e){return null;}
 }
 async function fetchTaf(code){
-  try{const d=await apiFetch(awxUrl('/taf?ids='+code+'&format=json'));return d[0]||null;}
+  try{const d=await apiFetch(awxUrl('/taf?ids='+code+'&format=json'),true);return d[0]||null;}
   catch(e){return null;}
 }
 async function fetchForecast(lat,lon){
