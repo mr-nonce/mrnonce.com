@@ -384,7 +384,7 @@ function renderCurrent(obs,stn,fc){
   c+='<div class="cur-top"><span class="cur-icon">'+icon+'</span><span class="cur-desc">'+desc+'</span></div>';
   c+='<div class="cur-grid">';
   c+=cell(catHTML(cat),'Flight Category');
-  const skyLayers=obs.clouds&&obs.clouds.length?obs.clouds.map(cl=>cl.cover+(cl.base!=null?' '+cl.base.toLocaleString()+'\''':'')).join('<br>'):'CLR';
+  const skyLayers=obs.clouds&&obs.clouds.length?obs.clouds.map(cl=>cl.cover+(cl.base!=null?' '+cl.base.toLocaleString()+'\'':'')).join('<br>'):'CLR';
   c+=cell(skyLayers,'SKY');
   c+=cell(fmtVis(obs.visSm),'Visibility');
   c+=cell(tempF+(tempC!=null?'°F <span style="color:var(--text-dim)">('+tempC.toFixed(0)+'°C)</span>':''),'Temperature');
