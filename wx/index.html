@@ -6,11 +6,10 @@
 <title>Airport Weather</title>
 <link rel="icon" href="/favicon.ico">
 <style>
-/* ====== RESET & VARIABLES ====== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0b1120;--bg-card:#131c2e;--bg-input:#182340;--bg-sticky:#101828;
-  --border:#1e3050;--text:#e2e8f0;--text-dim:#8892a4;--text-muted:#4a5568;
+  --border:#1e3050;--text:#e2e8f0;--text-dim:#8b95a8;--text-muted:#4a5568;
   --vfr:#48bb78;--mvfr:#4299e1;--ifr:#fc8181;--lifr:#d53f8c;
   --accent:#63b3ed;--highlight:rgba(66,153,225,.12);
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
@@ -20,12 +19,14 @@ html{font-size:14px}
 body{font-family:var(--font);background:var(--bg);color:var(--text);
   min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}
-/* ====== LAYOUT ====== */
+
+/* Layout */
 #app{max-width:960px;margin:0 auto;padding:16px 12px 40px}
 header{text-align:center;margin-bottom:20px}
 .logo{font-size:1.4rem;font-weight:700;margin-bottom:14px;letter-spacing:-.02em}
 .logo span{opacity:.6;font-weight:400}
-/* ====== SEARCH ====== */
+
+/* Search */
 .search-wrap{display:flex;gap:8px;max-width:360px;margin:0 auto 10px}
 #code-input{flex:1;padding:10px 14px;font-size:1rem;font-family:var(--mono);
   background:var(--bg-input);border:1px solid var(--border);border-radius:8px;
@@ -35,29 +36,34 @@ header{text-align:center;margin-bottom:20px}
 #go-btn{padding:10px 18px;font-size:1rem;font-weight:600;background:var(--accent);
   color:#0b1120;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
 #go-btn:hover{opacity:.85}
-#go-btn:active{transform:scale(.97)}
 .recent{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
 .recent-chip{padding:5px 12px;font-size:.8rem;font-family:var(--mono);
   background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
-  color:var(--text-dim);cursor:pointer;transition:all .15s}
+  color:var(--text-dim);cursor:pointer;transition:all .15s;user-select:none}
 .recent-chip:hover{background:var(--bg-input);color:var(--text);border-color:var(--accent)}
-/* ====== LOADING / ERROR ====== */
+
+/* Loading / Error */
 #loading{display:none;text-align:center;padding:60px 0;color:var(--text-dim)}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);
   border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-#error{display:none;text-align:center;padding:40px 20px;color:var(--ifr);font-size:1rem}
-/* ====== RESULTS ====== */
+#error-box{display:none;text-align:center;padding:30px 20px;margin:10px 0;
+  background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.25);border-radius:10px;
+  color:var(--ifr);font-size:.95rem}
+
+/* Results */
 #results{display:none;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-/* ====== STATION HEADER ====== */
+
+/* Station Header */
 .stn-hdr{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
 .stn-code{font-size:1.8rem;font-weight:800;font-family:var(--mono);letter-spacing:.04em}
 .stn-name{font-size:1rem;color:var(--text-dim);margin:2px 0}
 .stn-meta{font-size:.78rem;color:var(--text-muted);display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:4px}
 .stn-meta span{white-space:nowrap}
 .metar-age{color:var(--accent);font-weight:600}
-/* ====== CURRENT CONDITIONS ====== */
+
+/* Current Conditions */
 .cur-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
   padding:18px 16px;margin-bottom:16px}
 .cur-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;justify-content:center}
@@ -77,7 +83,8 @@ header{text-align:center;margin-bottom:20px}
 .cur-raw summary{font-size:.75rem;color:var(--text-muted);cursor:pointer;user-select:none}
 .cur-raw pre{font-family:var(--mono);font-size:.75rem;color:var(--text-dim);
   margin-top:6px;word-break:break-all;white-space:pre-wrap}
-/* ====== HOURLY TIMELINE ====== */
+
+/* Hourly Timeline */
 .section-label{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
   color:var(--text-muted);margin-bottom:8px;padding-left:4px}
 .hourly-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
@@ -108,8 +115,9 @@ header{text-align:center;margin-bottom:20px}
 .hr-precip{font-family:var(--mono);font-size:.72rem;color:var(--text-dim)}
 .hr-vis{font-family:var(--mono);font-size:.72rem}
 .hr-ceil{font-size:.7rem;color:var(--text-dim)}
-.hr-sun{font-size:.85rem;line-height:1}
-/* ====== DAILY FORECAST ====== */
+.hr-sun{font-size:.8rem;line-height:1}
+
+/* Daily Forecast */
 .daily-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
   padding:14px 0;margin-bottom:16px;overflow:hidden}
 .daily-strip{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 8px;gap:2px;
@@ -124,10 +132,8 @@ header{text-align:center;margin-bottom:20px}
 .day-icon{font-size:1.5rem;line-height:1.2;margin:2px 0}
 .day-temps{font-family:var(--mono);font-size:.8rem;font-weight:600}
 .day-temps .lo{color:var(--text-dim);font-weight:400}
-/* VFR color bar */
 .vfr-bar{display:flex;margin:8px 12px 0;border-radius:3px;overflow:hidden;height:5px}
 .vfr-seg{flex:1;transition:background .3s}
-/* Daily detail */
 .daily-detail{padding:8px 14px 0}
 .dd-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(30,48,80,.3);
   font-size:.85rem;gap:8px;flex-wrap:wrap}
@@ -139,22 +145,21 @@ header{text-align:center;margin-bottom:20px}
 .dd-half .info{font-family:var(--mono);font-size:.8rem}
 .dd-half .info .dim{color:var(--text-dim);font-weight:400}
 .dd-sun{font-size:.65rem;color:var(--text-muted);font-family:var(--mono)}
-/* ====== FOOTER ====== */
+
+/* Footer */
 footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 10px;
   border-top:1px solid var(--border);margin-top:8px}
-/* ====== RESPONSIVE ====== */
+
+/* Responsive */
 @media(max-width:600px){
   html{font-size:13px}
   #app{padding:12px 8px 30px}
-  .cur-grid{grid-template-columns:repeat(3,1fr);gap:1px}
+  .cur-grid{gap:1px}
   .cur-cell{padding:8px 2px}
   .hourly-tbl th,.hourly-tbl td{min-width:56px;max-width:56px}
   .hourly-tbl th:first-child,.hourly-tbl td:first-child{min-width:50px;max-width:50px}
   .day-card{width:78px}
   .dd-half{min-width:120px}
-}
-@media(min-width:700px){
-  .cur-grid{gap:3px}
 }
 </style>
 </head>
@@ -169,7 +174,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
     <div class="recent" id="recent"></div>
   </header>
   <div id="loading"><div class="spinner"></div><p>Fetching weather data…</p></div>
-  <div id="error"></div>
+  <div id="error-box"></div>
   <main id="results">
     <section id="station-hdr"></section>
     <section id="current"></section>
@@ -184,298 +189,239 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
       <div class="daily-detail" id="daily-detail"></div>
     </section>
   </main>
-  <footer>Data: <a href="https://aviationweather.gov" target="_blank">aviationweather.gov</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a></footer>
+  <footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a></footer>
 </div>
 <script>
 'use strict';
-/* ========== CONFIG ========== */
-const RECENT_KEY='wx_recent', MAX_RECENT=8;
+const RECENT_KEY='wx_recent',MAX_RECENT=8;
 
 /* ========== WMO WEATHER CODES ========== */
 const WMO={
-  0:{d:'☀️',n:'🌙',t:'Clear'},
-  1:{d:'🌤️',n:'🌙',t:'Mostly Clear'},
-  2:{d:'⛅',n:'☁️',t:'Partly Cloudy'},
-  3:{d:'☁️',n:'☁️',t:'Overcast'},
-  45:{d:'🌫️',n:'🌫️',t:'Fog'},
-  48:{d:'🌫️',n:'🌫️',t:'Freezing Fog'},
-  51:{d:'🌦️',n:'🌧️',t:'Light Drizzle'},
-  53:{d:'🌦️',n:'🌧️',t:'Drizzle'},
-  55:{d:'🌧️',n:'🌧️',t:'Heavy Drizzle'},
-  56:{d:'🌧️',n:'🌧️',t:'Freezing Drizzle'},
+  0:{d:'☀️',n:'🌙',t:'Clear'},1:{d:'🌤️',n:'🌙',t:'Mostly Clear'},
+  2:{d:'⛅',n:'☁️',t:'Partly Cloudy'},3:{d:'☁️',n:'☁️',t:'Overcast'},
+  45:{d:'🌫️',n:'🌫️',t:'Fog'},48:{d:'🌫️',n:'🌫️',t:'Freezing Fog'},
+  51:{d:'🌦️',n:'🌧️',t:'Light Drizzle'},53:{d:'🌦️',n:'🌧️',t:'Drizzle'},
+  55:{d:'🌧️',n:'🌧️',t:'Heavy Drizzle'},56:{d:'🌧️',n:'🌧️',t:'Freezing Drizzle'},
   57:{d:'🌧️',n:'🌧️',t:'Heavy Frzg Drizzle'},
-  61:{d:'🌧️',n:'🌧️',t:'Light Rain'},
-  63:{d:'🌧️',n:'🌧️',t:'Rain'},
-  65:{d:'🌧️',n:'🌧️',t:'Heavy Rain'},
-  66:{d:'🌧️',n:'🌧️',t:'Freezing Rain'},
+  61:{d:'🌧️',n:'🌧️',t:'Light Rain'},63:{d:'🌧️',n:'🌧️',t:'Rain'},
+  65:{d:'🌧️',n:'🌧️',t:'Heavy Rain'},66:{d:'🌧️',n:'🌧️',t:'Freezing Rain'},
   67:{d:'🌧️',n:'🌧️',t:'Heavy Frzg Rain'},
-  71:{d:'🌨️',n:'🌨️',t:'Light Snow'},
-  73:{d:'🌨️',n:'🌨️',t:'Snow'},
-  75:{d:'🌨️',n:'🌨️',t:'Heavy Snow'},
-  77:{d:'🌨️',n:'🌨️',t:'Snow Grains'},
-  80:{d:'🌦️',n:'🌧️',t:'Light Showers'},
-  81:{d:'🌦️',n:'🌧️',t:'Showers'},
-  82:{d:'🌧️',n:'🌧️',t:'Heavy Showers'},
-  85:{d:'🌨️',n:'🌨️',t:'Light Snow Showers'},
+  71:{d:'🌨️',n:'🌨️',t:'Light Snow'},73:{d:'🌨️',n:'🌨️',t:'Snow'},
+  75:{d:'🌨️',n:'🌨️',t:'Heavy Snow'},77:{d:'🌨️',n:'🌨️',t:'Snow Grains'},
+  80:{d:'🌦️',n:'🌧️',t:'Light Showers'},81:{d:'🌦️',n:'🌧️',t:'Showers'},
+  82:{d:'🌧️',n:'🌧️',t:'Heavy Showers'},85:{d:'🌨️',n:'🌨️',t:'Snow Showers'},
   86:{d:'🌨️',n:'🌨️',t:'Heavy Snow Showers'},
-  95:{d:'⛈️',n:'⛈️',t:'Thunderstorm'},
-  96:{d:'⛈️',n:'⛈️',t:'T-Storm w/ Hail'},
+  95:{d:'⛈️',n:'⛈️',t:'Thunderstorm'},96:{d:'⛈️',n:'⛈️',t:'T-Storm w/ Hail'},
   99:{d:'⛈️',n:'⛈️',t:'T-Storm w/ Heavy Hail'}
 };
-function wmoInfo(code,night){const w=WMO[code]||WMO[3];return{icon:night?w.n:w.d,text:w.t}}
+function wmoInfo(code,night){const w=WMO[code]||WMO[3];return{icon:night?w.n:w.d,text:w.t};}
 
 /* ========== FLIGHT CATEGORY ========== */
 function fltCat(ceilFt,visSm){
-  const c=ceilFt,v=visSm;
-  if((c!==null&&c<500)||v<1)return'LIFR';
-  if((c!==null&&c<1000)||v<3)return'IFR';
-  if((c!==null&&c<3000)||v<5)return'MVFR';
+  if((ceilFt!==null&&ceilFt<500)||visSm<1)return'LIFR';
+  if((ceilFt!==null&&ceilFt<1000)||visSm<3)return'IFR';
+  if((ceilFt!==null&&ceilFt<3000)||visSm<5)return'MVFR';
   return'VFR';
 }
-function catColor(cat){return'var(--'+(cat||'vfr').toLowerCase()+')'}
-function catHTML(cat){return'<span class="hr-cat cat-badge cat-'+cat+'">'+cat+'</span>'}
+function catColor(c){return'var(--'+(c||'vfr').toLowerCase()+')';}
+function catHTML(c){return'<span class="hr-cat cat-badge cat-'+c+'">'+c+'</span>';}
 
-/* ========== METAR HELPERS ========== */
-function metarCeiling(clouds){
+/* ========== HELPERS ========== */
+function getCeiling(clouds){
   if(!clouds||!clouds.length)return null;
-  for(const c of clouds){if(c.cover==='BKN'||c.cover==='OVC')return c.base;}
+  for(const c of clouds){if((c.cover==='BKN'||c.cover==='OVC')&&c.base!=null)return c.base;}
   return null;
 }
-function metarCoverDesc(cover,wx){
-  const map={CLR:'Clear',SKC:'Clear',FEW:'Few Clouds',SCT:'Scattered Clouds',
-    BKN:'Mostly Cloudy',OVC:'Overcast'};
-  let d=map[cover]||cover||'';
-  if(wx){
-    const wm={'RA':'Rain','SN':'Snow','DZ':'Drizzle','FG':'Fog','BR':'Mist','HZ':'Haze',
-      'TS':'Thunderstorm','SH':'Showers','FZ':'Freezing','GR':'Hail','TSRA':'Thunderstorm',
-      '+RA':'Heavy Rain','-RA':'Light Rain','+SN':'Heavy Snow','-SN':'Light Snow',
-      'FZRA':'Freezing Rain','FZDZ':'Freezing Drizzle','BLSN':'Blowing Snow'};
-    const parts=wx.split(/\s+/);
-    const descs=parts.map(p=>wm[p]||p).filter(Boolean);
-    if(descs.length)d=descs.join(', ');
-  }
-  return d;
+function getCover(clouds){
+  if(!clouds||!clouds.length)return'CLR';
+  const order=['CLR','FEW','SCT','BKN','OVC'];
+  let best=0;
+  for(const c of clouds){const i=order.indexOf(c.cover);if(i>best)best=i;}
+  return order[best];
 }
-function metarIcon(cover,wx,night){
-  if(wx){
-    if(/TS/.test(wx))return'⛈️';
-    if(/SN|BLSN/.test(wx))return'🌨️';
-    if(/RA|DZ|SH/.test(wx))return night?'🌧️':'🌦️';
-    if(/FG|BR/.test(wx))return'🌫️';
+function coverIcon(cover,desc,night){
+  if(desc){
+    const d=desc.toLowerCase();
+    if(d.includes('thunder'))return'⛈️';
+    if(d.includes('snow')||d.includes('sleet'))return'🌨️';
+    if(d.includes('rain')||d.includes('drizzle')||d.includes('shower'))return night?'🌧️':'🌦️';
+    if(d.includes('fog')||d.includes('mist')||d.includes('haze'))return'🌫️';
   }
-  const m={CLR:night?'🌙':'☀️',SKC:night?'🌙':'☀️',FEW:night?'🌙':'🌤️',
-    SCT:night?'☁️':'⛅',BKN:'☁️',OVC:'☁️'};
+  const m={CLR:night?'🌙':'☀️',FEW:night?'🌙':'🌤️',SCT:night?'☁️':'⛅',BKN:'☁️',OVC:'☁️'};
   return m[cover]||'☁️';
 }
-function parseVis(v){if(v==null)return 10;if(typeof v==='string'){if(v.includes('+'))return parseFloat(v)||10;return parseFloat(v)||10;}return v;}
-function fmtVis(v){const n=parseVis(v);return n>=10?'10+ sm':n>=1?n+' sm':n.toFixed(1)+' sm';}
-
-/* ========== DENSITY ALTITUDE ========== */
-function densityAlt(elevM,altimHpa,tempC){
-  const elevFt=elevM*3.28084;
-  const altimInHg=altimHpa/33.8639;
-  const pa=elevFt+((29.92-altimInHg)*1000);
+function relHumidity(tc,tdc){
+  if(tc==null||tdc==null)return null;
+  return Math.round(100*Math.exp((17.625*tdc)/(243.04+tdc))/Math.exp((17.625*tc)/(243.04+tc)));
+}
+function densityAlt(elevM,pressHpa,tempC){
+  if(elevM==null||pressHpa==null||tempC==null)return null;
+  const eFt=elevM*3.28084,inHg=pressHpa/33.8639;
+  const pa=eFt+((29.92-inHg)*1000);
   const isa=15-(1.98*(pa/1000));
   return Math.round(pa+120*(tempC-isa));
 }
-
-/* ========== HUMIDITY ========== */
-function relHumidity(tc,tdc){
-  return Math.round(100*Math.exp((17.625*tdc)/(243.04+tdc))/Math.exp((17.625*tc)/(243.04+tc)));
-}
-
-/* ========== TIME HELPERS ========== */
-function timeAgo(ts){
-  const ms=Date.now()-ts;
+function timeAgo(isoStr){
+  if(!isoStr)return'—';
+  const ms=Date.now()-new Date(isoStr).getTime();
   const m=Math.floor(ms/60000);
-  if(m<1)return'just now';
-  if(m<60)return m+'m ago';
-  const h=Math.floor(m/60);
-  if(h<24)return h+'h ago';
+  if(m<1)return'just now';if(m<60)return m+'m ago';
+  const h=Math.floor(m/60);if(h<24)return h+'h ago';
   return Math.floor(h/24)+'d ago';
 }
-function fmtTime(d,tz){return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz});}
 function fmtHour(d,tz){return d.toLocaleTimeString('en-US',{hour:'2-digit',hour12:false,timeZone:tz}).replace(/^24/,'00');}
+function fmtTime(d,tz){return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz});}
 function fmtDay(d,tz){return d.toLocaleDateString('en-US',{weekday:'short',timeZone:tz});}
 function fmtDate(d,tz){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:tz});}
-function fmtDayFull(d,tz){return d.toLocaleDateString('en-US',{weekday:'long',timeZone:tz});}
-function isNight(dt,sunrise,sunset){return dt<sunrise||dt>=sunset;}
-
-/* ========== ESTIMATED CEILING FROM OPEN-METEO ========== */
-function estCeiling(cloudLow,tempF,dewpF,elevM){
-  // If low cloud cover >= ~62% (BKN), estimate ceiling from spread
-  if(cloudLow<62)return null;
-  const tempC=(tempF-32)*5/9, dewpC=(dewpF-32)*5/9;
-  const spreadC=tempC-dewpC;
-  const aglFt=Math.max(spreadC*400,200); // LCL approximation
-  return Math.round(aglFt);
+function isNightTime(dt,sr,ss){return dt<sr||dt>=ss;}
+function fmtVis(sm){return sm>=10?'10+ sm':sm>=1?Math.round(sm)+' sm':sm.toFixed(1)+' sm';}
+// Estimate ceiling from Open-Meteo cloud cover + spread
+function estCeiling(cloudLow,tempF,dewpF){
+  if(cloudLow<62)return null; // FEW/SCT → no ceiling
+  const tc=(tempF-32)*5/9,tdc=(dewpF-32)*5/9;
+  return Math.max(Math.round((tc-tdc)*400),200);
 }
 
-/* ========== TAF INTERPOLATION ========== */
-function tafAtTime(fcsts,tsMs){
-  if(!fcsts||!fcsts.length)return null;
-  // Use base/FM groups only (skip TEMPO/BECMG for simplicity)
-  const base=fcsts.filter(f=>!f.fcstChange||f.fcstChange==='FM');
-  for(let i=base.length-1;i>=0;i--){
-    const from=base[i].timeFrom*1000;
-    if(tsMs>=from)return base[i];
-  }
-  return base[0];
-}
-function tafCeiling(group){
-  if(!group||!group.clouds||!group.clouds.length)return null;
-  for(const c of group.clouds){if(c.cover==='BKN'||c.cover==='OVC')return c.base;}
-  return null;
-}
-
-/* ========== API FUNCTIONS ========== */
-const AWX_BASE='https://aviationweather.gov/api/data';
-function awxUrl(path){return'https://api.allorigins.win/get?url='+encodeURIComponent(AWX_BASE+path);}
-async function apiFetch(url,proxied){
+/* ========== API ========== */
+async function fetchJSON(url,opts){
   const ctrl=new AbortController();
   const tid=setTimeout(()=>ctrl.abort(),12000);
+  try{const r=await fetch(url,{...opts,signal:ctrl.signal});clearTimeout(tid);if(!r.ok)throw new Error(r.status);return r.json();}
+  catch(e){clearTimeout(tid);throw e;}
+}
+
+async function nwsStation(code){
+  const d=await fetchJSON('https://api.weather.gov/stations/'+code,{headers:{'Accept':'application/geo+json'}});
+  const p=d.properties,g=d.geometry.coordinates;
+  return{id:p.stationIdentifier,name:p.name||code,lat:g[1],lon:g[0],
+    elev:p.elevation?.value||0,tz:p.timeZone||'UTC',
+    state:p.name?.includes(',')?'':'',country:'US'};
+}
+
+async function nwsObs(code){
   try{
-    const r=await fetch(url,{signal:ctrl.signal});
-    clearTimeout(tid);
-    if(!r.ok)throw new Error('API '+r.status);
-    if(proxied){
-      const wrap=await r.json();
-      return JSON.parse(wrap.contents);
-    }
-    return r.json();
-  }catch(e){clearTimeout(tid);throw e;}
+    const d=await fetchJSON('https://api.weather.gov/stations/'+code+'/observations/latest',
+      {headers:{'Accept':'application/geo+json'}});
+    const p=d.properties;
+    const clouds=(p.cloudLayers||[]).filter(c=>c.amount&&c.amount!=='CLR').map(c=>({
+      cover:c.amount,base:c.base?.value!=null?Math.round(c.base.value*3.28084):null
+    }));
+    const wsKmh=p.windSpeed?.value;
+    return{
+      rawOb:p.rawMessage||'',
+      temp:p.temperature?.value,dewp:p.dewpoint?.value,
+      wdir:p.windDirection?.value,
+      wspd:wsKmh!=null?Math.round(wsKmh/1.852):0,
+      wgst:p.windGust?.value!=null?Math.round(p.windGust.value/1.852):null,
+      visSm:p.visibility?.value!=null?p.visibility.value/1609.34:10,
+      altimHpa:p.barometricPressure?.value!=null?p.barometricPressure.value/100:null,
+      clouds,cover:getCover(clouds.length?clouds:[{cover:'CLR'}]),
+      desc:p.textDescription||'',
+      timestamp:p.timestamp,
+      fltCat:fltCat(getCeiling(clouds),p.visibility?.value!=null?p.visibility.value/1609.34:10)
+    };
+  }catch(e){return null;}
 }
-async function fetchStation(code){
-  const d=await apiFetch(awxUrl('/stationinfo?ids='+code+'&format=json'),true);
-  if(!d.length)throw new Error('NOT_FOUND');
-  return d[0];
-}
-async function fetchMetar(code){
-  try{const d=await apiFetch(awxUrl('/metar?ids='+code+'&format=json'),true);return d[0]||null;}
-  catch(e){return null;}
-}
-async function fetchTaf(code){
-  try{const d=await apiFetch(awxUrl('/taf?ids='+code+'&format=json'),true);return d[0]||null;}
-  catch(e){return null;}
-}
-async function fetchForecast(lat,lon){
-  const params=[
+
+async function omForecast(lat,lon){
+  const q=[
     'latitude='+lat,'longitude='+lon,
     'hourly=temperature_2m,relative_humidity_2m,dewpoint_2m,precipitation_probability,cloud_cover,cloud_cover_low,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,pressure_msl',
     'daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant',
     'temperature_unit=fahrenheit','wind_speed_unit=kn','forecast_days=10','timezone=auto'
   ].join('&');
-  return apiFetch('https://api.open-meteo.com/v1/forecast?'+params);
+  return fetchJSON('https://api.open-meteo.com/v1/forecast?'+q);
 }
 
-/* ========== RENDERING ========== */
+/* ========== DOM ========== */
 function $(id){return document.getElementById(id);}
-function show(id){$(id).style.display='';}
-function hide(id){$(id).style.display='none';}
+function show(el){if(typeof el==='string')el=$(el);el.style.display='';}
+function hide(el){if(typeof el==='string')el=$(el);el.style.display='none';}
 
-function renderStationHeader(stn,metar,forecast){
-  const tz=forecast.timezone||'UTC';
-  const daily=forecast.daily;
-  const todayIdx=0;
-  const sunrise=daily.sunrise[todayIdx],sunset=daily.sunset[todayIdx];
-  const srT=sunrise.split('T')[1],ssT=sunset.split('T')[1];
-  const metarAge=metar?timeAgo(metar.obsTime*1000):'—';
-  let html='<div class="stn-hdr">';
-  html+='<div class="stn-code">'+stn.icaoId+'</div>';
-  html+='<div class="stn-name">'+stn.site+(stn.state?', '+stn.state:'')+(stn.country?', '+stn.country:'')+'</div>';
-  html+='<div class="stn-meta">';
-  html+='<span>'+stn.lat.toFixed(4)+'°N / '+(Math.abs(stn.lon)).toFixed(4)+'°'+(stn.lon<0?'W':'E')+'</span>';
-  html+='<span>Elev '+ Math.round(stn.elev*3.28084)+'\'</span>';
-  html+='<span>🌅 '+srT+'</span><span>🌇 '+ssT+'</span>';
-  if(metar)html+='<span class="metar-age">METAR '+metarAge+'</span>';
-  html+='</div></div>';
-  $('station-hdr').innerHTML=html;
+/* ========== RENDER ========== */
+function renderHeader(stn,obs,fc){
+  const tz=fc.timezone||stn.tz||'UTC';
+  const daily=fc.daily;
+  const sr=daily.sunrise[0].split('T')[1],ss=daily.sunset[0].split('T')[1];
+  const age=obs?timeAgo(obs.timestamp):'—';
+  const latDir=stn.lat>=0?'N':'S',lonDir=stn.lon>=0?'E':'W';
+  let h='<div class="stn-hdr">';
+  h+='<div class="stn-code">'+stn.id+'</div>';
+  h+='<div class="stn-name">'+stn.name+'</div>';
+  h+='<div class="stn-meta">';
+  h+='<span>'+Math.abs(stn.lat).toFixed(4)+'°'+latDir+' / '+Math.abs(stn.lon).toFixed(4)+'°'+lonDir+'</span>';
+  h+='<span>Elev '+Math.round(stn.elev*3.28084)+'\'</span>';
+  h+='<span>🌅 '+sr+'</span><span>🌇 '+ss+'</span>';
+  if(obs)h+='<span class="metar-age">METAR '+age+'</span>';
+  h+='</div></div>';
+  $('station-hdr').innerHTML=h;
 }
 
-function renderCurrent(metar,stn,forecast){
-  if(!metar){$('current').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted)">No current METAR available</div>';return;}
-  const tz=forecast.timezone||'UTC';
-  const daily=forecast.daily;
+function renderCurrent(obs,stn,fc){
+  if(!obs){$('current').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted)">No current observations available</div>';return;}
+  const tz=fc.timezone||stn.tz;
   const now=new Date();
-  const sr=new Date(daily.sunrise[0]),ss=new Date(daily.sunset[0]);
-  const night=isNight(now,sr,ss);
-  const cat=metar.fltCat||'VFR';
-  const ceil=metarCeiling(metar.clouds);
-  const vis=parseVis(metar.visib);
-  const desc=metarCoverDesc(metar.cover,metar.wxString);
-  const icon=metarIcon(metar.cover,metar.wxString,night);
-  const tempC=metar.temp, dewpC=metar.dewp;
-  const tempF=Math.round(tempC*9/5+32);
+  const sr=new Date(fc.daily.sunrise[0]),ss=new Date(fc.daily.sunset[0]);
+  const night=isNightTime(now,sr,ss);
+  const icon=coverIcon(obs.cover,obs.desc,night);
+  const desc=obs.desc||getCover([{cover:obs.cover}]);
+  const cat=obs.fltCat;
+  const ceil=getCeiling(obs.clouds);
+  const tempC=obs.temp,dewpC=obs.dewp;
+  const tempF=tempC!=null?Math.round(tempC*9/5+32):'—';
+  const tempCStr=tempC!=null?tempC.toFixed(0):'—';
   const rh=relHumidity(tempC,dewpC);
-  const dewpF=Math.round(dewpC*9/5+32);
-  const altimInHg=(metar.altim/33.8639).toFixed(2);
-  const da=densityAlt(stn.elev,metar.altim,tempC);
-  const wind=metar.wspd===0?'Calm':metar.wdir+'° at '+metar.wspd+(metar.wgst?' G'+metar.wgst:'')+' kts';
-  // Precip prob from today's Open-Meteo
-  const precipMax=daily.precipitation_probability_max?daily.precipitation_probability_max[0]:0;
-  // Find current hour precip from hourly
-  const hIdx=findCurrentHourIndex(forecast);
-  const precipNow=hIdx>=0?forecast.hourly.precipitation_probability[hIdx]:precipMax;
+  const dewpF=dewpC!=null?Math.round(dewpC*9/5+32):'—';
+  const altInHg=obs.altimHpa!=null?(obs.altimHpa/33.8639).toFixed(2):'—';
+  const da=densityAlt(stn.elev,obs.altimHpa,tempC);
+  const wind=obs.wspd===0||obs.wspd==null?'Calm':
+    (obs.wdir!=null?obs.wdir+'° ':'VRB ')+'at '+obs.wspd+(obs.wgst?' G'+obs.wgst:'')+' kts';
+  // Precip from current hour
+  const hIdx=findNowIdx(fc);
+  const precip=hIdx>=0?fc.hourly.precipitation_probability[hIdx]:'—';
 
-  let html='<div class="cur-card">';
-  html+='<div class="cur-top"><span class="cur-icon">'+icon+'</span><span class="cur-desc">'+desc+'</span></div>';
-  html+='<div class="cur-grid">';
-  html+=cell(catHTML(cat),'Flight Category');
-  html+=cell(ceil!==null?ceil.toLocaleString()+'\'':'No Ceiling','Ceiling');
-  html+=cell(fmtVis(metar.visib),'Visibility');
-  html+=cell(tempF+'°F <span style="color:var(--text-dim)">('+tempC.toFixed(0)+'°C)</span>','Temperature');
-  html+=cell(wind,'Wind (kts)');
-  html+=cell(altimInHg,'Altimeter');
-  html+=cell(dewpF+'°F / '+rh+'%','Dewpt / Humidity');
-  html+=cell(da.toLocaleString()+'\'','Density Alt');
-  html+=cell(precipNow+'%','Rain');
-  html+='</div>';
-  html+='<div class="cur-raw"><details><summary>Raw METAR</summary><pre>'+metar.rawOb+'</pre></details></div>';
-  html+='</div>';
-  $('current').innerHTML=html;
+  let c='<div class="cur-card">';
+  c+='<div class="cur-top"><span class="cur-icon">'+icon+'</span><span class="cur-desc">'+desc+'</span></div>';
+  c+='<div class="cur-grid">';
+  c+=cell(catHTML(cat),'Flight Category');
+  c+=cell(ceil!=null?ceil.toLocaleString()+'\'':'No Ceiling','Ceiling');
+  c+=cell(fmtVis(obs.visSm),'Visibility');
+  c+=cell(tempF+(tempC!=null?'°F <span style="color:var(--text-dim)">('+tempCStr+'°C)</span>':''),'Temperature');
+  c+=cell(wind,'Wind (kts)');
+  c+=cell(altInHg!=='—'?altInHg:'—','Altimeter');
+  c+=cell((dewpF!=='—'?dewpF+'°F':'—')+(rh!=null?' / '+rh+'%':''),'Dewpt / Humidity');
+  c+=cell(da!=null?da.toLocaleString()+'\'':'—','Density Alt');
+  c+=cell(precip+(precip!=='—'?'%':''),'Rain');
+  c+='</div>';
+  if(obs.rawOb){c+='<div class="cur-raw"><details><summary>Raw METAR</summary><pre>'+obs.rawOb+'</pre></details></div>';}
+  c+='</div>';
+  $('current').innerHTML=c;
 }
-function cell(val,lbl){return'<div class="cur-cell"><div class="cur-val">'+val+'</div><div class="cur-lbl">'+lbl+'</div></div>';}
+function cell(v,l){return'<div class="cur-cell"><div class="cur-val">'+v+'</div><div class="cur-lbl">'+l+'</div></div>';}
 
-function findCurrentHourIndex(forecast){
-  const now=new Date();
-  const times=forecast.hourly.time;
-  const tz=forecast.timezone;
-  // Find closest hour that's <= now
-  for(let i=times.length-1;i>=0;i--){
-    if(new Date(times[i])<=now)return i;
-  }
+function findNowIdx(fc){
+  const now=Date.now();
+  const times=fc.hourly.time;
+  for(let i=times.length-1;i>=0;i--){if(new Date(times[i]).getTime()<=now)return i;}
   return 0;
 }
 
-function renderHourly(forecast,taf,stn){
-  const tz=forecast.timezone||'UTC';
-  const h=forecast.hourly;
-  const daily=forecast.daily;
-  const now=new Date();
-  const startIdx=findCurrentHourIndex(forecast);
+function renderHourly(fc,stn){
+  const tz=fc.timezone||stn.tz;
+  const h=fc.hourly,daily=fc.daily;
+  const startIdx=findNowIdx(fc);
   const count=Math.min(72,h.time.length-startIdx);
-  $('hourly-label').textContent='Hourly Forecast ('+count+' hours)';
+  $('hourly-label').textContent='Hourly Forecast — '+count+' Hours';
 
-  // Build sunrise/sunset lookup for each day
-  const sunEvents={};
-  for(let di=0;di<daily.time.length;di++){
-    const dayKey=daily.time[di];
-    sunEvents[dayKey]={
-      sr:new Date(daily.sunrise[di]),
-      ss:new Date(daily.sunset[di])
-    };
+  // Sun lookup
+  const sunMap={};
+  for(let i=0;i<daily.time.length;i++){
+    sunMap[daily.time[i]]={sr:new Date(daily.sunrise[i]),ss:new Date(daily.sunset[i])};
   }
-  function getSunForDate(dt){
-    const key=dt.toLocaleDateString('en-CA',{timeZone:tz}); // YYYY-MM-DD
-    return sunEvents[key]||null;
-  }
-
-  // Build TAF data
-  const tafFcsts=taf?taf.fcsts:null;
-  const tafEnd=taf?(taf.validTimeTo*1000):0;
+  function sunFor(dt){const k=dt.toLocaleDateString('en-CA',{timeZone:tz});return sunMap[k]||null;}
 
   let thead='<tr><th></th>';
-  const rows={icon:'<tr><td></td>',cat:'<tr><td>Cat</td>',ceil:'<tr><td>Ceiling</td>',
+  const R={icon:'<tr><td></td>',cat:'<tr><td>Cat</td>',ceil:'<tr><td>Ceiling</td>',
     vis:'<tr><td>Vis</td>',wind:'<tr><td>Wind</td>',temp:'<tr><td>Temp</td>',
     precip:'<tr><td>Precip</td>'};
   let prevDay='';
@@ -484,169 +430,122 @@ function renderHourly(forecast,taf,stn){
     const dt=new Date(h.time[i]);
     const hr=fmtHour(dt,tz);
     const day=fmtDay(dt,tz);
-    const dayKey=dt.toLocaleDateString('en-CA',{timeZone:tz});
-    const isNewDay=day!==prevDay;
-    prevDay=day;
+    const isNew=day!==prevDay;prevDay=day;
     const isNow=i===startIdx;
-    const sep=isNewDay&&i!==startIdx?' hr-day-sep':'';
-    const nowCls=isNow?' hr-now':'';
-    const nowHdr=isNow?' hr-now-hdr':'';
+    const sep=isNew&&i!==startIdx?' hr-day-sep':'';
+    const nc=isNow?' hr-now':'';
+    const nh=isNow?' hr-now-hdr':'';
 
-    // Determine day/night
-    const sun=getSunForDate(dt);
-    const night=sun?isNight(dt,sun.sr,sun.ss):false;
+    const sun=sunFor(dt);
+    const night=sun?isNightTime(dt,sun.sr,sun.ss):false;
+    const dayLbl=isNew?'<div style="font-size:.6rem;color:var(--text-muted);font-weight:400">'+day+'</div>':'';
+    thead+='<th class="'+sep+nh+'">'+dayLbl+hr+'</th>';
 
-    // Time header - show day name for new day
-    const dayLabel=isNewDay?'<div style="font-size:.6rem;color:var(--text-muted);font-weight:400">'+day+'</div>':'';
-    thead+='<th class="'+sep+nowHdr+'">'+dayLabel+hr+'</th>';
-
-    // Weather icon
+    // Icon + sunrise/sunset marker
     const wi=wmoInfo(h.weather_code[i],night);
-    // Check if sunrise/sunset falls in this hour
     let sunMark='';
     if(sun){
-      const srHr=parseInt(fmtHour(sun.sr,tz));
-      const ssHr=parseInt(fmtHour(sun.ss,tz));
-      const thisHr=parseInt(hr);
-      if(thisHr===srHr)sunMark='<div class="hr-sun">🌅 '+fmtTime(sun.sr,tz)+'</div>';
-      else if(thisHr===ssHr)sunMark='<div class="hr-sun">🌇 '+fmtTime(sun.ss,tz)+'</div>';
+      const srH=parseInt(fmtHour(sun.sr,tz)),ssH=parseInt(fmtHour(sun.ss,tz)),thisH=parseInt(hr);
+      if(thisH===srH)sunMark='<div class="hr-sun">🌅'+fmtTime(sun.sr,tz)+'</div>';
+      else if(thisH===ssH)sunMark='<div class="hr-sun">🌇'+fmtTime(sun.ss,tz)+'</div>';
     }
-    rows.icon+='<td class="'+sep+nowCls+'"><span class="hr-icon">'+wi.icon+'</span>'+sunMark+'</td>';
+    R.icon+='<td class="'+sep+nc+'"><span class="hr-icon">'+wi.icon+'</span>'+sunMark+'</td>';
 
-    // Flight category
-    let ceiling=null,visSm=10;
-    const tsMs=dt.getTime();
-    if(tafFcsts&&tsMs<tafEnd){
-      const tg=tafAtTime(tafFcsts,tsMs);
-      if(tg){
-        ceiling=tafCeiling(tg);
-        visSm=parseVis(tg.visib);
-      }
-    }else{
-      // Estimate from Open-Meteo
-      visSm=h.visibility[i]/1609.34;
-      ceiling=estCeiling(h.cloud_cover_low[i],h.temperature_2m[i],h.dewpoint_2m[i],stn.elev);
-    }
+    // Flight category (estimated)
+    const visSm=h.visibility[i]/1609.34;
+    const ceiling=estCeiling(h.cloud_cover_low[i],h.temperature_2m[i],h.dewpoint_2m[i]);
     const cat=fltCat(ceiling,visSm);
-    rows.cat+='<td class="'+sep+nowCls+'">'+catHTML(cat)+'</td>';
+    R.cat+='<td class="'+sep+nc+'">'+catHTML(cat)+'</td>';
 
-    // Ceiling display
-    const ceilStr=ceiling!==null?ceiling.toLocaleString()+'\'':'None';
-    rows.ceil+='<td class="'+sep+nowCls+'"><span class="hr-ceil">'+ceilStr+'</span></td>';
+    // Ceiling
+    R.ceil+='<td class="'+sep+nc+'"><span class="hr-ceil">'+(ceiling!=null?ceiling.toLocaleString()+'\'':'None')+'</span></td>';
 
     // Visibility
-    const visVal=tafFcsts&&tsMs<tafEnd?fmtVis(tafAtTime(tafFcsts,tsMs)?.visib):
-      (h.visibility[i]/1609.34>=10?'10+ sm':(h.visibility[i]/1609.34).toFixed(0)+' sm');
-    rows.vis+='<td class="'+sep+nowCls+'"><span class="hr-vis">'+visVal+'</span></td>';
+    R.vis+='<td class="'+sep+nc+'"><span class="hr-vis">'+fmtVis(visSm)+'</span></td>';
 
     // Wind
-    const ws=Math.round(h.wind_speed_10m[i]);
-    const wd=Math.round(h.wind_direction_10m[i]);
+    const ws=Math.round(h.wind_speed_10m[i]),wd=Math.round(h.wind_direction_10m[i]);
     const wg=h.wind_gusts_10m[i]?Math.round(h.wind_gusts_10m[i]):0;
-    const windStr=ws<1?'Calm':wd+'°<br>'+ws+(wg>ws+5?'G'+wg:'')+' kts';
-    rows.wind+='<td class="'+sep+nowCls+'"><span class="hr-wind">'+windStr+'</span></td>';
+    R.wind+='<td class="'+sep+nc+'"><span class="hr-wind">'+(ws<1?'Calm':wd+'°<br>'+ws+(wg>ws+5?'G'+wg:'')+' kts')+'</span></td>';
 
-    // Temperature
-    rows.temp+='<td class="'+sep+nowCls+'"><span class="hr-temp">'+Math.round(h.temperature_2m[i])+'°F</span></td>';
+    // Temp
+    R.temp+='<td class="'+sep+nc+'"><span class="hr-temp">'+Math.round(h.temperature_2m[i])+'°F</span></td>';
 
-    // Precipitation
-    rows.precip+='<td class="'+sep+nowCls+'"><span class="hr-precip">'+h.precipitation_probability[i]+'%</span></td>';
+    // Precip
+    R.precip+='<td class="'+sep+nc+'"><span class="hr-precip">'+h.precipitation_probability[i]+'%</span></td>';
   }
 
   thead+='</tr>';
-  Object.keys(rows).forEach(k=>rows[k]+='</tr>');
-
+  Object.keys(R).forEach(k=>R[k]+='</tr>');
   $('hourly-tbl').innerHTML='<thead>'+thead+'</thead><tbody>'+
-    rows.icon+rows.cat+rows.ceil+rows.vis+rows.wind+rows.temp+rows.precip+'</tbody>';
-
-  // Auto-scroll to current hour (a bit to the left so it's visible)
+    R.icon+R.cat+R.ceil+R.vis+R.wind+R.temp+R.precip+'</tbody>';
   requestAnimationFrame(()=>{$('hourly-scroll').scrollLeft=0;});
 }
 
-function renderDaily(forecast,stn,taf){
-  const tz=forecast.timezone||'UTC';
-  const d=forecast.daily;
-  const h=forecast.hourly;
-  const now=new Date();
-
-  // Build daily cards
-  let stripHtml='';
-  let barHtml='';
-  let detailHtml='';
+function renderDaily(fc,stn){
+  const tz=fc.timezone||stn.tz;
+  const d=fc.daily,h=fc.hourly;
+  let strip='',bar='',detail='';
+  const catOrder=['VFR','MVFR','IFR','LIFR'];
 
   for(let i=0;i<d.time.length;i++){
     const dt=new Date(d.time[i]+'T12:00:00');
-    const dayName=fmtDay(dt,tz);
-    const dayDate=fmtDate(dt,tz);
+    const dayN=fmtDay(dt,tz),dayD=fmtDate(dt,tz);
     const wi=wmoInfo(d.weather_code[i],false);
-    const hi=Math.round(d.temperature_2m_max[i]);
-    const lo=Math.round(d.temperature_2m_min[i]);
-    const isToday=i===0;
-    const active=isToday?' active':'';
+    const hi=Math.round(d.temperature_2m_max[i]),lo=Math.round(d.temperature_2m_min[i]);
 
-    stripHtml+='<div class="day-card'+active+'" data-day="'+i+'">';
-    stripHtml+='<div class="day-name">'+dayName+'</div>';
-    stripHtml+='<div class="day-date">'+dayDate+'</div>';
-    stripHtml+='<div class="day-icon">'+wi.icon+'</div>';
-    stripHtml+='<div class="day-temps">'+hi+'° <span class="lo">/ '+lo+'°</span></div>';
-    stripHtml+='</div>';
+    strip+='<div class="day-card'+(i===0?' active':'')+'" data-day="'+i+'">';
+    strip+='<div class="day-name">'+dayN+'</div><div class="day-date">'+dayD+'</div>';
+    strip+='<div class="day-icon">'+wi.icon+'</div>';
+    strip+='<div class="day-temps">'+hi+'° <span class="lo">/ '+lo+'°</span></div></div>';
 
-    // VFR bar: worst-case flight category for the day
-    const dayStart=new Date(d.time[i]+'T00:00:00');
-    const dayEnd=new Date(dayStart.getTime()+24*3600000);
-    let worstCat='VFR';
-    const catOrder=['VFR','MVFR','IFR','LIFR'];
-    for(let hi2=0;hi2<h.time.length;hi2++){
-      const ht=new Date(h.time[hi2]);
-      if(ht>=dayStart&&ht<dayEnd){
-        const vs=h.visibility[hi2]/1609.34;
-        const cl=estCeiling(h.cloud_cover_low[hi2],h.temperature_2m[hi2],h.dewpoint_2m[hi2],stn.elev);
+    // VFR bar segment
+    let worst='VFR';
+    const ds=new Date(d.time[i]+'T00:00:00'),de=new Date(ds.getTime()+864e5);
+    for(let j=0;j<h.time.length;j++){
+      const ht=new Date(h.time[j]);
+      if(ht>=ds&&ht<de){
+        const vs=h.visibility[j]/1609.34;
+        const cl=estCeiling(h.cloud_cover_low[j],h.temperature_2m[j],h.dewpoint_2m[j]);
         const c=fltCat(cl,vs);
-        if(catOrder.indexOf(c)>catOrder.indexOf(worstCat))worstCat=c;
+        if(catOrder.indexOf(c)>catOrder.indexOf(worst))worst=c;
       }
     }
-    barHtml+='<div class="vfr-seg" style="background:'+catColor(worstCat)+'"></div>';
+    bar+='<div class="vfr-seg" style="background:'+catColor(worst)+'"></div>';
 
-    // Daily detail row
-    const sr=d.sunrise[i].split('T')[1];
-    const ss=d.sunset[i].split('T')[1];
-    const precip=d.precipitation_probability_max[i]||0;
+    // Detail row
+    const sr=d.sunrise[i].split('T')[1],ss=d.sunset[i].split('T')[1];
+    const pr=d.precipitation_probability_max[i]||0;
     const wMax=d.wind_speed_10m_max?Math.round(d.wind_speed_10m_max[i]):0;
     const wDir=d.wind_direction_10m_dominant?Math.round(d.wind_direction_10m_dominant[i]):0;
     const windStr=wMax<1?'Calm':wDir+'° '+wMax+' kts';
+    const ni=wmoInfo(d.weather_code[i],true);
 
-    // Day/night description from weather code
-    const dayDesc=wi.text;
-
-    detailHtml+='<div class="dd-row">';
-    detailHtml+='<div class="dd-date">'+dayName+'<br>'+dayDate+'</div>';
-    detailHtml+='<div class="dd-half"><span class="lbl">Day</span><span class="ico">'+wi.icon+'</span>';
-    detailHtml+='<span class="info">'+hi+'°F <span class="dim">△'+precip+'%</span></span>';
-    detailHtml+='<span class="dd-sun">🌅 '+sr+'</span></div>';
-    detailHtml+='<div class="dd-half"><span class="lbl">Night</span><span class="ico">'+wmoInfo(d.weather_code[i],true).icon+'</span>';
-    detailHtml+='<span class="info">'+lo+'°F <span class="dim">△'+precip+'%</span></span>';
-    detailHtml+='<span class="dd-sun">🌇 '+ss+'</span></div>';
-    detailHtml+='<div style="font-size:.72rem;color:var(--text-dim);margin-left:auto">'+windStr+'</div>';
-    detailHtml+='</div>';
+    detail+='<div class="dd-row">';
+    detail+='<div class="dd-date">'+dayN+'<br>'+dayD+'</div>';
+    detail+='<div class="dd-half"><span class="lbl">Day</span><span class="ico">'+wi.icon+'</span>';
+    detail+='<span class="info">'+hi+'°F <span class="dim">△'+pr+'%</span></span>';
+    detail+='<span class="dd-sun">🌅 '+sr+'</span></div>';
+    detail+='<div class="dd-half"><span class="lbl">Night</span><span class="ico">'+ni.icon+'</span>';
+    detail+='<span class="info">'+lo+'°F <span class="dim">△'+pr+'%</span></span>';
+    detail+='<span class="dd-sun">🌇 '+ss+'</span></div>';
+    detail+='<div style="font-size:.72rem;color:var(--text-dim);margin-left:auto">'+windStr+'</div>';
+    detail+='</div>';
   }
 
-  $('daily-strip').innerHTML=stripHtml;
-  $('vfr-bar').innerHTML=barHtml;
-  $('daily-detail').innerHTML=detailHtml;
-
-  // Click day card to highlight
-  $('daily-strip').querySelectorAll('.day-card').forEach(card=>{
-    card.addEventListener('click',()=>{
-      $('daily-strip').querySelectorAll('.day-card').forEach(c=>c.classList.remove('active'));
-      card.classList.add('active');
+  $('daily-strip').innerHTML=strip;
+  $('vfr-bar').innerHTML=bar;
+  $('daily-detail').innerHTML=detail;
+  $('daily-strip').querySelectorAll('.day-card').forEach(c=>{
+    c.addEventListener('click',()=>{
+      $('daily-strip').querySelectorAll('.day-card').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
     });
   });
 }
 
 /* ========== RECENT SEARCHES ========== */
-function getRecent(){
-  try{return JSON.parse(localStorage.getItem(RECENT_KEY))||[];}catch(e){return[];}
-}
+function getRecent(){try{return JSON.parse(localStorage.getItem(RECENT_KEY))||[];}catch(e){return[];}}
 function addRecent(code,name){
   let r=getRecent().filter(x=>x.code!==code);
   r.unshift({code,name:name||code});
@@ -660,107 +559,70 @@ function renderRecent(){
   $('recent').innerHTML=r.map(x=>
     '<span class="recent-chip" data-code="'+x.code+'" title="'+x.name+'">'+x.code+'</span>'
   ).join('');
-  $('recent').querySelectorAll('.recent-chip').forEach(chip=>{
-    chip.addEventListener('click',()=>loadAirport(chip.dataset.code));
+  $('recent').querySelectorAll('.recent-chip').forEach(c=>{
+    c.addEventListener('click',()=>loadAirport(c.dataset.code));
   });
 }
 
 /* ========== MAIN LOAD ========== */
 async function loadAirport(rawCode){
-  let code=rawCode.trim().toUpperCase();
+  let code=rawCode.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
   if(!code)return;
-  // Auto-prefix K for 3-letter US-style codes
   if(code.length===3&&/^[A-Z]{3}$/.test(code))code='K'+code;
-  if(code.length<3||code.length>4){showError('Enter a 3 or 4 letter ICAO airport code.');return;}
+  if(code.length<3||code.length>4){showError('Enter a 3 or 4 letter ICAO code.');return;}
 
-  hide('results');hide('error');show('loading');
+  hide('results');hide('error-box');show('loading');
   $('code-input').value=code;
-  window.location.hash=code;
+  history.replaceState(null,'','#'+code);
 
   try{
-    // Fetch station info first
     let stn;
-    try{stn=await fetchStation(code);}
-    catch(e){
-      // If 4-letter code failed and doesn't start with K, try with K prefix
-      if(code.length===3||!code.startsWith('K')){
-        try{stn=await fetchStation('K'+code);code='K'+code;}
-        catch(e2){throw new Error('NOT_FOUND');}
-      }else throw e;
+    try{stn=await nwsStation(code);}catch(e){
+      // Try with K prefix if not already
+      if(!code.startsWith('K')&&code.length<=4){
+        try{stn=await nwsStation('K'+code);code='K'+code;}catch(e2){throw new Error('NOT_FOUND');}
+      }else throw new Error('NOT_FOUND');
     }
 
-    // Fetch METAR, TAF, and forecast in parallel
-    const [metar,taf,forecast]=await Promise.all([
-      fetchMetar(stn.icaoId),
-      fetchTaf(stn.icaoId),
-      fetchForecast(stn.lat,stn.lon)
-    ]);
+    const [obs,fc]=await Promise.all([nwsObs(stn.id),omForecast(stn.lat,stn.lon)]);
 
-    // Add to recent
-    addRecent(stn.icaoId,stn.site);
+    if(!fc||!fc.hourly||!fc.hourly.time){throw new Error('Forecast data unavailable');}
 
-    // Update title
-    document.title=stn.icaoId+' Weather';
+    addRecent(stn.id,stn.name);
+    document.title=stn.id+' Weather';
 
-    // Render
-    renderStationHeader(stn,metar,forecast);
-    renderCurrent(metar,stn,forecast);
-    renderHourly(forecast,taf,stn);
-    renderDaily(forecast,stn,taf);
+    renderHeader(stn,obs,fc);
+    renderCurrent(obs,stn,fc);
+    renderHourly(fc,stn);
+    renderDaily(fc,stn);
 
-    hide('loading');
-    show('results');
-
-    // Show raw TAF if available
-    if(taf&&taf.rawTAF){
-      const tafEl=document.createElement('div');
-      tafEl.className='cur-raw';
-      tafEl.style.textAlign='center';
-      tafEl.style.marginTop='-8px';
-      tafEl.style.marginBottom='16px';
-      tafEl.innerHTML='<details><summary style="font-size:.75rem;color:var(--text-muted);cursor:pointer">Raw TAF</summary><pre style="font-family:var(--mono);font-size:.75rem;color:var(--text-dim);margin-top:6px;word-break:break-all;white-space:pre-wrap">'+taf.rawTAF+'</pre></details>';
-      $('current').appendChild(tafEl);
-    }
-
+    hide('loading');show('results');
   }catch(e){
     hide('loading');
-    if(e.message==='NOT_FOUND'){
-      showError('Airport "'+code+'" not found. Check the ICAO code and try again.');
-    }else{
-      showError('Failed to fetch weather data. '+e.message);
-    }
+    if(e.message==='NOT_FOUND')showError('Airport "'+code+'" not found. Check the ICAO code (e.g. KCMA, KSBA, KLAX).');
+    else showError('Failed to load weather: '+e.message);
   }
 }
 
-function showError(msg){
-  $('error').textContent=msg;
-  show('error');
-}
+function showError(msg){$('error-box').textContent=msg;show('error-box');}
 
-/* ========== EVENT HANDLERS ========== */
+/* ========== EVENTS ========== */
 $('go-btn').addEventListener('click',()=>loadAirport($('code-input').value));
 $('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')loadAirport($('code-input').value);});
 $('code-input').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');});
 
 /* ========== INIT ========== */
-(function init(){
-  // Seed KCMA if no recent searches
+(function(){
   if(!getRecent().length){
     localStorage.setItem(RECENT_KEY,JSON.stringify([
-      {code:'KCMA',name:'Camarillo'},
-      {code:'KSBA',name:'Santa Barbara'},
-      {code:'KLAX',name:'Los Angeles Intl'}
+      {code:'KCMA',name:'Camarillo'},{code:'KSBA',name:'Santa Barbara'},{code:'KLAX',name:'Los Angeles Intl'}
     ]));
   }
   renderRecent();
-  // Load from hash
-  const hash=window.location.hash.replace('#','').trim();
+  const hash=location.hash.replace('#','').trim();
   if(hash)loadAirport(hash);
 })();
-window.addEventListener('hashchange',()=>{
-  const hash=window.location.hash.replace('#','').trim();
-  if(hash)loadAirport(hash);
-});
+window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','').trim();if(h)loadAirport(h);});
 </script>
 </body>
 </html>
