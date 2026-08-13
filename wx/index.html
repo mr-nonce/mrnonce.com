@@ -101,6 +101,14 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
   .hourly-tbl th:first-child,.hourly-tbl td:first-child{min-width:50px;max-width:50px}
   .day-card{width:78px}
 }
+
+/* Legend */
+.legend{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:16px}
+.legend-group{flex:1;min-width:170px}
+.legend-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:7px}
+.legend-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:.76rem;color:var(--text-dim)}
+.legend-row .cat-badge{font-size:.72rem;padding:2px 8px;min-width:40px;text-align:center}
+.src-inline{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;padding:2px 6px;border-radius:3px}
 </style>
 </head>
 <body>
@@ -126,7 +134,23 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
       <div class="daily-hourly" id="daily-hourly"></div>
     </section>
   </main>
-  <footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://mesonet.agron.iastate.edu" target="_blank">IEM GFS-MOS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · <a href="https://avwx.rest" target="_blank">AVWX TAF</a></footer>
+  <div class="legend">
+  <div class="legend-group">
+    <div class="legend-title">Flight Category</div>
+    <div class="legend-row"><span class="cat-badge cat-VFR">VFR</span>Ceiling &gt;3,000&#39; and vis &gt;5sm</div>
+    <div class="legend-row"><span class="cat-badge cat-MVFR">MVFR</span>1,000–3,000&#39; ceiling or 3–5sm vis</div>
+    <div class="legend-row"><span class="cat-badge cat-IFR">IFR</span>500–1,000&#39; ceiling or 1–3sm vis</div>
+    <div class="legend-row"><span class="cat-badge cat-LIFR">LIFR</span>Below 500&#39; ceiling or &lt;1sm vis</div>
+  </div>
+  <div class="legend-group">
+    <div class="legend-title">Data Source</div>
+    <div class="legend-row"><span class="src-inline src-taf">TAF</span>NWS terminal aerodrome forecast (0–30h)</div>
+    <div class="legend-row"><span class="src-inline src-mos">MOS</span>GFS model output statistics (0–78h)</div>
+    <div class="legend-row"><span class="src-inline src-mex">MEX</span>GFS extended MOS (78–168h)</div>
+    <div class="legend-row"><span class="src-inline src-est">~est</span>Estimated from model cloud &amp; temp data</div>
+  </div>
+</div>
+<footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://mesonet.agron.iastate.edu" target="_blank">IEM GFS-MOS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · <a href="https://avwx.rest" target="_blank">AVWX TAF</a></footer>
 </div>
 <script>
 'use strict';
