@@ -289,13 +289,14 @@ async function fetchAvwxTaf(stationId){
 }
 
 /* ========== IEM GFS-MOS ========== */
+function iemUtc(s){return new Date(s.split('.')[0]+'Z').getTime();}
 function buildMosLookup(mavRows,mexRows){
   const lk={};
   // Process MAV (3h intervals, exact cig/vis codes)
   for(let i=0;i<mavRows.length;i++){
     const r=mavRows[i];
-    const ftMs=new Date(r.ftime_utc).getTime();
-    const nextMs=i<mavRows.length-1?new Date(mavRows[i+1].ftime_utc).getTime():ftMs+3*3600000;
+    const ftMs=iemUtc(r.ftime_utc);
+    const nextMs=i<mavRows.length-1?iemUtc(mavRows[i+1].ftime_utc):ftMs+3*3600000;
     const cat=cigVisCat(r.cig,r.vis);
     const ceilFt=r.cig!=null?(CIG_CEIL[r.cig]??null):null;
     const visSm=r.vis!=null?(VIS_SM[r.vis]||6):6;
@@ -305,8 +306,8 @@ function buildMosLookup(mavRows,mexRows){
   // Process MEX (12h intervals, cloud cover only - no cig/vis)
   for(let i=0;i<mexRows.length;i++){
     const r=mexRows[i];
-    const ftMs=new Date(r.ftime_utc).getTime();
-    const nextMs=i<mexRows.length-1?new Date(mexRows[i+1].ftime_utc).getTime():ftMs+12*3600000;
+    const ftMs=iemUtc(r.ftime_utc);
+    const nextMs=i<mexRows.length-1?iemUtc(mexRows[i+1].ftime_utc):ftMs+12*3600000;
     const cat=r.cig!=null?cigVisCat(r.cig,r.vis):mexCldCat(r.cld);
     const ceilFt=r.cig!=null?(CIG_CEIL[r.cig]??null):null;
     const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
