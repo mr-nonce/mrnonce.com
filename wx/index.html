@@ -303,22 +303,33 @@ function buildMosLookup(mavRows,mexRows){
     const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
     while(t.getTime()<nextMs){lk[t.toISOString().slice(0,13)]={src:'mav',cat,ceilFt,visSm,cld:r.cld};t.setUTCHours(t.getUTCHours()+1);}
   }
-  // Process MEX (12h intervals, LCL-derived ceiling from TMP/DPT spread)
+  // Process MEX (12h intervals, per-hour LCL ceiling via TMP/DPT linear interpolation)
   for(let i=0;i<mexRows.length;i++){
-    const r=mexRows[i];
+    const r=mexRows[i];const nextR=mexRows[i+1]||null;
     const ftMs=iemUtc(r.ftime_utc);
-    const nextMs=i<mexRows.length-1?iemUtc(mexRows[i+1].ftime_utc):ftMs+12*3600000;
-    let ceilFt=null;
-    if(r.cig!=null){ceilFt=CIG_CEIL[r.cig]??null;}
-    else if(r.tmp!=null&&r.dpt!=null&&(r.cld==='OV'||r.cld==='BK'||r.cld==='BKN'||r.cld==='OVC')){
-      ceilFt=Math.round((r.tmp-r.dpt)*228); // LCL: ~228ft per °F of surface T/Td spread
-    }
-    const cat=r.cig!=null?cigVisCat(r.cig,r.vis):fltCat(ceilFt,r.vis!=null?(VIS_SM[r.vis]||6):6);
+    const nextMs=nextR?iemUtc(nextR.ftime_utc):ftMs+12*3600000;
+    const durH=Math.max(1,Math.round((nextMs-ftMs)/3600000));
+    const visSm=r.vis!=null?(VIS_SM[r.vis]||6):6;
     const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
+    let h=0;
     while(t.getTime()<nextMs){
       const key=t.toISOString().slice(0,13);
-      if(!lk[key])lk[key]={src:'mex',cat,ceilFt,visSm:r.vis!=null?(VIS_SM[r.vis]||6):6,cld:r.cld};
-      t.setUTCHours(t.getUTCHours()+1);
+      if(!lk[key]){
+        let ceilFt=null;
+        if(r.cig!=null){ceilFt=CIG_CEIL[r.cig]??null;}
+        else{
+          const frac=h/durH;
+          const cld=frac<0.5||!nextR?r.cld:(nextR.cld||r.cld);
+          if((cld==='OV'||cld==='BK'||cld==='BKN'||cld==='OVC')&&r.tmp!=null&&r.dpt!=null){
+            const tmpH=nextR&&nextR.tmp!=null?r.tmp+frac*(nextR.tmp-r.tmp):r.tmp;
+            const dptH=nextR&&nextR.dpt!=null?r.dpt+frac*(nextR.dpt-r.dpt):r.dpt;
+            ceilFt=Math.round((tmpH-dptH)*228);
+          }
+        }
+        const cat=r.cig!=null?cigVisCat(r.cig,r.vis):fltCat(ceilFt,visSm);
+        lk[key]={src:'mex',cat,ceilFt,visSm,cld:r.cld};
+      }
+      t.setUTCHours(t.getUTCHours()+1);h++;
     }
   }
   return lk;
@@ -367,13 +378,14 @@ function renderCurrent(obs,stn,fc){
   const rh=relHumidity(tempC,dewpC);const dewpF=dewpC!=null?Math.round(dewpC*9/5+32):'—';
   const altInHg=obs.altimHpa!=null?(obs.altimHpa/33.8639).toFixed(2):'—';
   const da=densityAlt(stn.elev,obs.altimHpa,tempC);
-  const wind=obs.wspd===0||obs.wspd==null?'Calm':(obs.wdir!=null?obs.wdir+'° ':'VRB ')+'at '+obs.wspd+(obs.wgst?' G'+obs.wgst:'')+' kts';
+  const wind=obs.wspd===0||obs.wspd==null?'Calm':(obs.wdir!=null?obs.wdir+'° @ ':'VRB @ ')+obs.wspd+(obs.wgst?' G'+obs.wgst:'')+' kts';
   const hIdx=findNowIdx(fc);const precip=hIdx>=0?fc.hourly.precipitation_probability[hIdx]:'—';
   let c='<div class="cur-card">';
   c+='<div class="cur-top"><span class="cur-icon">'+icon+'</span><span class="cur-desc">'+desc+'</span></div>';
   c+='<div class="cur-grid">';
   c+=cell(catHTML(cat),'Flight Category');
-  c+=cell(ceil!=null?ceil.toLocaleString()+'\'':'No Ceiling','Ceiling');
+  const skyLayers=obs.clouds&&obs.clouds.length?obs.clouds.map(cl=>cl.cover+(cl.base!=null?' '+cl.base.toLocaleString()+'\''':'')).join('<br>'):'CLR';
+  c+=cell(skyLayers,'SKY');
   c+=cell(fmtVis(obs.visSm),'Visibility');
   c+=cell(tempF+(tempC!=null?'°F <span style="color:var(--text-dim)">('+tempC.toFixed(0)+'°C)</span>':''),'Temperature');
   c+=cell(wind,'Wind (kts)');c+=cell(altInHg!=='—'?altInHg:'—','Altimeter');
