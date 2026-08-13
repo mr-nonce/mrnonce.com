@@ -19,19 +19,17 @@ html{font-size:14px}
 body{font-family:var(--font);background:var(--bg);color:var(--text);
   min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}
-
-/* Layout */
 #app{max-width:960px;margin:0 auto;padding:16px 12px 40px}
 header{text-align:center;margin-bottom:20px}
 .logo{font-size:1.4rem;font-weight:700;margin-bottom:14px;letter-spacing:-.02em}
 .logo span{opacity:.6;font-weight:400}
 
-/* Search */
-.search-wrap{display:flex;gap:8px;max-width:360px;margin:0 auto 10px}
-#code-input{flex:1;padding:10px 14px;font-size:1rem;font-family:var(--mono);
+/* Search — compact for 4-char codes */
+.search-wrap{display:flex;gap:8px;max-width:220px;margin:0 auto 10px}
+#code-input{width:130px;padding:10px 14px;font-size:1rem;font-family:var(--mono);
   background:var(--bg-input);border:1px solid var(--border);border-radius:8px;
   color:var(--text);text-transform:uppercase;outline:none;letter-spacing:.08em}
-#code-input::placeholder{text-transform:none;letter-spacing:0;color:var(--text-muted)}
+#code-input::placeholder{text-transform:none;letter-spacing:0;color:var(--text-muted);font-size:.78rem}
 #code-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,179,237,.15)}
 #go-btn{padding:10px 18px;font-size:1rem;font-weight:600;background:var(--accent);
   color:#0b1120;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
@@ -42,7 +40,6 @@ header{text-align:center;margin-bottom:20px}
   color:var(--text-dim);cursor:pointer;transition:all .15s;user-select:none}
 .recent-chip:hover{background:var(--bg-input);color:var(--text);border-color:var(--accent)}
 
-/* Loading / Error */
 #loading{display:none;text-align:center;padding:60px 0;color:var(--text-dim)}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);
   border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
@@ -50,12 +47,9 @@ header{text-align:center;margin-bottom:20px}
 #error-box{display:none;text-align:center;padding:30px 20px;margin:10px 0;
   background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.25);border-radius:10px;
   color:var(--ifr);font-size:.95rem}
-
-/* Results */
 #results{display:none;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* Station Header */
 .stn-hdr{text-align:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
 .stn-code{font-size:1.8rem;font-weight:800;font-family:var(--mono);letter-spacing:.04em}
 .stn-name{font-size:1rem;color:var(--text-dim);margin:2px 0}
@@ -63,7 +57,6 @@ header{text-align:center;margin-bottom:20px}
 .stn-meta span{white-space:nowrap}
 .metar-age{color:var(--accent);font-weight:600}
 
-/* Current Conditions */
 .cur-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
   padding:18px 16px;margin-bottom:16px}
 .cur-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;justify-content:center}
@@ -84,11 +77,10 @@ header{text-align:center;margin-bottom:20px}
 .cur-raw pre{font-family:var(--mono);font-size:.75rem;color:var(--text-dim);
   margin-top:6px;word-break:break-all;white-space:pre-wrap}
 
-/* Hourly Timeline */
 .section-label{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
   color:var(--text-muted);margin-bottom:8px;padding-left:4px}
-.hourly-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
-  margin-bottom:16px;overflow:hidden}
+
+/* Hourly table (used inside daily section) */
 .hourly-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;
   scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .hourly-scroll::-webkit-scrollbar{height:6px}
@@ -97,16 +89,15 @@ header{text-align:center;margin-bottom:20px}
 .hourly-tbl th,.hourly-tbl td{padding:4px 0;text-align:center;font-size:.78rem;
   min-width:62px;max-width:62px;border-bottom:1px solid rgba(30,48,80,.4)}
 .hourly-tbl th:first-child,.hourly-tbl td:first-child{
-  position:sticky;left:0;z-index:3;background:var(--bg-sticky);
+  position:sticky;left:0;z-index:3;background:var(--bg-card);
   min-width:58px;max-width:58px;text-align:right;padding-right:8px;
   font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;
   border-right:1px solid var(--border)}
 .hourly-tbl thead th{font-family:var(--mono);font-size:.72rem;font-weight:600;
   color:var(--text-dim);padding:8px 0;border-bottom:1px solid var(--border)}
-.hourly-tbl thead th:first-child{background:var(--bg-sticky)}
+.hourly-tbl thead th:first-child{background:var(--bg-card)}
 .hr-now{background:var(--highlight) !important}
 .hr-now-hdr{background:var(--highlight) !important;color:var(--accent) !important;font-weight:700 !important}
-.hr-day-sep{border-left:2px solid var(--border) !important}
 .hr-icon{font-size:1.1rem;line-height:1.2}
 .hr-cat{font-size:.6rem;font-weight:700;font-family:var(--mono);
   display:inline-block;padding:1px 5px;border-radius:3px;letter-spacing:.03em}
@@ -117,7 +108,7 @@ header{text-align:center;margin-bottom:20px}
 .hr-ceil{font-size:.7rem;color:var(--text-dim)}
 .hr-sun{font-size:.8rem;line-height:1}
 
-/* Daily Forecast */
+/* Daily */
 .daily-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
   padding:14px 0;margin-bottom:16px;overflow:hidden}
 .daily-strip{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 8px;gap:2px;
@@ -134,23 +125,12 @@ header{text-align:center;margin-bottom:20px}
 .day-temps .lo{color:var(--text-dim);font-weight:400}
 .vfr-bar{display:flex;margin:8px 12px 0;border-radius:3px;overflow:hidden;height:5px}
 .vfr-seg{flex:1;transition:background .3s}
-.daily-detail{padding:8px 14px 0}
-.dd-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(30,48,80,.3);
-  font-size:.85rem;gap:8px;flex-wrap:wrap}
-.dd-row:last-child{border-bottom:none}
-.dd-date{font-weight:700;min-width:70px;font-size:.82rem}
-.dd-half{display:flex;align-items:center;gap:6px;flex:1;min-width:140px}
-.dd-half .lbl{font-size:.65rem;color:var(--text-muted);text-transform:uppercase;min-width:38px}
-.dd-half .ico{font-size:1rem}
-.dd-half .info{font-family:var(--mono);font-size:.8rem}
-.dd-half .info .dim{color:var(--text-dim);font-weight:400}
-.dd-sun{font-size:.65rem;color:var(--text-muted);font-family:var(--mono)}
+.daily-hourly{padding:6px 0 0}
+.daily-hourly .section-label{margin:8px 12px 6px}
 
-/* Footer */
 footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 10px;
   border-top:1px solid var(--border);margin-top:8px}
 
-/* Responsive */
 @media(max-width:600px){
   html{font-size:13px}
   #app{padding:12px 8px 30px}
@@ -159,7 +139,6 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
   .hourly-tbl th,.hourly-tbl td{min-width:56px;max-width:56px}
   .hourly-tbl th:first-child,.hourly-tbl td:first-child{min-width:50px;max-width:50px}
   .day-card{width:78px}
-  .dd-half{min-width:120px}
 }
 </style>
 </head>
@@ -168,7 +147,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
   <header>
     <div class="logo">✈️ Airport Weather <span>Daily</span></div>
     <div class="search-wrap">
-      <input type="text" id="code-input" placeholder="ICAO code (KCMA)" maxlength="4" autocomplete="off" spellcheck="false">
+      <input type="text" id="code-input" placeholder="ICAO" maxlength="4" autocomplete="off" spellcheck="false">
       <button id="go-btn">Go</button>
     </div>
     <div class="recent" id="recent"></div>
@@ -178,15 +157,11 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
   <main id="results">
     <section id="station-hdr"></section>
     <section id="current"></section>
-    <div class="section-label" id="hourly-label"></div>
-    <section class="hourly-wrap" id="hourly-wrap">
-      <div class="hourly-scroll" id="hourly-scroll"><table class="hourly-tbl" id="hourly-tbl"></table></div>
-    </section>
     <div class="section-label">10-Day Forecast</div>
     <section class="daily-wrap" id="daily-wrap">
       <div class="daily-strip" id="daily-strip"></div>
       <div class="vfr-bar" id="vfr-bar"></div>
-      <div class="daily-detail" id="daily-detail"></div>
+      <div class="daily-hourly" id="daily-hourly"></div>
     </section>
   </main>
   <footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a></footer>
@@ -194,6 +169,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
 <script>
 'use strict';
 const RECENT_KEY='wx_recent',MAX_RECENT=8;
+let _fc=null,_stn=null;
 
 /* ========== WMO WEATHER CODES ========== */
 const WMO={
@@ -275,9 +251,8 @@ function fmtDay(d,tz){return d.toLocaleDateString('en-US',{weekday:'short',timeZ
 function fmtDate(d,tz){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:tz});}
 function isNightTime(dt,sr,ss){return dt<sr||dt>=ss;}
 function fmtVis(sm){return sm>=10?'10+ sm':sm>=1?Math.round(sm)+' sm':sm.toFixed(1)+' sm';}
-// Estimate ceiling from Open-Meteo cloud cover + spread
 function estCeiling(cloudLow,tempF,dewpF){
-  if(cloudLow<62)return null; // FEW/SCT → no ceiling
+  if(cloudLow<62)return null;
   const tc=(tempF-32)*5/9,tdc=(dewpF-32)*5/9;
   return Math.max(Math.round((tc-tdc)*400),200);
 }
@@ -289,15 +264,12 @@ async function fetchJSON(url,opts){
   try{const r=await fetch(url,{...opts,signal:ctrl.signal});clearTimeout(tid);if(!r.ok)throw new Error(r.status);return r.json();}
   catch(e){clearTimeout(tid);throw e;}
 }
-
 async function nwsStation(code){
   const d=await fetchJSON('https://api.weather.gov/stations/'+code,{headers:{'Accept':'application/geo+json'}});
   const p=d.properties,g=d.geometry.coordinates;
   return{id:p.stationIdentifier,name:p.name||code,lat:g[1],lon:g[0],
-    elev:p.elevation?.value||0,tz:p.timeZone||'UTC',
-    state:p.name?.includes(',')?'':'',country:'US'};
+    elev:p.elevation?.value||0,tz:p.timeZone||'UTC'};
 }
-
 async function nwsObs(code){
   try{
     const d=await fetchJSON('https://api.weather.gov/stations/'+code+'/observations/latest',
@@ -322,7 +294,6 @@ async function nwsObs(code){
     };
   }catch(e){return null;}
 }
-
 async function omForecast(lat,lon){
   const q=[
     'latitude='+lat,'longitude='+lon,
@@ -338,7 +309,7 @@ function $(id){return document.getElementById(id);}
 function show(el){if(typeof el==='string')el=$(el);el.style.display='block';}
 function hide(el){if(typeof el==='string')el=$(el);el.style.display='none';}
 
-/* ========== RENDER ========== */
+/* ========== RENDER: HEADER ========== */
 function renderHeader(stn,obs,fc){
   const tz=fc.timezone||stn.tz||'UTC';
   const daily=fc.daily;
@@ -357,14 +328,14 @@ function renderHeader(stn,obs,fc){
   $('station-hdr').innerHTML=h;
 }
 
+/* ========== RENDER: CURRENT CONDITIONS ========== */
 function renderCurrent(obs,stn,fc){
   if(!obs){$('current').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted)">No current observations available</div>';return;}
-  const tz=fc.timezone||stn.tz;
   const now=new Date();
   const sr=new Date(fc.daily.sunrise[0]),ss=new Date(fc.daily.sunset[0]);
   const night=isNightTime(now,sr,ss);
   const icon=coverIcon(obs.cover,obs.desc,night);
-  const desc=obs.desc||getCover([{cover:obs.cover}]);
+  const desc=obs.desc||'Unknown';
   const cat=obs.fltCat;
   const ceil=getCeiling(obs.clouds);
   const tempC=obs.temp,dewpC=obs.dewp;
@@ -376,7 +347,6 @@ function renderCurrent(obs,stn,fc){
   const da=densityAlt(stn.elev,obs.altimHpa,tempC);
   const wind=obs.wspd===0||obs.wspd==null?'Calm':
     (obs.wdir!=null?obs.wdir+'° ':'VRB ')+'at '+obs.wspd+(obs.wgst?' G'+obs.wgst:'')+' kts';
-  // Precip from current hour
   const hIdx=findNowIdx(fc);
   const precip=hIdx>=0?fc.hourly.precipitation_probability[hIdx]:'—';
 
@@ -406,86 +376,86 @@ function findNowIdx(fc){
   return 0;
 }
 
-function renderHourly(fc,stn){
+/* ========== RENDER: DAY HOURLY (tap a day → see its 24h breakdown) ========== */
+function renderDayHourly(dayIdx){
+  if(!_fc||!_stn)return;
+  const fc=_fc,stn=_stn;
   const tz=fc.timezone||stn.tz;
   const h=fc.hourly,daily=fc.daily;
-  const startIdx=findNowIdx(fc);
-  const count=Math.min(72,h.time.length-startIdx);
-  $('hourly-label').textContent='Hourly Forecast — '+count+' Hours';
+  const dayDate=daily.time[dayIdx];
 
-  // Sun lookup
-  const sunMap={};
-  for(let i=0;i<daily.time.length;i++){
-    sunMap[daily.time[i]]={sr:new Date(daily.sunrise[i]),ss:new Date(daily.sunset[i])};
-  }
-  function sunFor(dt){const k=dt.toLocaleDateString('en-CA',{timeZone:tz});return sunMap[k]||null;}
+  // Hourly indices for this day
+  const idx=[];
+  for(let i=0;i<h.time.length;i++){if(h.time[i].startsWith(dayDate))idx.push(i);}
+  if(!idx.length){$('daily-hourly').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted)">No hourly data</div>';return;}
+
+  const now=new Date();
+  const todayKey=now.toLocaleDateString('en-CA',{timeZone:tz});
+  const isToday=dayDate===todayKey;
+  const curIdx=isToday?findNowIdx(fc):-1;
+  const sun={sr:new Date(daily.sunrise[dayIdx]),ss:new Date(daily.sunset[dayIdx])};
 
   let thead='<tr><th></th>';
   const R={icon:'<tr><td></td>',cat:'<tr><td>Cat</td>',ceil:'<tr><td>Ceiling</td>',
     vis:'<tr><td>Vis</td>',wind:'<tr><td>Wind</td>',temp:'<tr><td>Temp</td>',
     precip:'<tr><td>Precip</td>'};
-  let prevDay='';
+  let scrollTo=0;
 
-  for(let i=startIdx;i<startIdx+count&&i<h.time.length;i++){
+  for(let j=0;j<idx.length;j++){
+    const i=idx[j];
     const dt=new Date(h.time[i]);
     const hr=fmtHour(dt,tz);
-    const day=fmtDay(dt,tz);
-    const isNew=day!==prevDay;prevDay=day;
-    const isNow=i===startIdx;
-    const sep=isNew&&i!==startIdx?' hr-day-sep':'';
+    const isNow=i===curIdx;
     const nc=isNow?' hr-now':'';
     const nh=isNow?' hr-now-hdr':'';
+    if(isNow)scrollTo=j;
 
-    const sun=sunFor(dt);
-    const night=sun?isNightTime(dt,sun.sr,sun.ss):false;
-    const dayLbl=isNew?'<div style="font-size:.6rem;color:var(--text-muted);font-weight:400">'+day+'</div>':'';
-    thead+='<th class="'+sep+nh+'">'+dayLbl+hr+'</th>';
+    const night=isNightTime(dt,sun.sr,sun.ss);
+    thead+='<th class="'+nh+'">'+hr+'</th>';
 
-    // Icon + sunrise/sunset marker
     const wi=wmoInfo(h.weather_code[i],night);
     let sunMark='';
-    if(sun){
-      const srH=parseInt(fmtHour(sun.sr,tz)),ssH=parseInt(fmtHour(sun.ss,tz)),thisH=parseInt(hr);
-      if(thisH===srH)sunMark='<div class="hr-sun">🌅'+fmtTime(sun.sr,tz)+'</div>';
-      else if(thisH===ssH)sunMark='<div class="hr-sun">🌇'+fmtTime(sun.ss,tz)+'</div>';
-    }
-    R.icon+='<td class="'+sep+nc+'"><span class="hr-icon">'+wi.icon+'</span>'+sunMark+'</td>';
+    const srH=parseInt(fmtHour(sun.sr,tz)),ssH=parseInt(fmtHour(sun.ss,tz)),thisH=parseInt(hr);
+    if(thisH===srH)sunMark='<div class="hr-sun">🌅'+fmtTime(sun.sr,tz)+'</div>';
+    else if(thisH===ssH)sunMark='<div class="hr-sun">🌇'+fmtTime(sun.ss,tz)+'</div>';
+    R.icon+='<td class="'+nc+'"><span class="hr-icon">'+wi.icon+'</span>'+sunMark+'</td>';
 
-    // Flight category (estimated)
     const visSm=h.visibility[i]/1609.34;
     const ceiling=estCeiling(h.cloud_cover_low[i],h.temperature_2m[i],h.dewpoint_2m[i]);
     const cat=fltCat(ceiling,visSm);
-    R.cat+='<td class="'+sep+nc+'">'+catHTML(cat)+'</td>';
-
-    // Ceiling
-    R.ceil+='<td class="'+sep+nc+'"><span class="hr-ceil">'+(ceiling!=null?ceiling.toLocaleString()+'\'':'None')+'</span></td>';
-
-    // Visibility
-    R.vis+='<td class="'+sep+nc+'"><span class="hr-vis">'+fmtVis(visSm)+'</span></td>';
-
-    // Wind
+    R.cat+='<td class="'+nc+'">'+catHTML(cat)+'</td>';
+    R.ceil+='<td class="'+nc+'"><span class="hr-ceil">'+(ceiling!=null?ceiling.toLocaleString()+'\'':'None')+'</span></td>';
+    R.vis+='<td class="'+nc+'"><span class="hr-vis">'+fmtVis(visSm)+'</span></td>';
     const ws=Math.round(h.wind_speed_10m[i]),wd=Math.round(h.wind_direction_10m[i]);
     const wg=h.wind_gusts_10m[i]?Math.round(h.wind_gusts_10m[i]):0;
-    R.wind+='<td class="'+sep+nc+'"><span class="hr-wind">'+(ws<1?'Calm':wd+'°<br>'+ws+(wg>ws+5?'G'+wg:'')+' kts')+'</span></td>';
-
-    // Temp
-    R.temp+='<td class="'+sep+nc+'"><span class="hr-temp">'+Math.round(h.temperature_2m[i])+'°F</span></td>';
-
-    // Precip
-    R.precip+='<td class="'+sep+nc+'"><span class="hr-precip">'+h.precipitation_probability[i]+'%</span></td>';
+    R.wind+='<td class="'+nc+'"><span class="hr-wind">'+(ws<1?'Calm':wd+'°<br>'+ws+(wg>ws+5?'G'+wg:'')+' kts')+'</span></td>';
+    R.temp+='<td class="'+nc+'"><span class="hr-temp">'+Math.round(h.temperature_2m[i])+'°F</span></td>';
+    R.precip+='<td class="'+nc+'"><span class="hr-precip">'+h.precipitation_probability[i]+'%</span></td>';
   }
 
   thead+='</tr>';
   Object.keys(R).forEach(k=>R[k]+='</tr>');
-  $('hourly-tbl').innerHTML='<thead>'+thead+'</thead><tbody>'+
-    R.icon+R.cat+R.ceil+R.vis+R.wind+R.temp+R.precip+'</tbody>';
-  requestAnimationFrame(()=>{$('hourly-scroll').scrollLeft=0;});
+
+  const dayN=fmtDay(new Date(dayDate+'T12:00:00'),tz);
+  const dayD=fmtDate(new Date(dayDate+'T12:00:00'),tz);
+  const srT=daily.sunrise[dayIdx].split('T')[1],ssT=daily.sunset[dayIdx].split('T')[1];
+
+  let out='<div class="section-label">'+dayN+' '+dayD+' — Hourly &nbsp; <span style="font-weight:400;font-size:.7rem">🌅 '+srT+' &nbsp; 🌇 '+ssT+'</span></div>';
+  out+='<div class="hourly-scroll" id="day-hourly-scroll" style="border-top:1px solid var(--border);padding-top:4px"><table class="hourly-tbl">';
+  out+='<thead>'+thead+'</thead><tbody>'+R.icon+R.cat+R.ceil+R.vis+R.wind+R.temp+R.precip+'</tbody></table></div>';
+  $('daily-hourly').innerHTML=out;
+
+  // Auto-scroll to current hour if today
+  if(isToday&&scrollTo>2){
+    requestAnimationFrame(()=>{const el=$('day-hourly-scroll');if(el)el.scrollLeft=(scrollTo-2)*62;});
+  }
 }
 
+/* ========== RENDER: 10-DAY STRIP + VFR BAR ========== */
 function renderDaily(fc,stn){
   const tz=fc.timezone||stn.tz;
   const d=fc.daily,h=fc.hourly;
-  let strip='',bar='',detail='';
+  let strip='',bar='';
   const catOrder=['VFR','MVFR','IFR','LIFR'];
 
   for(let i=0;i<d.time.length;i++){
@@ -499,7 +469,6 @@ function renderDaily(fc,stn){
     strip+='<div class="day-icon">'+wi.icon+'</div>';
     strip+='<div class="day-temps">'+hi+'° <span class="lo">/ '+lo+'°</span></div></div>';
 
-    // VFR bar segment
     let worst='VFR';
     const ds=new Date(d.time[i]+'T00:00:00'),de=new Date(ds.getTime()+864e5);
     for(let j=0;j<h.time.length;j++){
@@ -512,36 +481,22 @@ function renderDaily(fc,stn){
       }
     }
     bar+='<div class="vfr-seg" style="background:'+catColor(worst)+'"></div>';
-
-    // Detail row
-    const sr=d.sunrise[i].split('T')[1],ss=d.sunset[i].split('T')[1];
-    const pr=d.precipitation_probability_max[i]||0;
-    const wMax=d.wind_speed_10m_max?Math.round(d.wind_speed_10m_max[i]):0;
-    const wDir=d.wind_direction_10m_dominant?Math.round(d.wind_direction_10m_dominant[i]):0;
-    const windStr=wMax<1?'Calm':wDir+'° '+wMax+' kts';
-    const ni=wmoInfo(d.weather_code[i],true);
-
-    detail+='<div class="dd-row">';
-    detail+='<div class="dd-date">'+dayN+'<br>'+dayD+'</div>';
-    detail+='<div class="dd-half"><span class="lbl">Day</span><span class="ico">'+wi.icon+'</span>';
-    detail+='<span class="info">'+hi+'°F <span class="dim">△'+pr+'%</span></span>';
-    detail+='<span class="dd-sun">🌅 '+sr+'</span></div>';
-    detail+='<div class="dd-half"><span class="lbl">Night</span><span class="ico">'+ni.icon+'</span>';
-    detail+='<span class="info">'+lo+'°F <span class="dim">△'+pr+'%</span></span>';
-    detail+='<span class="dd-sun">🌇 '+ss+'</span></div>';
-    detail+='<div style="font-size:.72rem;color:var(--text-dim);margin-left:auto">'+windStr+'</div>';
-    detail+='</div>';
   }
 
   $('daily-strip').innerHTML=strip;
   $('vfr-bar').innerHTML=bar;
-  $('daily-detail').innerHTML=detail;
+
+  // Day card click → show hourly for that day
   $('daily-strip').querySelectorAll('.day-card').forEach(c=>{
     c.addEventListener('click',()=>{
       $('daily-strip').querySelectorAll('.day-card').forEach(x=>x.classList.remove('active'));
       c.classList.add('active');
+      renderDayHourly(parseInt(c.dataset.day));
     });
   });
+
+  // Default: show today's hourly
+  renderDayHourly(0);
 }
 
 /* ========== RECENT SEARCHES ========== */
@@ -578,22 +533,20 @@ async function loadAirport(rawCode){
   try{
     let stn;
     try{stn=await nwsStation(code);}catch(e){
-      // Try with K prefix if not already
       if(!code.startsWith('K')&&code.length<=4){
         try{stn=await nwsStation('K'+code);code='K'+code;}catch(e2){throw new Error('NOT_FOUND');}
       }else throw new Error('NOT_FOUND');
     }
 
     const [obs,fc]=await Promise.all([nwsObs(stn.id),omForecast(stn.lat,stn.lon)]);
-
     if(!fc||!fc.hourly||!fc.hourly.time){throw new Error('Forecast data unavailable');}
 
+    _fc=fc;_stn=stn;
     addRecent(stn.id,stn.name);
     document.title=stn.id+' Weather';
 
     renderHeader(stn,obs,fc);
     renderCurrent(obs,stn,fc);
-    renderHourly(fc,stn);
     renderDaily(fc,stn);
 
     hide('loading');show('results');
@@ -603,7 +556,6 @@ async function loadAirport(rawCode){
     else showError('Failed to load weather: '+e.message);
   }
 }
-
 function showError(msg){$('error-box').textContent=msg;show('error-box');}
 
 /* ========== EVENTS ========== */
