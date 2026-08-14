@@ -150,7 +150,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
     <div class="legend-row"><span class="src-inline src-est">~est</span>Estimated from model cloud &amp; temp data</div>
   </div>
 </div>
-<footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://mesonet.agron.iastate.edu" target="_blank">IEM GFS-MOS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · <a href="https://aviationweather.gov" target="_blank">AWC TAF</a></footer>
+<footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://mesonet.agron.iastate.edu" target="_blank">IEM GFS-MOS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · <a href="https://avwx.rest" target="_blank">AVWX TAF</a></footer>
 </div>
 <script>
 'use strict';
@@ -285,6 +285,7 @@ async function omForecast(lat,lon){
   return fetchJSON('https://api.open-meteo.com/v1/forecast?'+q);
 }
 
+const AVWX_TOKEN='';
 /* ========== AWC TAF (aviation.weather.gov — no API key, CORS-enabled) ========== */
 function parseVisSm(s){
   if(!s||s==='6+')return 10;
@@ -311,11 +312,30 @@ function buildAwcTafLookup(taf){
   }
   return Object.keys(lk).length?lk:null;
 }
+
+function parseTafDDHH(repr,nowMs){
+  const dd=parseInt(repr.slice(0,2)),hh=parseInt(repr.slice(2,4));
+  const ref=new Date(nowMs);const d=new Date(Date.UTC(ref.getUTCFullYear(),ref.getUTCMonth(),dd,hh));
+  if(d.getTime()<nowMs-15*86400000)d.setUTCMonth(d.getUTCMonth()+1);return d.getTime();
+}
+function buildAvwxTafLookup(tafData){
+  const lk={};const now=Date.now();
+  for(const g of tafData.forecast||[]){
+    if(g.type==='TEMPO')continue;
+    const stMs=parseTafDDHH(g.start_time.repr,now);const etMs=parseTafDDHH(g.end_time.repr,now);
+    let ceilFt=null;
+    for(const c of g.clouds||[])if((c.type==='BKN'||c.type==='OVC')&&(ceilFt===null||c.altitude*100<ceilFt))ceilFt=c.altitude*100;
+    const cat=g.flight_rules||'VFR',visSm=g.visibility?.value||6;
+    const t=new Date(stMs);t.setUTCMinutes(0,0,0);
+    while(t.getTime()<etMs){lk[t.toISOString().slice(0,13)]={cat,ceilFt,visSm};t.setUTCHours(t.getUTCHours()+1);}
+  }
+  return Object.keys(lk).length?lk:null;
+}
 async function fetchTaf(stationId){
   try{
-    const d=await fetchJSON('https://aviationweather.gov/api/data/taf?ids='+stationId+'&format=json&time=valid');
-    if(!d||!d.length||!d[0].fcsts)return null;
-    return buildAwcTafLookup(d[0]);
+    const d=await fetchJSON('https://avwx.rest/api/taf/'+stationId+'?token='+AVWX_TOKEN);
+    if(d.error||!d.forecast)return null;
+    return buildAvwxTafLookup(d);
   }catch(e){return null;}
 }
 
