@@ -12,6 +12,7 @@
   --border:#1e3050;--text:#e2e8f0;--text-dim:#8b95a8;--text-muted:#4a5568;
   --vfr:#48bb78;--mvfr:#4299e1;--ifr:#fc8181;--lifr:#d53f8c;
   --accent:#63b3ed;--highlight:rgba(66,153,225,.12);--mex:#a78bfa;
+  --nbm:#f6ad55;--lamp:#4fd1c5;
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
 }
@@ -75,10 +76,16 @@ header{text-align:center;margin-bottom:20px}
 .hr-wind{font-size:.86rem;color:var(--text-dim)}.hr-temp{font-family:var(--mono);font-weight:600;font-size:.96rem}
 .hr-precip{font-family:var(--mono);font-size:.88rem;color:var(--text-dim)}
 .hr-vis{font-family:var(--mono);font-size:.88rem}.hr-ceil{font-size:.86rem;color:var(--text-dim)}
+/* A real BKN/OVC ceiling reads solid; a cloud base with no ceiling is dimmed and
+   italic so a 25,000' cirrus base can never be misread as a ceiling. */
+.ceil-real{color:var(--text);font-weight:600}
+.ceil-base{color:var(--text-muted);font-style:italic;opacity:.8}
+.ceil-none{color:var(--text-muted)}
 .hr-sun{font-size:.8rem;line-height:1}
 /* Source badges */
 .src-badge{font-size:.64rem;display:block;font-weight:700;letter-spacing:.05em;line-height:1.2}
-.src-taf{color:var(--accent)}.src-mos{color:var(--vfr)}.src-mex{color:var(--mex)}.src-est{color:var(--text-muted);font-weight:400}
+.src-taf{color:var(--accent)}.src-lamp{color:var(--lamp)}.src-nbm{color:var(--nbm)}
+.src-mos{color:var(--vfr)}.src-mex{color:var(--mex)}.src-est{color:var(--text-muted);font-weight:400}
 /* Daily */
 .daily-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 0;margin-bottom:16px;overflow:hidden}
 .daily-strip{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 8px;gap:2px;scrollbar-width:none}
@@ -143,11 +150,20 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
     <div class="legend-row"><span class="cat-badge cat-LIFR">LIFR</span>Below 500&#39; ceiling or &lt;1sm vis</div>
   </div>
   <div class="legend-group">
-    <div class="legend-title">Data Source</div>
+    <div class="legend-title">Data Source <span style="font-weight:400;text-transform:none;letter-spacing:0">(best available per hour)</span></div>
     <div class="legend-row"><span class="src-inline src-taf">TAF</span>NWS terminal aerodrome forecast (0–30h)</div>
-    <div class="legend-row"><span class="src-inline src-mos">MOS</span>GFS model output statistics (0–78h)</div>
-    <div class="legend-row"><span class="src-inline src-mex">MEX</span>GFS extended MOS (78–168h)</div>
+    <div class="legend-row"><span class="src-inline src-lamp">LAMP</span>Localized aviation MOS, hourly (0–25h)</div>
+    <div class="legend-row"><span class="src-inline src-nbm">NBM</span>National Blend of Models (0–72h)</div>
+    <div class="legend-row"><span class="src-inline src-nbm">NBMX</span>NBM extended — ceiling from sky cover (72h+)</div>
+    <div class="legend-row"><span class="src-inline src-mos">MOS</span>GFS model output statistics (fallback)</div>
+    <div class="legend-row"><span class="src-inline src-mex">MEX</span>GFS extended MOS (fallback)</div>
     <div class="legend-row"><span class="src-inline src-est">~est</span>Estimated from model cloud &amp; temp data</div>
+  </div>
+  <div class="legend-group">
+    <div class="legend-title">Ceiling Row</div>
+    <div class="legend-row"><span class="hr-ceil ceil-real" style="min-width:44px">1,200'</span>Reported ceiling — lowest BKN/OVC layer</div>
+    <div class="legend-row"><span class="hr-ceil ceil-base" style="min-width:44px">(25,000')</span>In parentheses: no ceiling — cloud base only, does not affect category</div>
+    <div class="legend-row"><span class="hr-ceil ceil-none" style="min-width:44px">None</span>No cloud layer forecast</div>
   </div>
 </div>
 <footer>Data: <a href="https://api.weather.gov" target="_blank">NWS</a> · <a href="https://mesonet.agron.iastate.edu" target="_blank">IEM GFS-MOS</a> · <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · <a href="https://avwx.rest" target="_blank">AVWX TAF</a></footer>
@@ -155,7 +171,7 @@ footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:20px 0 
 <script>
 'use strict';
 const RECENT_KEY='***',MAX_RECENT=8;
-let _fc=null,_stn=null,_initDay=0,_taf=null,_mos=null;
+let _fc=null,_stn=null,_initDay=0,_src=null;
 
 /* ========== WMO WEATHER CODES ========== */
 const WMO={
@@ -174,33 +190,80 @@ const WMO={
 function wmoInfo(code,night){const w=WMO[code]||WMO[3];return{icon:night?w.n:w.d,text:w.t};}
 
 /* ========== FLIGHT CATEGORY ========== */
+/* NWS/FAA definitions. Note the inclusive upper bounds: MVFR is a ceiling of 1,000 TO
+   3,000 ft and visibility of 3 TO 5 sm, so exactly 3,000' or exactly 5 sm is MVFR, not
+   VFR. Strict < comparisons here would call a 3,000' ceiling VFR. */
 function fltCat(ceilFt,visSm){
-  if((ceilFt!==null&&ceilFt<500)||visSm<1)return'LIFR';
-  if((ceilFt!==null&&ceilFt<1000)||visSm<3)return'IFR';
-  if((ceilFt!==null&&ceilFt<3000)||visSm<5)return'MVFR';
+  if((ceilFt!=null&&ceilFt<500)||(visSm!=null&&visSm<1))return'LIFR';
+  if((ceilFt!=null&&ceilFt<1000)||(visSm!=null&&visSm<3))return'IFR';
+  if((ceilFt!=null&&ceilFt<=3000)||(visSm!=null&&visSm<=5))return'MVFR';
   return'VFR';
 }
-function worstCat(a,b){const o=['VFR','MVFR','IFR','LIFR'];return o[Math.max(o.indexOf(a),o.indexOf(b))];}
+/* Model ceilings are not precise to the foot. Round DOWN to a sensible granularity so a
+   value can never drift optimistically across a category boundary (999' → 950', still
+   IFR) and an interpolated high deck reads as a clean number. */
+function roundCeil(ft){
+  if(ft==null)return null;
+  if(ft<1000)return Math.floor(ft/50)*50;
+  if(ft<5000)return Math.floor(ft/100)*100;
+  return Math.floor(ft/500)*500;
+}
 function catColor(c){return'var(--'+(c||'vfr').toLowerCase()+')';}
 function catHTML(c){return'<span class="hr-cat cat-badge cat-'+c+'">'+c+'</span>';}
 
-/* ========== GFS-MOS DECODING ========== */
-// CIG codes: 1=<200ft, 2=200-400ft, 3=500-900ft, 4=1000-3000ft, 5=3100-6500ft, 6=6500-12000ft, 7+=no ceiling
-const CIG_CEIL={1:150,2:300,3:700,4:1500,5:4500,6:9000,7:null,8:null};
-const CIG_CAT={1:'LIFR',2:'LIFR',3:'IFR',4:'MVFR'};
-// VIS codes: 1=<0.5SM, 2=0.5SM, 3=1SM, 4=1.5SM, 5=2SM, 6=3SM, 7=6+SM
-const VIS_SM={1:0.25,2:0.75,3:1,4:1.5,5:2,6:3,7:6};
-function cigVisCat(cig,vis){
-  let cat=cig!=null?(CIG_CAT[cig]||'VFR'):'VFR';
-  if(vis!=null){
-    const sm=VIS_SM[vis]||6;
-    cat=worstCat(cat,fltCat(null,sm));
-  }
-  return cat;
+/* ========== MOS / LAMP CATEGORICAL TABLES ==========
+   Official NWS MOS + LAMP category codes. We take the LOWER bound of each bin as the
+   representative value: the bins are drawn on flight-category boundaries, so the lower
+   edge always yields the correct — and conservative — category.
+   CIG: 1=<200  2=200-400  3=500-900  4=1000-1900  5=2000-3000  6=3100-6500
+        7=6600-12000  8=>12000 or unlimited
+   VIS: 1=<1/2  2=1/2-<1  3=1-<2  4=2-<3  5=3-5  6=6  7=>6                            */
+const CIG_CEIL={1:100,2:200,3:500,4:1000,5:2000,6:3100,7:6600,8:null};
+const VIS_SM   ={1:0.25,2:0.5,3:1,4:2,5:3,6:6,7:10};
+function mosCeil(c){return c==null?null:(c in CIG_CEIL?CIG_CEIL[c]:null);}
+function mosVis(v){return v==null?null:(VIS_SM[v]||10);}
+
+/* ========== NBM BULLETIN DECODING (NBS / NBE) ==========
+   Unlike the older MOS products, NBM station bulletins carry real values, not categories:
+     cig = ceiling,          hundreds of feet, -88 = unlimited (no BKN/OVC layer)
+     lcb = lowest cloud base, hundreds of feet, -88 = no cloud at all
+     vis = visibility,       tenths of a statute mile, capped at 100 (10 sm)
+   Verified against KMRY/KSFO fog (vis 2 = 0.2 sm, cig 2 = 200') and KCMA high cirrus
+   (lcb 250 = 25,000' — the value ForeFlight renders as its "25,000' CEILING").        */
+function nbmCeil(v){return(v==null||v<=0)?null:v*100;}
+function nbmVis(v){return v==null?null:Math.min(v/10,10);}
+
+/* Lifted condensation level — cloud base AGL from the temp/dewpoint spread (°F).
+   ~222 ft per °F of spread (the standard 1000 ft per 4.4°F rule).                      */
+function lclFt(tF,dF){
+  if(tF==null||dF==null)return null;
+  return Math.max(Math.round((tF-dF)*222),100);
 }
-function mexCldCat(cld){
-  if(cld==='OV'||cld==='BK')return'MVFR';
-  return'VFR';
+/* Sky cover → is there a ceiling, and/or a cloud base? BKN (5/8 = 62.5%) is the default
+   threshold, which is correct when skyPct is a genuine LOW-cloud fraction. Callers
+   working from a coarse *total* sky average pass a higher threshold — see decNbe. */
+function skyToLayers(skyPct,tF,dF,ceilThresh){
+  if(skyPct==null)return{ceilFt:null,baseFt:null};
+  const base=roundCeil(lclFt(tF,dF));
+  if(skyPct>=(ceilThresh==null?62.5:ceilThresh))return{ceilFt:base,baseFt:base};
+  if(skyPct>=12.5)return{ceilFt:null,baseFt:base};
+  return{ceilFt:null,baseFt:null};
+}
+/* Sky description from cloud cover %, matching ForeFlight's wording. */
+function skyDesc(pct){
+  if(pct==null)return'—';
+  if(pct<12.5)return'Clear';
+  if(pct<37.5)return'Mostly Clear';
+  if(pct<62.5)return'Partly Cloudy';
+  if(pct<87.5)return'Mostly Cloudy';
+  return'Overcast';
+}
+function skyIcon(pct,night){
+  if(pct==null)return night?'🌙':'☀️';
+  if(pct<12.5)return night?'🌙':'☀️';
+  if(pct<37.5)return night?'🌙':'🌤️';
+  if(pct<62.5)return night?'☁️':'⛅';
+  return'☁️';
 }
 
 /* ========== HELPERS ========== */
@@ -243,14 +306,39 @@ function timeAgo(isoStr){
 }
 function fmtHour(d,tz){return d.toLocaleTimeString('en-US',{hour:'2-digit',hour12:false,timeZone:tz}).replace(/^24/,'00');}
 function fmtTime(d,tz){return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz});}
-function fmtDay(d,tz){return d.toLocaleDateString('en-US',{weekday:'short',timeZone:tz});}
-function fmtDate(d,tz){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:tz});}
 function isNightTime(dt,sr,ss){return dt<sr||dt>=ss;}
-function fmtVis(sm){return sm>=10?'10+ sm':sm>=1?Math.round(sm)+' sm':sm.toFixed(1)+' sm';}
-function estCeiling(cloudLow,tempF,dewpF){
-  if(cloudLow<62)return null;
-  const tc=(tempF-32)*5/9,tdc=(dewpF-32)*5/9;
-  return Math.max(Math.round((tc-tdc)*400),200);
+/* Open-Meteo returns bare local wall-clock strings ("2026-08-17T05:00") with no offset.
+   Feeding those to new Date() resolves them in the *browser's* timezone, which silently
+   shifts every model lookup by hours whenever the pilot is not sitting in the airport's
+   own timezone. Convert through the reported offset instead. */
+function omMs(fc,s){
+  if(!s)return NaN;
+  const iso=s.length===16?s+':00Z':(s.length===19?s+'Z':s);
+  return Date.parse(iso)-(fc.utc_offset_seconds||0)*1000;
+}
+/* Day labels come straight off the YYYY-MM-DD string, pinned to UTC noon, so the
+   weekday can never slip a day on a browser in a distant timezone. */
+function dayLabel(dateStr,opts){
+  return new Date(dateStr+'T12:00:00Z').toLocaleDateString('en-US',Object.assign({timeZone:'UTC'},opts));
+}
+/* NBM caps visibility at 10 sm, so 10 is "10 sm" not "10+" — matches ForeFlight. */
+function fmtVis(sm){
+  if(sm==null)return'—';
+  if(sm>=1)return Math.round(sm)+' sm';
+  if(sm>=0.5)return'1/2 sm';
+  if(sm>=0.25)return'1/4 sm';
+  return'<1/4 sm';
+}
+/* Ceiling cell, ForeFlight style: a true BKN/OVC ceiling reads bold; when there is no
+   ceiling but the model still has a cloud deck we show that base dimmed, so a high
+   cirrus base can never be mistaken for a ceiling. */
+function fmtCeil(ceilFt,baseFt){
+  if(ceilFt!=null)return'<span class="hr-ceil ceil-real">'+ceilFt.toLocaleString()+'\'</span>';
+  /* Parenthesised, dimmed and italic. A bare number here would be indistinguishable
+     from a ceiling — two adjacent hours can legitimately both read 200' while one is
+     LIFR and the other VFR, and styling alone is too weak a signal for that. */
+  if(baseFt!=null)return'<span class="hr-ceil ceil-base">('+baseFt.toLocaleString()+'\')</span>';
+  return'<span class="hr-ceil ceil-none">None</span>';
 }
 
 /* ========== API ========== */
@@ -277,13 +365,34 @@ async function nwsObs(code){
       fltCat:fltCat(getCeiling(clouds),p.visibility?.value!=null?p.visibility.value/1609.34:10)};
   }catch(e){return null;}
 }
+/* Open-Meteo, requesting the NBM CONUS model alongside best_match. ForeFlight's hourly
+   temperature/wind/sky track NBM exactly, so NBM is the backbone and best_match only
+   fills gaps (NBM visibility stops at ~96h, and its precipitation_probability field is
+   not populated — verified 168/168 hours returning ~0). */
+const OM_MODELS='ncep_nbm_conus,best_match';
 async function omForecast(lat,lon){
   const q=['latitude='+lat,'longitude='+lon,
-    'hourly=temperature_2m,relative_humidity_2m,dewpoint_2m,precipitation_probability,cloud_cover,cloud_cover_low,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,pressure_msl',
+    'hourly=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation_probability,cloud_cover,cloud_cover_low,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,pressure_msl',
     'daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant',
+    'models='+OM_MODELS,
     'temperature_unit=fahrenheit','wind_speed_unit=kn','forecast_days=10','timezone=auto'].join('&');
   return fetchJSON('https://api.open-meteo.com/v1/forecast?'+q);
 }
+/* Open-Meteo suffixes every series with its model name ONLY while the requested models
+   actually cover the point. Outside the CONUS NBM domain — Alaska, Hawaii, Puerto Rico,
+   Guam — it silently drops the model and returns bare, unsuffixed keys instead. Without
+   the bare-key fallback below, every lookup returns null and those airports render an
+   empty all-clear forecast, which is far worse than an error. */
+function omPick(o,base,i,pref){
+  for(const k of pref){const a=o[k];if(a&&a[i]!=null)return a[i];}
+  const bare=o[base];
+  return bare?bare[i]:null;
+}
+/* Prefer the NBM series, fall back to best_match where NBM has no value. */
+function omH(h,base,i){return omPick(h,base,i,[base+'_ncep_nbm_conus',base+'_best_match']);}
+/* Fields NBM does not usefully provide — always take best_match. */
+function omB(h,base,i){return omPick(h,base,i,[base+'_best_match']);}
+function omD(d,base,i){return omPick(d,base,i,[base+'_best_match',base+'_ncep_nbm_conus']);}
 
 const AVWX_TOKEN='t5DGYfV-N6Y4h7r8S_zNKaPyZut0VFUyisQszQySEcw';
 /* ========== AWC TAF (aviation.weather.gov — no API key, CORS-enabled) ========== */
@@ -303,12 +412,19 @@ function buildAwcTafLookup(taf){
   for(const g of taf.fcsts||[]){
     if(!g.timeFrom||!g.timeTo||g.fcstChange==='TEMPO')continue;
     const stMs=g.timeFrom*1000;const etMs=g.timeTo*1000;
-    let ceilFt=null;
-    for(const c of g.clouds||[])if((c.cover==='BKN'||c.cover==='OVC')&&c.base!=null&&(ceilFt===null||c.base<ceilFt))ceilFt=c.base;
+    let ceilFt=null,baseFt=null;
+    for(const c of g.clouds||[]){
+      if(c.base==null)continue;
+      if(baseFt===null||c.base<baseFt)baseFt=c.base;
+      if((c.cover==='BKN'||c.cover==='OVC')&&(ceilFt===null||c.base<ceilFt))ceilFt=c.base;
+    }
     const visSm=parseVisSm(g.visib);
     const cat=fltCat(ceilFt,visSm);
     const t=new Date(stMs);t.setUTCMinutes(0,0,0);
-    while(t.getTime()<etMs){lk[t.toISOString().slice(0,13)]={cat,ceilFt,visSm};t.setUTCHours(t.getUTCHours()+1);}
+    while(t.getTime()<etMs){
+      lk[t.toISOString().slice(0,13)]={src:'taf',cat,ceilFt,baseFt:baseFt!==null?baseFt:ceilFt,visSm,ifrProb:null,sky:null};
+      t.setUTCHours(t.getUTCHours()+1);
+    }
   }
   return Object.keys(lk).length?lk:null;
 }
@@ -323,91 +439,148 @@ function buildAvwxTafLookup(tafData){
   for(const g of tafData.forecast||[]){
     if(g.type==='TEMPO')continue;
     const stMs=parseTafDDHH(g.start_time.repr,now);const etMs=parseTafDDHH(g.end_time.repr,now);
-    let ceilFt=null;
-    for(const c of g.clouds||[])if((c.type==='BKN'||c.type==='OVC')&&(ceilFt===null||c.altitude*100<ceilFt))ceilFt=c.altitude*100;
-    const cat=g.flight_rules||'VFR',visSm=g.visibility?.value||6;
+    let ceilFt=null,baseFt=null;
+    for(const c of g.clouds||[]){
+      if(c.altitude==null)continue;
+      const ft=c.altitude*100;
+      if(baseFt===null||ft<baseFt)baseFt=ft;
+      if((c.type==='BKN'||c.type==='OVC')&&(ceilFt===null||ft<ceilFt))ceilFt=ft;
+    }
+    const visSm=g.visibility?.value||10;
+    /* Recompute rather than trusting flight_rules, so category and displayed
+       ceiling/visibility can never disagree. */
+    const cat=fltCat(ceilFt,visSm);
     const t=new Date(stMs);t.setUTCMinutes(0,0,0);
-    while(t.getTime()<etMs){lk[t.toISOString().slice(0,13)]={cat,ceilFt,visSm};t.setUTCHours(t.getUTCHours()+1);}
+    while(t.getTime()<etMs){
+      lk[t.toISOString().slice(0,13)]={src:'taf',cat,ceilFt,baseFt:baseFt!==null?baseFt:ceilFt,visSm,ifrProb:null,sky:null};
+      t.setUTCHours(t.getUTCHours()+1);
+    }
   }
   return Object.keys(lk).length?lk:null;
 }
+/* AVWX first, then aviationweather.gov. A TAF is the only human-issued, legally
+   authoritative forecast in this stack, so it is worth a second attempt. */
 async function fetchTaf(stationId){
   try{
     const d=await fetchJSON('https://avwx.rest/api/taf/'+stationId+'?token='+AVWX_TOKEN);
-    if(d.error||!d.forecast)return null;
-    return buildAvwxTafLookup(d);
-  }catch(e){return null;}
+    if(!d.error&&d.forecast){const lk=buildAvwxTafLookup(d);if(lk)return lk;}
+  }catch(e){}
+  try{
+    const d=await fetchJSON('https://aviationweather.gov/api/data/taf?ids='+stationId+'&format=json');
+    if(Array.isArray(d)&&d.length)return buildAwcTafLookup(d[0]);
+  }catch(e){}
+  return null;
 }
 
-/* ========== IEM GFS-MOS ========== */
+/* ========== IEM MODEL BULLETINS (NBM / LAMP / GFS-MOS) ==========
+   ForeFlight's extended hourly forecast is the National Blend of Models. NBM's hourly
+   *grid* is not reachable from a browser, but NOAA's NBM station bulletins are, via IEM:
+     NBS  NBM short range, 3-hourly to +72h — real ceiling & visibility values
+     NBE  NBM extended,   12-hourly to +264h — sky cover only, no ceiling/vis
+     LAV  LAMP,            hourly to +25h — terminal-calibrated aviation MOS
+     GFS  GFS MOS (MAV),   3-hourly to +72h — fallback where NBM has no bulletin
+     MEX  GFS extended,   12-hourly beyond — last-resort fallback                       */
 function iemUtc(s){return new Date(s.split('.')[0]+'Z').getTime();}
-function buildMosLookup(mavRows,mexRows){
+function utcKey(ms){return new Date(ms).toISOString().slice(0,13);}
+function latestRun(rows){
+  if(!rows||!rows.length)return[];
+  let best=null;for(const r of rows)if(best===null||r.runtime>best)best=r.runtime;
+  return rows.filter(r=>r.runtime===best).sort((a,b)=>iemUtc(a.ftime_utc)-iemUtc(b.ftime_utc));
+}
+/* Ceilings only interpolate between two finite values. Across an unlimited↔finite
+   transition we switch at the midpoint instead of inventing a gradual change the model
+   never forecast — a marine layer arrives as a step, not as a slow descent. */
+function lerpCeil(a,b,f){
+  if(a==null&&b==null)return null;
+  if(a==null||b==null)return f<0.5?a:b;
+  return Math.round(a+f*(b-a));
+}
+function lerpNum(a,b,f){
+  if(a==null)return b;if(b==null)return a;
+  return a+f*(b-a);
+}
+/* Expand a coarse bulletin onto every hour between its valid times. */
+function expandBulletin(rows,decode,stepH,src){
+  const R=latestRun(rows);if(!R.length)return null;
   const lk={};
-  let mavLastCeil=null;
-  // Process MAV (3h intervals, per-hour interpolation + 300ft/hr ceiling-rise cap)
-  for(let i=0;i<mavRows.length;i++){
-    const r=mavRows[i];const nextR=mavRows[i+1]||null;
-    const ftMs=iemUtc(r.ftime_utc);
-    const nextMs=i<mavRows.length-1?iemUtc(mavRows[i+1].ftime_utc):ftMs+3*3600000;
-    const durH=Math.max(1,Math.round((nextMs-ftMs)/3600000));
-    const rawCeilFt=r.cig!=null?(CIG_CEIL[r.cig]??null):null;
-    const nextRawCeilFt=nextR&&nextR.cig!=null?(CIG_CEIL[nextR.cig]??null):null;
-    const visSm=r.vis!=null?(VIS_SM[r.vis]||6):6;
-    const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
-    let h=0;
-    while(t.getTime()<nextMs){
-      const key=t.toISOString().slice(0,13);
-      let ceilFt=rawCeilFt;
-      if(rawCeilFt!=null&&nextRawCeilFt!=null&&h>0)ceilFt=Math.round(rawCeilFt+(h/durH)*(nextRawCeilFt-rawCeilFt));
-      if(mavLastCeil!=null&&ceilFt!=null&&ceilFt>mavLastCeil+300)ceilFt=mavLastCeil+300;
-      mavLastCeil=ceilFt;
-      lk[key]={src:'mav',cat:fltCat(ceilFt,visSm),ceilFt,visSm,cld:r.cld};
-      t.setUTCHours(t.getUTCHours()+1);h++;
-    }
-  }
-  let prevHourCeil=mavLastCeil; // anchor MEX start to MAV boundary
-  // Process MEX (12h intervals, per-hour LCL ceiling via TMP/DPT linear interpolation)
-  for(let i=0;i<mexRows.length;i++){
-    const r=mexRows[i];const nextR=mexRows[i+1]||null;
-    const ftMs=iemUtc(r.ftime_utc);
-    const nextMs=nextR?iemUtc(nextR.ftime_utc):ftMs+12*3600000;
-    const durH=Math.max(1,Math.round((nextMs-ftMs)/3600000));
-    const visSm=r.vis!=null?(VIS_SM[r.vis]||6):6;
-    const t=new Date(ftMs);t.setUTCMinutes(0,0,0);
-    let h=0;
-    while(t.getTime()<nextMs){
-      const key=t.toISOString().slice(0,13);
-      if(!lk[key]){
-        let ceilFt=null;
-        if(r.cig!=null){ceilFt=CIG_CEIL[r.cig]??null;}
-        else{
-          const frac=h/durH;
-          const cld=frac<0.75||!nextR?r.cld:(nextR.cld||r.cld); // 3/4 window before cloud transition
-          if((cld==='OV'||cld==='BK'||cld==='BKN'||cld==='OVC')&&r.tmp!=null&&r.dpt!=null){
-            const tmpH=nextR&&nextR.tmp!=null?r.tmp+frac*(nextR.tmp-r.tmp):r.tmp;
-            const dptH=nextR&&nextR.dpt!=null?r.dpt+frac*(nextR.dpt-r.dpt):r.dpt;
-            ceilFt=Math.round((tmpH-dptH)*228);
-            if(prevHourCeil!==null&&ceilFt>prevHourCeil+300)ceilFt=prevHourCeil+300; // 300ft/hr max rise
-          }
-        }
-        const cat=r.cig!=null?cigVisCat(r.cig,r.vis):fltCat(ceilFt,visSm);
-        lk[key]={src:'mex',cat,ceilFt,visSm,cld:r.cld};
-        prevHourCeil=ceilFt;
-      }else{prevHourCeil=lk[key].ceilFt;}
-      t.setUTCHours(t.getUTCHours()+1);h++;
+  for(let i=0;i<R.length;i++){
+    const a=decode(R[i]),b=R[i+1]?decode(R[i+1]):null;
+    const aMs=iemUtc(R[i].ftime_utc);
+    const bMs=R[i+1]?iemUtc(R[i+1].ftime_utc):aMs+stepH*3600000;
+    const n=Math.max(1,Math.min(24,Math.round((bMs-aMs)/3600000)));
+    for(let k=0;k<n;k++){
+      const f=k/n;
+      const ceilFt=roundCeil(b?lerpCeil(a.ceilFt,b.ceilFt,f):a.ceilFt);
+      /* Cloud base is only a backdrop reading, never a category driver — step it instead
+         of interpolating, so a high deck reads as a clean 25,000' not a drifting
+         24,333' that implies precision the model never had. */
+      const baseFt=roundCeil(b?(f<0.5?a.baseFt:b.baseFt):a.baseFt);
+      let visSm=b?lerpNum(a.visSm,b.visSm,f):a.visSm;
+      if(visSm!=null)visSm=Math.round(visSm*10)/10;
+      /* Category comes from the same rounded value that is displayed, so the badge and
+         the number under it can never disagree. */
+      lk[utcKey(aMs+k*3600000)]={src,ceilFt,baseFt,visSm,
+        cat:fltCat(ceilFt,visSm==null?10:visSm),
+        ifrProb:a.ifrProb,sky:a.sky};
     }
   }
   return lk;
 }
-async function fetchIemMos(stationId){
+/* NBM short range — cig/lcb in hundreds of feet, vis in tenths of a mile. */
+function decNbs(r){
+  const ceil=nbmCeil(r.cig),base=nbmCeil(r.lcb);
+  return{ceilFt:ceil,baseFt:base!=null?base:ceil,visSm:nbmVis(r.vis),
+    ifrProb:r.ifc!=null?r.ifc:null,sky:r.sky};
+}
+/* NBM extended — carries NO ceiling or visibility field at all, so a cloud base has to
+   be derived from sky cover + LCL. Its `sky` is a coarse average over a 12-hourly step,
+   where a 65% reading is far more often scattered-to-broken than a solid deck: measured
+   against ForeFlight, a plain BKN threshold here invented an MVFR ceiling for eight
+   straight hours at KCMA. Require a solid deck (80%) before calling a ceiling — but no
+   higher, because Monterey's real marine-layer IFR sits at 80-87% with an LCL near
+   700 ft, and suppressing that would under-call genuine IFR. */
+function decNbe(r){
+  const L=skyToLayers(r.sky,r.tmp,r.dpt,80);
+  return{ceilFt:L.ceilFt,baseFt:L.baseFt,visSm:nbmVis(r.vis),ifrProb:null,sky:r.sky};
+}
+/* LAMP and GFS MOS — categorical ceiling/visibility. */
+function decCat(r){
+  const c=mosCeil(r.cig);
+  return{ceilFt:c,baseFt:c,visSm:mosVis(r.vis),ifrProb:null,sky:null};
+}
+const MEX_CLD_PCT={CL:5,FW:20,SC:45,BK:75,OV:100};
+function decMex(r){
+  if(r.cig!=null)return decCat(r);
+  const pct=MEX_CLD_PCT[r.cld];
+  const L=skyToLayers(pct,r.tmp,r.dpt);
+  return{ceilFt:L.ceilFt,baseFt:L.baseFt,visSm:mosVis(r.vis),ifrProb:null,sky:pct};
+}
+async function iemBulletin(station,model){
   try{
-    const [mav,mex]=await Promise.all([
-      fetchJSON('https://mesonet.agron.iastate.edu/api/1/mos.json?station='+stationId+'&model=GFS'),
-      fetchJSON('https://mesonet.agron.iastate.edu/api/1/mos.json?station='+stationId+'&model=MEX')
-    ]);
-    if(!mav.data||!mav.data.length)return null;
-    return buildMosLookup(mav.data,mex.data||[]);
+    const d=await fetchJSON('https://mesonet.agron.iastate.edu/api/1/mos.json?station='+station+'&model='+model);
+    return d&&d.data&&d.data.length?d.data:null;
   }catch(e){return null;}
+}
+async function fetchModels(stationId){
+  const [nbs,nbe,lav,mav,mex]=await Promise.all([
+    iemBulletin(stationId,'NBS'),iemBulletin(stationId,'NBE'),iemBulletin(stationId,'LAV'),
+    iemBulletin(stationId,'GFS'),iemBulletin(stationId,'MEX')
+  ]);
+  return{
+    nbs:nbs?expandBulletin(nbs,decNbs,3,'nbs'):null,
+    nbe:nbe?expandBulletin(nbe,decNbe,12,'nbe'):null,
+    lav:lav?expandBulletin(lav,decCat,1,'lav'):null,
+    mav:mav?expandBulletin(mav,decCat,3,'mav'):null,
+    mex:mex?expandBulletin(mex,decMex,12,'mex'):null
+  };
+}
+/* Best available aviation source for a given UTC hour. The official TAF outranks every
+   model; LAMP is the sharpest short-range terminal model; NBM is what ForeFlight uses. */
+const SRC_ORDER=['taf','lav','nbs','mav','nbe','mex'];
+function avAt(key){
+  if(!_src)return null;
+  for(const s of SRC_ORDER){const l=_src[s];if(l&&l[key])return l[key];}
+  return null;
 }
 
 /* ========== DOM ========== */
@@ -418,7 +591,8 @@ function hide(el){if(typeof el==='string')el=$(el);el.style.display='none';}
 /* ========== RENDER: HEADER ========== */
 function renderHeader(stn,obs,fc){
   const tz=fc.timezone||stn.tz||'UTC';const daily=fc.daily;
-  const sr=daily.sunrise[0].split('T')[1],ss=daily.sunset[0].split('T')[1];
+  const srRaw=omD(daily,'sunrise',0),ssRaw=omD(daily,'sunset',0);
+  const sr=srRaw?srRaw.split('T')[1]:'—',ss=ssRaw?ssRaw.split('T')[1]:'—';
   const age=obs?timeAgo(obs.timestamp):'—';
   const latDir=stn.lat>=0?'N':'S',lonDir=stn.lon>=0?'E':'W';
   let h='<div class="stn-hdr">';
@@ -436,7 +610,7 @@ function renderHeader(stn,obs,fc){
 /* ========== RENDER: CURRENT CONDITIONS ========== */
 function renderCurrent(obs,stn,fc){
   if(!obs){$('current').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted)">No current observations available</div>';return;}
-  const now=new Date();const sr=new Date(fc.daily.sunrise[0]),ss=new Date(fc.daily.sunset[0]);
+  const now=new Date();const sr=new Date(omMs(fc,omD(fc.daily,'sunrise',0))),ss=new Date(omMs(fc,omD(fc.daily,'sunset',0)));
   const night=isNightTime(now,sr,ss);const icon=coverIcon(obs.cover,obs.desc,night);
   const desc=obs.desc||'Unknown';const cat=obs.fltCat;const ceil=getCeiling(obs.clouds);
   const tempC=obs.temp,dewpC=obs.dewp;const tempF=tempC!=null?Math.round(tempC*9/5+32):'—';
@@ -444,7 +618,7 @@ function renderCurrent(obs,stn,fc){
   const altInHg=obs.altimHpa!=null?(obs.altimHpa/33.8639).toFixed(2):'—';
   const da=densityAlt(stn.elev,obs.altimHpa,tempC);
   const wind=obs.wspd===0||obs.wspd==null?'Calm':(obs.wdir!=null?obs.wdir+'° @ ':'VRB @ ')+obs.wspd+(obs.wgst?' G'+obs.wgst:'')+' kts';
-  const hIdx=findNowIdx(fc);const precip=hIdx>=0?fc.hourly.precipitation_probability[hIdx]:'—';
+  const hIdx=findNowIdx(fc);const pp=hIdx>=0?omB(fc.hourly,'precipitation_probability',hIdx):null;const precip=pp==null?'—':pp;
   let c='<div class="cur-card">';
   c+='<div class="cur-top"><span class="cur-icon">'+icon+'</span><span class="cur-desc">'+desc+'</span></div>';
   c+='<div class="cur-grid">';
@@ -461,9 +635,49 @@ function renderCurrent(obs,stn,fc){
   c+='</div>';$('current').innerHTML=c;
 }
 function cell(v,l){return'<div class="cur-cell"><div class="cur-val">'+v+'</div><div class="cur-lbl">'+l+'</div></div>';}
-function findNowIdx(fc){const now=Date.now();const times=fc.hourly.time;for(let i=times.length-1;i>=0;i--){if(new Date(times[i]).getTime()<=now)return i;}return 0;}
+function findNowIdx(fc){const now=Date.now();const times=fc.hourly.time;for(let i=times.length-1;i>=0;i--){if(omMs(fc,times[i])<=now)return i;}return 0;}
 
 /* ========== RENDER: DAY HOURLY ========== */
+const SRC_BADGE={
+  taf:'<span class="src-badge src-taf">TAF</span>',
+  lav:'<span class="src-badge src-lamp">LAMP</span>',
+  nbs:'<span class="src-badge src-nbm">NBM</span>',
+  nbe:'<span class="src-badge src-nbm">NBMX</span>',
+  mav:'<span class="src-badge src-mos">MOS</span>',
+  mex:'<span class="src-badge src-mex">MEX</span>',
+  est:'<span class="src-badge src-est">~est</span>'
+};
+/* Sky icon from cloud cover; the WMO code only wins once there is fog or precipitation
+   (code >= 45), because NBM's code field never reports more than "partly cloudy". */
+function hrIcon(h,i,cloud,night){
+  const wc=omH(h,'weather_code',i);
+  if(wc!=null&&wc>=45)return wmoInfo(wc,night).icon;
+  return skyIcon(cloud,night);
+}
+/* Aviation data for one hour: best model source, else derived from the hourly grid. */
+function gridVis(h,i){
+  const v=omH(h,'visibility',i);
+  return v!=null?Math.min(v/1609.34,10):null;
+}
+function hrAv(fc,h,i,ms){
+  const av=avAt(utcKey(ms));
+  if(av){
+    if(av.visSm!=null)return av;
+    /* The NBM extended bulletin carries no visibility field. Rather than leave the
+       column blank past 72h, fall back to the hourly grid and recompute the category
+       so the badge still reflects the visibility actually shown. */
+    const visSm=gridVis(h,i);
+    return{src:av.src,ceilFt:av.ceilFt,baseFt:av.baseFt,visSm,
+      cat:fltCat(av.ceilFt,visSm==null?10:visSm),ifrProb:av.ifrProb,sky:av.sky};
+  }
+  /* Ceilings are formed by the LOW deck, so prefer cloud_cover_low; total cover would
+     let a cirrus shield masquerade as an overcast ceiling. */
+  const lowC=omH(h,'cloud_cover_low',i);
+  const L=skyToLayers(lowC!=null?lowC:omH(h,'cloud_cover',i),omH(h,'temperature_2m',i),omH(h,'dew_point_2m',i));
+  const visSm=gridVis(h,i);
+  return{src:'est',ceilFt:L.ceilFt,baseFt:L.baseFt,visSm,
+    cat:fltCat(L.ceilFt,visSm==null?10:visSm),ifrProb:null,sky:null};
+}
 function renderDayHourly(dayIdx){
   if(!_fc||!_stn)return;const fc=_fc,stn=_stn;
   const tz=fc.timezone||stn.tz;const h=fc.hourly,daily=fc.daily;const dayDate=daily.time[dayIdx];
@@ -471,46 +685,38 @@ function renderDayHourly(dayIdx){
   if(!idx.length){$('daily-hourly').innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted)">No hourly data</div>';return;}
   const now=new Date();const todayKey=now.toLocaleDateString('en-CA',{timeZone:tz});
   const isToday=dayDate===todayKey;const curIdx=isToday?findNowIdx(fc):-1;
-  const sun={sr:new Date(daily.sunrise[dayIdx]),ss:new Date(daily.sunset[dayIdx])};
+  const srMs=omMs(fc,omD(daily,'sunrise',dayIdx)),ssMs=omMs(fc,omD(daily,'sunset',dayIdx));
+  const srD=new Date(srMs),ssD=new Date(ssMs);
   let thead='<tr><th></th>';
   const R={icon:'<tr><td></td>',cat:'<tr><td>Cat</td>',ceil:'<tr><td>Ceiling</td>',vis:'<tr><td>Vis</td>',wind:'<tr><td>Wind</td>',temp:'<tr><td>Temp</td>',precip:'<tr><td>Precip</td>'};
   let scrollTo=0;
-  const srcBadgeHtml={
-    'taf':'<span class="src-badge src-taf">TAF</span>',
-    'mav':'<span class="src-badge src-mos">MOS</span>',
-    'mex':'<span class="src-badge src-mex">MEX</span>',
-    'est':'<span class="src-badge src-est">~est</span>'
-  };
   for(let j=0;j<idx.length;j++){
-    const i=idx[j];const dt=new Date(h.time[i]);const hr=fmtHour(dt,tz);
+    const i=idx[j];const ms=omMs(fc,h.time[i]);const dt=new Date(ms);const hr=fmtHour(dt,tz);
     const isNow=i===curIdx;const nc=isNow?' hr-now':'';const nh=isNow?' hr-now-hdr':'';
     if(isNow)scrollTo=j;
-    const utcKey=dt.toISOString().slice(0,13);
-    const tafHr=_taf&&_taf[utcKey];const mosHr=!tafHr&&_mos&&_mos[utcKey];
-    // Source and flight data
-    let cat,ceiling,visSm,srcKey;
-    if(tafHr){cat=tafHr.cat;ceiling=tafHr.ceilFt;visSm=tafHr.visSm;srcKey='taf';}
-    else if(mosHr){cat=mosHr.cat;ceiling=mosHr.ceilFt;visSm=mosHr.visSm;srcKey=mosHr.src;}
-    else{visSm=h.visibility[i]/1609.34;ceiling=estCeiling(h.cloud_cover_low[i],h.temperature_2m[i],h.dewpoint_2m[i]);cat=fltCat(ceiling,visSm);srcKey='est';}
-    const night=isNightTime(dt,sun.sr,sun.ss);
-    thead+='<th class="'+nh+'">'+hr+(srcBadgeHtml[srcKey]||'')+'</th>';
-    const wi=wmoInfo(h.weather_code[i],night);
-    let sunMark='';const srH=parseInt(fmtHour(sun.sr,tz)),ssH=parseInt(fmtHour(sun.ss,tz)),thisH=parseInt(hr);
-    if(thisH===srH)sunMark='<div class="hr-sun">🌅'+fmtTime(sun.sr,tz)+'</div>';
-    else if(thisH===ssH)sunMark='<div class="hr-sun">🌇'+fmtTime(sun.ss,tz)+'</div>';
-    R.icon+='<td class="'+nc+'"><span class="hr-icon">'+wi.icon+'</span>'+sunMark+'</td>';
-    R.cat+='<td class="'+nc+'">'+catHTML(cat)+'</td>';
-    R.ceil+='<td class="'+nc+'"><span class="hr-ceil">'+(ceiling!=null?ceiling.toLocaleString()+'\'':'None')+'</span></td>';
-    R.vis+='<td class="'+nc+'"><span class="hr-vis">'+fmtVis(visSm)+'</span></td>';
-    const ws=Math.round(h.wind_speed_10m[i]),wd=Math.round(h.wind_direction_10m[i]);
-    const wg=h.wind_gusts_10m[i]?Math.round(h.wind_gusts_10m[i]):0;
-    R.wind+='<td class="'+nc+'"><span class="hr-wind">'+(ws<1?'Calm':wd+'°<br>'+ws+(wg>ws?'G'+wg:'')+' kts')+'</span></td>';
-    R.temp+='<td class="'+nc+'"><span class="hr-temp">'+Math.round(h.temperature_2m[i])+'°F</span></td>';
-    R.precip+='<td class="'+nc+'"><span class="hr-precip">'+h.precipitation_probability[i]+'%</span></td>';
+    const av=hrAv(fc,h,i,ms);
+    const cloud=omH(h,'cloud_cover',i);
+    const night=ms<srMs||ms>=ssMs;
+    thead+='<th class="'+nh+'">'+hr+(SRC_BADGE[av.src]||'')+'</th>';
+    let sunMark='';const srH=parseInt(fmtHour(srD,tz)),ssH=parseInt(fmtHour(ssD,tz)),thisH=parseInt(hr);
+    if(thisH===srH)sunMark='<div class="hr-sun">🌅'+fmtTime(srD,tz)+'</div>';
+    else if(thisH===ssH)sunMark='<div class="hr-sun">🌇'+fmtTime(ssD,tz)+'</div>';
+    const sky=skyDesc(cloud)+(cloud!=null?' ('+Math.round(cloud)+'% cloud)':'');
+    R.icon+='<td class="'+nc+'" title="'+sky+'"><span class="hr-icon">'+hrIcon(h,i,cloud,night)+'</span>'+sunMark+'</td>';
+    R.cat+='<td class="'+nc+'">'+catHTML(av.cat)+'</td>';
+    R.ceil+='<td class="'+nc+'">'+fmtCeil(av.ceilFt,av.baseFt)+'</td>';
+    R.vis+='<td class="'+nc+'"><span class="hr-vis">'+fmtVis(av.visSm)+'</span></td>';
+    const wsR=omH(h,'wind_speed_10m',i),wdR=omH(h,'wind_direction_10m',i),wgR=omH(h,'wind_gusts_10m',i);
+    const ws=wsR==null?null:Math.round(wsR),wd=wdR==null?null:Math.round(wdR),wg=wgR==null?0:Math.round(wgR);
+    R.wind+='<td class="'+nc+'"><span class="hr-wind">'+(ws==null?'—':ws<3?'Calm':wd+'°<br>'+ws+(wg>ws?'G'+wg:'')+' kts')+'</span></td>';
+    const tp=omH(h,'temperature_2m',i);
+    R.temp+='<td class="'+nc+'"><span class="hr-temp">'+(tp==null?'—':Math.round(tp)+'°F')+'</span></td>';
+    const pp=omB(h,'precipitation_probability',i);
+    R.precip+='<td class="'+nc+'"><span class="hr-precip">'+(pp==null?'—':pp+'%')+'</span></td>';
   }
   thead+='</tr>';Object.keys(R).forEach(k=>R[k]+='</tr>');
-  const dayN=fmtDay(new Date(dayDate+'T12:00:00'),tz),dayD=fmtDate(new Date(dayDate+'T12:00:00'),tz);
-  const srT=daily.sunrise[dayIdx].split('T')[1],ssT=daily.sunset[dayIdx].split('T')[1];
+  const dayN=dayLabel(dayDate,{weekday:'short'}),dayD=dayLabel(dayDate,{month:'short',day:'numeric'});
+  const srT=fmtTime(srD,tz),ssT=fmtTime(ssD,tz);
   let out='<div class="section-label">'+dayN+' '+dayD+' — Hourly &nbsp;<span style="font-weight:400;font-size:.7rem">🌅 '+srT+' &nbsp; 🌇 '+ssT+'</span></div>';
   out+='<div class="hourly-scroll" id="day-hourly-scroll" style="border-top:1px solid var(--border);padding-top:4px"><table class="hourly-tbl">';
   out+='<thead>'+thead+'</thead><tbody>'+R.icon+R.cat+R.ceil+R.vis+R.wind+R.temp+R.precip+'</tbody></table></div>';
@@ -520,30 +726,31 @@ function renderDayHourly(dayIdx){
 
 /* ========== RENDER: 10-DAY STRIP + VFR BAR ========== */
 function renderDaily(fc,stn){
-  const tz=fc.timezone||stn.tz;const d=fc.daily,h=fc.hourly;
+  const d=fc.daily,h=fc.hourly;
   let strip='',bar='';const catOrder=['VFR','MVFR','IFR','LIFR'];
   for(let i=0;i<d.time.length;i++){
-    const dt=new Date(d.time[i]+'T12:00:00');
-    const dayN=fmtDay(dt,tz),dayD=fmtDate(dt,tz);
-    const wi=wmoInfo(d.weather_code[i],false);
-    const hi=Math.round(d.temperature_2m_max[i]),lo=Math.round(d.temperature_2m_min[i]);
-    strip+='<div class="day-card'+(i===(_initDay||0)?' active':'')+'" data-day="'+i+'">';
-    strip+='<div class="day-name">'+dayN+'</div><div class="day-date">'+dayD+'</div>';
-    strip+='<div class="day-icon">'+wi.icon+'</div>';
-    strip+='<div class="day-temps">'+hi+'° <span class="lo">/ '+lo+'°</span></div></div>';
-    // VFR bar: use MOS/TAF when available, else Open-Meteo estimate
-    let worst='VFR';
-    const ds=new Date(d.time[i]+'T00:00:00'),de=new Date(ds.getTime()+864e5);
+    const dayDate=d.time[i];
+    /* Walk this day's own hours: the high/low and the worst flight category on the card
+       are derived from exactly the rows the hourly table shows, so a day card can never
+       contradict the hours behind it. */
+    let hi=null,lo=null,worst='VFR',middayCloud=null;
     for(let j=0;j<h.time.length;j++){
-      const ht=new Date(h.time[j]);if(ht<ds||ht>=de)continue;
-      const utcKey=ht.toISOString().slice(0,13);
-      const tafHr=_taf&&_taf[utcKey];const mosHr=!tafHr&&_mos&&_mos[utcKey];
-      let c;
-      if(tafHr)c=tafHr.cat;
-      else if(mosHr)c=mosHr.cat;
-      else{const vs=h.visibility[j]/1609.34;const cl=estCeiling(h.cloud_cover_low[j],h.temperature_2m[j],h.dewpoint_2m[j]);c=fltCat(cl,vs);}
+      if(!h.time[j].startsWith(dayDate))continue;
+      const t=omH(h,'temperature_2m',j);
+      if(t!=null){if(hi===null||t>hi)hi=t;if(lo===null||t<lo)lo=t;}
+      if(parseInt(h.time[j].slice(11,13))===13)middayCloud=omH(h,'cloud_cover',j);
+      const c=hrAv(fc,h,j,omMs(fc,h.time[j])).cat;
       if(catOrder.indexOf(c)>catOrder.indexOf(worst))worst=c;
     }
+    if(hi===null)hi=omD(d,'temperature_2m_max',i);
+    if(lo===null)lo=omD(d,'temperature_2m_min',i);
+    const wc=omD(d,'weather_code',i);
+    const icon=(wc!=null&&wc>=45)?wmoInfo(wc,false).icon:skyIcon(middayCloud,false);
+    strip+='<div class="day-card'+(i===(_initDay||0)?' active':'')+'" data-day="'+i+'">';
+    strip+='<div class="day-name">'+dayLabel(dayDate,{weekday:'short'})+'</div>';
+    strip+='<div class="day-date">'+dayLabel(dayDate,{month:'short',day:'numeric'})+'</div>';
+    strip+='<div class="day-icon">'+icon+'</div>';
+    strip+='<div class="day-temps">'+(hi==null?'—':Math.round(hi)+'°')+' <span class="lo">/ '+(lo==null?'—':Math.round(lo)+'°')+'</span></div></div>';
     bar+='<div class="vfr-seg" style="background:'+catColor(worst)+'"></div>';
   }
   $('daily-strip').innerHTML=strip;$('vfr-bar').innerHTML=bar;
@@ -584,11 +791,11 @@ async function loadAirport(rawCode,dayIdx){
       if(!code.startsWith('K')&&code.length<=4){try{stn=await nwsStation('K'+code);code='K'+code;}catch(e2){throw new Error('NOT_FOUND');}}
       else throw new Error('NOT_FOUND');
     }
-    const [obs,fc,tafLookup,mosLookup]=await Promise.all([
-      nwsObs(stn.id),omForecast(stn.lat,stn.lon),fetchTaf(stn.id),fetchIemMos(stn.id)
+    const [obs,fc,taf,models]=await Promise.all([
+      nwsObs(stn.id),omForecast(stn.lat,stn.lon),fetchTaf(stn.id),fetchModels(stn.id)
     ]);
     if(!fc||!fc.hourly||!fc.hourly.time)throw new Error('Forecast data unavailable');
-    _fc=fc;_stn=stn;_initDay=dayIdx;_taf=tafLookup;_mos=mosLookup;
+    _fc=fc;_stn=stn;_initDay=dayIdx;_src=Object.assign({taf:taf},models);
     history.replaceState(null,'','#'+stn.id+'/'+dayIdx);
     addRecent(stn.id,stn.name);document.title=stn.id+' Weather';
     renderHeader(stn,obs,fc);renderCurrent(obs,stn,fc);renderDaily(fc,stn);
