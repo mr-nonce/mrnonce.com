@@ -550,7 +550,10 @@
   /* ── Pilot note ── */
   if (note) {
     document.getElementById('note-card').style.display = 'block';
-    document.getElementById('note-text').textContent = note;
+    const noteEscaped = note.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const noteLinked = noteEscaped.replace(/(https?:\/\/[^\s<]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:var(--gold);word-break:break-all">$1</a>');
+    document.getElementById('note-text').innerHTML = noteLinked.replace(/\n/g, '<br>');
   }
 
   /* ── Airport database (common US airports; Nominatim fallback for unknowns) ── */
@@ -719,3 +722,4 @@
 </script>
 </body>
 </html>
+
